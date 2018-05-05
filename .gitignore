@@ -31,4 +31,7 @@
 *.out
 *.app
 
+# General
 .DS_Store
+.vscode/
+CMakeLists.txt.user
