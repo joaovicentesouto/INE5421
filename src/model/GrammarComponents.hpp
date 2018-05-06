@@ -165,10 +165,13 @@ class NonTerminalProduction : public Production
 };
 
 class Hasher
-{
+{   
   public:
-    std::size_t operator()(const Symbol &symbol) const;
-    std::size_t operator()(const Production &prod) const;
+    using symbol_type         = Symbol;
+    using production_type_ptr = std::shared_ptr<Production>;
+
+    std::size_t operator()(const symbol_type &symbol) const;
+    std::size_t operator()(const production_type_ptr &prod) const;
 };
 
 } // namespace grammar

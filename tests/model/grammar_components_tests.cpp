@@ -56,7 +56,7 @@ TEST_CASE("Sentencial Form", "[grammar][sentencial_form]")
     using namespace formal_device::grammar;
 
     SECTION("Sentencial Form: Custom construtors", "[grammar][sentencial_form]"){
-        SentencialForm a(Symbol("A"), "abc");
+        SentencialForm a("A", "abc");
 
         CHECK(a.non_terminal() == "A");
         CHECK(a.setence() == "abc");
@@ -64,7 +64,7 @@ TEST_CASE("Sentencial Form", "[grammar][sentencial_form]")
     }
 
     SECTION("Sentencial Form: Copy construtors", "[grammar][sentencial_form]"){
-        SentencialForm a(Symbol("A"), "abc");
+        SentencialForm a("A", "abc");
         SentencialForm b(a);
 
         CHECK(b.non_terminal() == "A");
@@ -73,7 +73,7 @@ TEST_CASE("Sentencial Form", "[grammar][sentencial_form]")
     }
 
     SECTION("Sentencial Form: Move construtors", "[grammar][sentencial_form]"){
-        SentencialForm a(Symbol("A"), "abc");
+        SentencialForm a("A", "abc");
         SentencialForm b(std::move(a));
 
         CHECK(b.non_terminal() == "A");
@@ -82,7 +82,7 @@ TEST_CASE("Sentencial Form", "[grammar][sentencial_form]")
     }
 
     SECTION("Sentencial Form: Sentence check", "[grammar][sentencial_form]"){
-        SentencialForm a(Symbol("A"), "abc");
+        SentencialForm a("A", "abc");
         SentencialForm b(Symbol(), "abc");
 
         CHECK(!a.is_sentence());
@@ -90,8 +90,8 @@ TEST_CASE("Sentencial Form", "[grammar][sentencial_form]")
     }
 
     SECTION("Sentencial Form: Operator ==", "[grammar][sentencial_form]"){
-        SentencialForm a(Symbol("A"), "abc");
-        SentencialForm b(Symbol("A"), "abc");
+        SentencialForm a("A", "abc");
+        SentencialForm b("A", "abc");
         SentencialForm c(Symbol(), "abc");
 
         CHECK(a == b);
@@ -99,7 +99,7 @@ TEST_CASE("Sentencial Form", "[grammar][sentencial_form]")
     }
 
     SECTION("Sentencial Form: Operator +", "[grammar][sentencial_form]"){
-        SentencialForm a(Symbol("A"), "abc");
+        SentencialForm a("A", "abc");
 
         a = a + Symbol("b");
 
@@ -226,7 +226,7 @@ TEST_CASE("Terminal Production", "[grammar][terminal_production]")
 
     SECTION("Terminal Production: Operator <<", "[grammar][terminal_production]"){
         TerminalProduction prod(Symbol("b"));
-        SentencialForm b(Symbol("A"), "abc");
+        SentencialForm b("A", "abc");
 
         b = prod << b;
 
@@ -246,7 +246,7 @@ TEST_CASE("Terminal Production", "[grammar][terminal_production]")
         CHECK(*b == *a);
         CHECK(*a == *b);
 
-        SentencialForm sent(Symbol("A"), "abc");
+        SentencialForm sent("A", "abc");
 
         sent = *a << sent;
 
@@ -299,7 +299,7 @@ TEST_CASE("Non-Terminal Production", "[grammar][non_terminal_production]")
 
     SECTION("Non-Terminal Production: Operator <<", "[grammar][non_terminal_production]"){
         NonTerminalProduction prod(Symbol("b"), Symbol("B"));
-        SentencialForm b(Symbol("A"), "abc");
+        SentencialForm b("A", "abc");
 
         b = prod << b;
 
@@ -319,7 +319,7 @@ TEST_CASE("Non-Terminal Production", "[grammar][non_terminal_production]")
         CHECK(*b == *a);
         CHECK(*a == *b);
 
-        SentencialForm sent(Symbol("A"), "abc");
+        SentencialForm sent("A", "abc");
 
         sent = *a << sent;
 

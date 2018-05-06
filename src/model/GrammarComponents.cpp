@@ -36,6 +36,8 @@ bool Symbol::operator==(const string_type &symbol) const
     return m_symbol == symbol;
 }
 
+/* ----------------------------------------------------------------------- */
+
 bool SentencialForm::is_sentence() const
 {
     return m_non_terminal == "&";
@@ -63,6 +65,8 @@ bool SentencialForm::operator==(const SentencialForm &form) const
 {
     return m_sentence == form.m_sentence && m_non_terminal == form.m_non_terminal;
 }
+
+/* ----------------------------------------------------------------------- */
 
 Sentence::Sentence(const string_type &sentence) :
     SentencialForm("&", sentence)
@@ -99,6 +103,8 @@ bool Sentence::operator==(const Sentence &form) const
     return SentencialForm::operator==(form);
 }
 
+/* ----------------------------------------------------------------------- */
+
 TerminalProduction::TerminalProduction(const symbol_type &terminal) :
     m_terminal{terminal}
 {
@@ -130,6 +136,8 @@ bool TerminalProduction::operator==(const Production& prod) const
     }
 }
 
+/* ----------------------------------------------------------------------- */
+
 bool NonTerminalProduction::is_terminal() const
 {
     return false;
@@ -151,21 +159,23 @@ bool NonTerminalProduction::operator==(const Production& prod) const
     }
 }
 
-std::size_t Hasher::operator()(const Symbol &symbol) const
+/* ----------------------------------------------------------------------- */
+
+std::size_t Hasher::operator()(const symbol_type &symbol) const
 {
     return std::hash<std::string>()(symbol.m_symbol);
 }
 
-std::size_t Hasher::operator()(const Production &prod) const
+std::size_t Hasher::operator()(const production_type_ptr &prod) const
 {
-    if (prod.is_terminal())
+    if (prod->is_terminal())
     {
-        const TerminalProduction* term = dynamic_cast<const TerminalProduction*>(&prod);
+        const TerminalProduction* term = dynamic_cast<const TerminalProduction*>(prod.get());
         return std::hash<std::string>()(term->m_terminal.m_symbol);
     }
     else
     {
-        const NonTerminalProduction* term = dynamic_cast<const NonTerminalProduction*>(&prod);
+        const NonTerminalProduction* term = dynamic_cast<const NonTerminalProduction*>(prod.get());
         return ((std::hash<std::string>()(term->m_terminal.m_symbol)
                ^ (std::hash<std::string>()(term->m_non_terminal.m_symbol) << 1)) >> 1);
     }

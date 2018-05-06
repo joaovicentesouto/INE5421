@@ -15,13 +15,14 @@ class Regular
 {
     template <class T>
     using set_type            = std::unordered_set<T, Hasher>;
-    template <class Key, class T>
-    using map_type            = std::unordered_map<Key, T, Hasher>;
+    template <class Key, class Value>
+    using map_type            = std::unordered_map<Key, Value, Hasher>;
 
     using symbol_type         = Symbol;
-    using ptr_production_type = std::shared_ptr<Production>;
+    using production_type_ptr = std::shared_ptr<Production>;
+
     using vocabulary_set_type = set_type<symbol_type>;
-    using production_map_type = map_type<symbol_type, set_type<ptr_production_type>>;
+    using production_map_type = map_type<symbol_type, set_type<production_type_ptr>>;
 
     // Class constructors
     Regular() = delete;
