@@ -19,8 +19,9 @@ class Regular
     using map_type            = std::unordered_map<Key, T, Hasher>;
 
     using symbol_type         = Symbol;
+    using ptr_production_type = std::shared_ptr<Production>;
     using vocabulary_set_type = set_type<symbol_type>;
-    using production_map_type = map_type<symbol_type, set_type<Production>>;
+    using production_map_type = map_type<symbol_type, set_type<ptr_production_type>>;
 
     // Class constructors
     Regular() = delete;

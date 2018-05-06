@@ -3,6 +3,7 @@
 
 #include <utility>
 #include <string>
+#include <regex>
 #include <unordered_set>
 #include <unordered_map>
 
@@ -27,13 +28,12 @@ class Symbol
     Symbol(Symbol &&) = default;
     Symbol &operator=(Symbol &&) = default;
 
-    template <class Arg1>
-    Symbol(Arg1 &&symbol) : m_symbol{std::forward<Arg1>(symbol)}
-    {
-    }
+    Symbol(const string_type &symbol);
+    Symbol(string_type &&symbol);
 
     bool is_terminal() const;
     bool operator==(const Symbol &symbol) const;
+    bool operator==(const string_type &symbol) const;
 
   private:
     string_type m_symbol;
@@ -61,17 +61,18 @@ class SentencialForm
     }
 
     bool is_sentence() const;
-
-    symbol_type non_terminal() const;
+    symbol_type non_terminal();
+    string_type setence();
 
     SentencialForm operator+(const symbol_type &symbol) const;
+    bool operator==(const SentencialForm &from) const;
 
   private:
     string_type m_sentence;
     symbol_type m_non_terminal;
 };
 
-class Sentence : private SentencialForm
+class Sentence : public SentencialForm
 {
   public:
     using string_type = std::string;
@@ -85,46 +86,45 @@ class Sentence : private SentencialForm
     Sentence(Sentence &&) = default;
     Sentence &operator=(Sentence &&) = default;
 
-    template <class Arg1>
-    Sentence(Arg1 &&sentence) : SentencialForm("&", std::forward<Arg1>(sentence))
-    {
-    }
+    Sentence(const string_type &sentence);
+    Sentence(string_type &&sentence);
 
     bool is_sentence() const;
+    string_type setence();
 
     SentencialForm operator+(const symbol_type &symbol) const;
+    bool operator==(const SentencialForm &form) const;
+    bool operator==(const Sentence &form) const;
 };
 
 class Production
 {
   public:
     friend class Hasher;
-    ~Production() = default;
+    virtual ~Production() = default;
 
     virtual bool is_terminal() const = 0;
     virtual SentencialForm operator<<(const SentencialForm &form) const = 0;
     virtual bool operator==(const Production &form) const = 0;
 };
 
-class ProductionTerminal : public Production
+class TerminalProduction : public Production
 {
   public:
     friend class Hasher;
 
     using symbol_type = Symbol;
 
-    ProductionTerminal() = delete;
+    TerminalProduction() = delete;
 
-    ProductionTerminal(const ProductionTerminal &) = default;
-    ProductionTerminal &operator=(const ProductionTerminal &) = default;
+    TerminalProduction(const TerminalProduction &) = default;
+    TerminalProduction &operator=(const TerminalProduction &) = default;
 
-    ProductionTerminal(ProductionTerminal &&) = default;
-    ProductionTerminal &operator=(ProductionTerminal &&) = default;
+    TerminalProduction(TerminalProduction &&) = default;
+    TerminalProduction &operator=(TerminalProduction &&) = default;
 
-    template <class Arg1>
-    ProductionTerminal(Arg1 &&terminal) : m_terminal{std::forward<Arg1>(terminal)}
-    {
-    }
+    TerminalProduction(const symbol_type &terminal);
+    TerminalProduction(symbol_type &&terminal);
 
     bool is_terminal() const;
     SentencialForm operator<<(const SentencialForm &form) const;
@@ -134,24 +134,25 @@ class ProductionTerminal : public Production
     symbol_type m_terminal;
 };
 
-class ProductionNonTerminal : public Production
+class NonTerminalProduction : public Production
 {
   public:
     friend class Hasher;
 
     using symbol_type = Symbol;
 
-    ProductionNonTerminal() = delete;
+    NonTerminalProduction() = delete;
 
-    ProductionNonTerminal(const ProductionNonTerminal &) = default;
-    ProductionNonTerminal &operator=(const ProductionNonTerminal &) = default;
+    NonTerminalProduction(const NonTerminalProduction &) = default;
+    NonTerminalProduction &operator=(const NonTerminalProduction &) = default;
 
-    ProductionNonTerminal(ProductionNonTerminal &&) = default;
-    ProductionNonTerminal &operator=(ProductionNonTerminal &&) = default;
+    NonTerminalProduction(NonTerminalProduction &&) = default;
+    NonTerminalProduction &operator=(NonTerminalProduction &&) = default;
 
     template <class Arg1, class Arg2>
-    ProductionNonTerminal(Arg1 &&terminal, Arg1 &&non_terminal) : m_terminal{std::forward<Arg1>(terminal)},
-                                                                  m_non_terminal{std::forward<Arg2>(non_terminal)}
+    NonTerminalProduction(Arg1 &&terminal, Arg2 &&non_terminal) :
+        m_terminal{std::forward<Arg1>(terminal)},
+        m_non_terminal{std::forward<Arg2>(non_terminal)}
     {
     }
 
