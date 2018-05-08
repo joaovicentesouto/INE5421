@@ -13,6 +13,7 @@ namespace grammar
 
 class Regular
 {
+  public:
     template <class T>
     using set_type            = std::unordered_set<T, Hasher>;
     template <class Key, class Value>

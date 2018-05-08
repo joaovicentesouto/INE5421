@@ -3,70 +3,116 @@
 
 #include <unordered_set>
 #include <unordered_map>
+#include "./FiniteAutomatonComponents.h"
 
 namespace formal_device
 {
+namespace finite_automaton
+{
 
-//class State {};
-//class Simbol {};
+class MinimalDeterministic; // Only the Deterministic can build it.
 
-//class MinimumDFA;
+class Deterministic
+{
+  public:
+    template <class T>
+    using set_type            = std::unordered_set<T, Hasher>;
+    template <class Key, class Value>
+    using map_type            = std::unordered_map<Key, Value, Hasher>;
 
-//class DFA
-//{
-//  public:
-//    template <class T>
-//    using set_type            = std::unordered_set<T>;
-//    template <class Key, class T>
-//    using map_type            = std::unordered_map<Key, T>;
+    using state_type          = State;
+    using symbol_type         = Symbol;
+    using state_set_type      = set_type<state_type>;
+    using symbol_set_type     = set_type<symbol_type>;
+    using transition_map_type = map_type<state_type, map_type<symbol_type, state_type>>;
 
-//    using state_type          = State;
-//    using simbol_type         = Simbol;
-//    using state_set_type      = set_type<state_type>;
-//    using simbol_set_type     = set_type<simbol_type>;
-//    using transition_map_type = map_type<state_type, map_type<simbol_type, state_type>>;
+    // Class constructors
+    Deterministic() = delete;
 
-//    // Class constructors
-//    DFA() = delete;
+    Deterministic(const Deterministic &) = default;
+    Deterministic &operator=(const Deterministic &) = default;
 
-//    DFA(const DFA &) = default;
-//    DFA &operator=(const DFA &) = default;
+    Deterministic(Deterministic &&) = default;
+    Deterministic &operator=(Deterministic &&) = default;
 
-//    DFA(DFA &&) = default;
-//    DFA &operator=(DFA &&) = default;
+    template <class Arg1, class Arg2, class Arg3, class Arg4, class Arg5>
+    Deterministic(Arg1 &&alphabet, Arg2 &&states, Arg3 &&transitions, Arg4 &&final_states, Arg5 &&initial_state) :
+        m_alphabet{std::forward<Arg1>(alphabet)},
+        m_states{std::forward<Arg2>(states)},
+        m_transitions{std::forward<Arg3>(transitions)},
+        m_final_states{std::forward<Arg4>(final_states)},
+        m_initial_state{std::forward<Arg5>(initial_state)}
+    {
+    }
 
-//    template <class Arg1, class Arg2, class Arg3, class Arg4, class Arg5>
-//    DFA(Arg1 &&alphabet, Arg2 &&states, Arg3 &&transitions, Arg4 &&final_states, Arg5 &&initial_state) :
-//        m_alphabet{std::forward<Arg1>(alphabet)},
-//        m_states{std::forward<Arg2>(states)},
-//        m_transitions{std::forward<Arg3>(transitions)},
-//        m_final_states{std::forward<Arg4>(final_states)},
-//        m_initial_state{std::forward<Arg5>(initial_state)}
-//    {
-//    }
+    // Class member functions
 
-//    // Class member functions
+    // union using operator+
+    // denial using operator!
+    // intersection using operator^
+    // difference using operator-
+    // reverse using operator^(char 'r') ???
 
-//    // union using operator+
-//    // denial using operator!
-//    // intersection using operator^
-//    // difference using operator-
-//    // reverse using operator^(char 'r') ???
+private:
+    symbol_set_type     m_alphabet;
+    state_set_type      m_states;
+    transition_map_type m_transitions;
+    state_set_type      m_final_states;
+    state_type          m_initial_state;
+};
 
-//  private:
-//    simbol_set_type     m_alphabet;
-//    state_set_type      m_states;
-//    transition_map_type m_transitions;
-//    state_set_type      m_final_states;
-//    state_type          m_initial_state;
-//};
+class DeterministicEpsilon : private Deterministic
+{
 
-//class DFAEpsilon;
+};
 
-//class NDFA;
+class NonDeterministic
+{
+public:
+    template <class T>
+    using set_type            = Deterministic::set_type<T>;
+    template <class Key, class Value>
+    using map_type            = Deterministic::map_type<Key, Value>;
 
-//class NDFAEpsilon;
+    using state_type          = Deterministic::state_type;
+    using symbol_type         = Deterministic::symbol_type;
+    using state_set_type      = Deterministic::state_set_type;
+    using symbol_set_type     = Deterministic::symbol_set_type;
+    using transition_map_type = map_type<state_type, map_type<symbol_type, set_type<state_type>>>;
 
+    // Class constructors
+    NonDeterministic() = delete;
+
+    NonDeterministic(const NonDeterministic &) = default;
+    NonDeterministic &operator=(const NonDeterministic &) = default;
+
+    NonDeterministic(NonDeterministic &&) = default;
+    NonDeterministic &operator=(NonDeterministic &&) = default;
+
+    template <class Arg1, class Arg2, class Arg3, class Arg4, class Arg5>
+    NonDeterministic(Arg1 &&alphabet, Arg2 &&states, Arg3 &&transitions, Arg4 &&final_states, Arg5 &&initial_state) :
+        m_alphabet{std::forward<Arg1>(alphabet)},
+        m_states{std::forward<Arg2>(states)},
+        m_transitions{std::forward<Arg3>(transitions)},
+        m_final_states{std::forward<Arg4>(final_states)},
+        m_initial_state{std::forward<Arg5>(initial_state)}
+    {
+    }
+
+private:
+    symbol_set_type     m_alphabet;
+    state_set_type      m_states;
+    transition_map_type m_transitions;
+    state_set_type      m_final_states;
+    state_type          m_initial_state;
+};
+
+class NonDeterministicEpsilon : private NonDeterministic
+{
+
+};
+
+}  // finite_automaton
 } // namespace formal_device
 
 #endif // MODEL_FINITEAUTOMATON_HPP
