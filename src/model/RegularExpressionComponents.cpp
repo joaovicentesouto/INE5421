@@ -5,6 +5,32 @@ namespace formal_device
 namespace expression
 {
 
+RegularPointer::RegularPointer(Regular * reg) :
+    std::shared_ptr<Regular>(reg)
+{
+
+}
+
+RegularPointer RegularPointer::operator|(const RegularPointer &reg) const
+{
+    return *get() | reg;
+}
+
+RegularPointer RegularPointer::operator+(const RegularPointer &reg) const
+{
+    return *get() + reg;
+}
+
+RegularPointer RegularPointer::operator^(const Operation &op) const
+{
+    return *get() ^ op;
+}
+
+bool RegularPointer::operator==(const RegularPointer &reg) const
+{
+    return *get() == reg;
+}
+
 /* --------------------- Empty --------------------- */
 
 regular_ptr Empty::clone() const
@@ -12,14 +38,14 @@ regular_ptr Empty::clone() const
     return regular_ptr(new Empty());
 }
 
-regular_ptr Empty::operator|(const Regular &reg) const
+regular_ptr Empty::operator|(const regular_ptr &reg) const
 {
-    return reg.clone();
+    return reg;
 }
 
-regular_ptr Empty::operator+(const Regular &reg) const
+regular_ptr Empty::operator+(const regular_ptr &reg) const
 {
-    return reg.clone();
+    return reg;
 }
 
 regular_ptr Empty::operator^(const Operation &op) const
@@ -27,26 +53,26 @@ regular_ptr Empty::operator^(const Operation &op) const
     return clone();
 }
 
-bool Empty::operator==(const Regular &reg) const
+bool Empty::operator==(const regular_ptr &reg) const
 {
-    return dynamic_cast<const Empty*>(&reg);
+    return dynamic_cast<const Empty*>(reg.get());
 }
 
 /* --------------------- Epsilon --------------------- */
 
 regular_ptr Epsilon::clone() const
 {
-    return regular_ptr(new Epsilon());
+    return new Epsilon();
 }
 
-regular_ptr Epsilon::operator|(const Regular &reg) const
+regular_ptr Epsilon::operator|(const regular_ptr &reg) const
 {
-    return regular_ptr(new Optional(reg.clone()));
+    return new Optional(reg);
 }
 
-regular_ptr Epsilon::operator+(const Regular &reg) const
+regular_ptr Epsilon::operator+(const regular_ptr &reg) const
 {
-    return regular_ptr(reg.clone());
+    return reg;
 }
 
 regular_ptr Epsilon::operator^(const Operation &op) const
@@ -54,9 +80,9 @@ regular_ptr Epsilon::operator^(const Operation &op) const
     return clone();
 }
 
-bool Epsilon::operator==(const Regular &reg) const
+bool Epsilon::operator==(const regular_ptr &reg) const
 {
-    return dynamic_cast<const Epsilon*>(&reg);
+    return dynamic_cast<const Epsilon*>(reg.get());
 }
 
 /* --------------------- Unit --------------------- */
@@ -64,21 +90,28 @@ bool Epsilon::operator==(const Regular &reg) const
 Unit::Unit(const string_type &symbol) :
     m_symbol{symbol}
 {
+
 }
 
 Unit::Unit(string_type &&symbol) :
     m_symbol{std::move(symbol)}
 {
+
 }
 
-regular_ptr Unit::operator|(const Regular &reg) const
+regular_ptr Unit::clone() const
 {
-    return new Union(clone(), reg.clone());
+    return new Unit(m_symbol);
 }
 
-regular_ptr Unit::operator+(const Regular &reg) const
+regular_ptr Unit::operator|(const regular_ptr &reg) const
 {
-    return new Concatenation(clone(), reg.clone());
+    return new Union(clone(), reg);
+}
+
+regular_ptr Unit::operator+(const regular_ptr &reg) const
+{
+    return new Concatenation(clone(), reg);
 }
 
 regular_ptr Unit::operator^(const Operation &op) const
@@ -96,10 +129,10 @@ regular_ptr Unit::operator^(const Operation &op) const
     }
 }
 
-bool Unit::operator==(const Regular &reg) const
+bool Unit::operator==(const regular_ptr &reg) const
 {
-    const Unit * check = dynamic_cast<const Unit*>(&reg);
-    
+    const Unit * check = dynamic_cast<const Unit*>(reg.get());
+
     if (!check)
         return false;
 
@@ -113,14 +146,14 @@ regular_ptr Union::clone() const
     return new Union(m_left_expression, m_right_expression);
 }
 
-regular_ptr Union::operator|(const Regular &reg) const
+regular_ptr Union::operator|(const regular_ptr &reg) const
 {
-    return new Union(clone(), reg.clone());
+    return new Union(clone(), reg);
 }
 
-regular_ptr Union::operator+(const Regular &reg) const
+regular_ptr Union::operator+(const regular_ptr &reg) const
 {
-    return new Concatenation(clone(), reg.clone());
+    return new Concatenation(clone(), reg);
 }
 
 regular_ptr Union::operator^(const Operation &op) const
@@ -138,9 +171,9 @@ regular_ptr Union::operator^(const Operation &op) const
     }
 }
 
-bool Union::operator==(const Regular &reg) const
+bool Union::operator==(const regular_ptr &reg) const
 {
-    const Union * check = dynamic_cast<const Union*>(&reg);
+    const Union * check = dynamic_cast<const Union*>(reg.get());
     
     if (!check)
         return false;
@@ -156,14 +189,14 @@ regular_ptr Concatenation::clone() const
     return new Concatenation(m_left_expression, m_right_expression);
 }
 
-regular_ptr Concatenation::operator|(const Regular &reg) const
+regular_ptr Concatenation::operator|(const regular_ptr &reg) const
 {
-    return new Union(clone(), reg.clone());
+    return new Union(clone(), reg);
 }
 
-regular_ptr Concatenation::operator+(const Regular &reg) const
+regular_ptr Concatenation::operator+(const regular_ptr &reg) const
 {
-    return new Concatenation(clone(), reg.clone());
+    return new Concatenation(clone(), reg);
 }
 
 regular_ptr Concatenation::operator^(const Operation &op) const
@@ -181,9 +214,9 @@ regular_ptr Concatenation::operator^(const Operation &op) const
     }
 }
 
-bool Concatenation::operator==(const Regular &reg) const
+bool Concatenation::operator==(const regular_ptr &reg) const
 {
-    const Concatenation * check = dynamic_cast<const Concatenation*>(&reg);
+    const Concatenation * check = dynamic_cast<const Concatenation*>(reg.get());
     
     if (!check)
         return false;
@@ -199,14 +232,14 @@ regular_ptr ReflexiveClosure::clone() const
     return new ReflexiveClosure(m_expression);
 }
 
-regular_ptr ReflexiveClosure::operator|(const Regular &reg) const
+regular_ptr ReflexiveClosure::operator|(const regular_ptr &reg) const
 {
-    return new Union(clone(), reg.clone());
+    return new Union(clone(), reg);
 }
 
-regular_ptr ReflexiveClosure::operator+(const Regular &reg) const
+regular_ptr ReflexiveClosure::operator+(const regular_ptr &reg) const
 {
-    return new Concatenation(clone(), reg.clone());
+    return new Concatenation(clone(), reg);
 }
 
 regular_ptr ReflexiveClosure::operator^(const Operation &op) const
@@ -224,9 +257,9 @@ regular_ptr ReflexiveClosure::operator^(const Operation &op) const
     }
 }
 
-bool ReflexiveClosure::operator==(const Regular &reg) const
+bool ReflexiveClosure::operator==(const regular_ptr &reg) const
 {
-    const ReflexiveClosure * check = dynamic_cast<const ReflexiveClosure*>(&reg);
+    const ReflexiveClosure * check = dynamic_cast<const ReflexiveClosure*>(reg.get());
     
     if (!check)
         return false;
@@ -241,14 +274,14 @@ regular_ptr TransitiveClosure::clone() const
     return new ReflexiveClosure(m_expression);
 }
 
-regular_ptr TransitiveClosure::operator|(const Regular &reg) const
+regular_ptr TransitiveClosure::operator|(const regular_ptr &reg) const
 {
-    return new Union(clone(), reg.clone());
+    return new Union(clone(), reg);
 }
 
-regular_ptr TransitiveClosure::operator+(const Regular &reg) const
+regular_ptr TransitiveClosure::operator+(const regular_ptr &reg) const
 {
-    return new Concatenation(clone(), reg.clone());
+    return new Concatenation(clone(), reg);
 }
 
 regular_ptr TransitiveClosure::operator^(const Operation &op) const
@@ -266,9 +299,9 @@ regular_ptr TransitiveClosure::operator^(const Operation &op) const
     }
 }
 
-bool TransitiveClosure::operator==(const Regular &reg) const
+bool TransitiveClosure::operator==(const regular_ptr &reg) const
 {
-    const TransitiveClosure * check = dynamic_cast<const TransitiveClosure*>(&reg);
+    const TransitiveClosure * check = dynamic_cast<const TransitiveClosure*>(reg.get());
     
     if (!check)
         return false;
@@ -283,14 +316,14 @@ regular_ptr Optional::clone() const
     return new ReflexiveClosure(m_expression);
 }
 
-regular_ptr Optional::operator|(const Regular &reg) const
+regular_ptr Optional::operator|(const regular_ptr &reg) const
 {
-    return new Union(clone(), reg.clone());
+    return new Union(clone(), reg);
 }
 
-regular_ptr Optional::operator+(const Regular &reg) const
+regular_ptr Optional::operator+(const regular_ptr &reg) const
 {
-    return new Concatenation(clone(), reg.clone());
+    return new Concatenation(clone(), reg);
 }
 
 regular_ptr Optional::operator^(const Operation &op) const
@@ -308,9 +341,9 @@ regular_ptr Optional::operator^(const Operation &op) const
     }
 }
 
-bool Optional::operator==(const Regular &reg) const
+bool Optional::operator==(const regular_ptr &reg) const
 {
-    const Optional * check = dynamic_cast<const Optional*>(&reg);
+    const Optional * check = dynamic_cast<const Optional*>(reg.get());
     
     if (!check)
         return false;

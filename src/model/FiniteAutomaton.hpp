@@ -3,7 +3,7 @@
 
 #include <unordered_set>
 #include <unordered_map>
-#include "./FiniteAutomatonComponents.h"
+#include "./FiniteAutomatonComponents.hpp"
 
 namespace formal_device
 {

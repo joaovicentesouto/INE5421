@@ -1,10 +1,11 @@
 #ifndef MODEL_REGULAREXPRESSION_HPP
 #define MODEL_REGULAREXPRESSION_HPP
 
-#include <utility>
 #include <string>
+#include <utility>
 #include <memory>
 #include <type_traits>
+#include <exception>
 
 namespace formal_device
 {
@@ -17,19 +18,38 @@ enum class Operation
     Optional
 };
 
+class Regular;
+class RegularPointer : public std::shared_ptr<Regular>
+{
+  public:
+    RegularPointer(Regular * reg);
+
+    RegularPointer(const RegularPointer &) = default;
+    RegularPointer &operator=(const RegularPointer &) = default;
+    RegularPointer(RegularPointer &&) = default;
+    RegularPointer &operator=(RegularPointer &&) = default;
+
+    RegularPointer operator|(const RegularPointer &reg) const;
+    RegularPointer operator+(const RegularPointer &reg) const;
+    RegularPointer operator^(const Operation &op) const;
+    bool operator==(const RegularPointer &reg) const;
+};
+
 using string_type = std::string;
-using regular_ptr = std::shared_ptr<Regular>;
+using regular_ptr = RegularPointer;
 
 class Regular
 {
   public:
-    virtual ~Regular() = default;
+    virtual ~Regular() {}
 
-    virtual regular_ptr clone() const = 0;
-    virtual regular_ptr operator|(const Regular &reg) const = 0;  // Union
-    virtual regular_ptr operator+(const Regular &reg) const = 0;  // Concatenate
+    virtual regular_ptr operator|(const regular_ptr &reg) const = 0;  // Union
+    virtual regular_ptr operator+(const regular_ptr &reg) const = 0;  // Concatenate
     virtual regular_ptr operator^(const Operation &op) const = 0; // Closure
-    virtual bool operator==(const Regular &reg) const = 0;
+    virtual bool operator==(const regular_ptr &reg) const = 0;
+
+  private:
+    virtual regular_ptr clone() const = 0;
 };
 
 class Empty : public Regular
@@ -44,11 +64,13 @@ class Empty : public Regular
 
     ~Empty() = default;
 
-    regular_ptr clone() const;
-    regular_ptr operator|(const Regular &reg) const;
-    regular_ptr operator+(const Regular &reg) const;
+    regular_ptr operator|(const regular_ptr &reg) const;
+    regular_ptr operator+(const regular_ptr &reg) const;
     regular_ptr operator^(const Operation &op) const;
-    bool operator==(const Regular &reg) const;
+    bool operator==(const regular_ptr &reg) const;
+
+  private:
+    regular_ptr clone() const;
 };
 
 class Epsilon : public Regular
@@ -63,15 +85,14 @@ class Epsilon : public Regular
 
     ~Epsilon() = default;
 
-    regular_ptr clone() const;
-
-    regular_ptr operator|(const Regular &reg) const;
-    regular_ptr operator+(const Regular &reg) const;
+    regular_ptr operator|(const regular_ptr &reg) const;
+    regular_ptr operator+(const regular_ptr &reg) const;
     regular_ptr operator^(const Operation &op) const;
-
-    bool operator==(const Regular &reg) const;
+    bool operator==(const regular_ptr &reg) const;
 
   private:
+    regular_ptr clone() const;
+
     string_type m_symbol{"&"};
 };
 
@@ -90,15 +111,14 @@ class Unit : public Regular
 
     ~Unit() = default;
 
-    regular_ptr clone() const;
-
-    regular_ptr operator|(const Regular &reg) const;
-    regular_ptr operator+(const Regular &reg) const;
+    regular_ptr operator|(const regular_ptr &reg) const;
+    regular_ptr operator+(const regular_ptr &reg) const;
     regular_ptr operator^(const Operation &op) const;
-
-    bool operator==(const Regular &reg) const;
+    bool operator==(const regular_ptr &reg) const;
 
   private:
+    regular_ptr clone() const;
+
     string_type m_symbol;
 };
 
@@ -113,23 +133,22 @@ class Union : public Regular
     Union &operator=(Union &&) = default;
 
     template<class Arg1, class Arg2>
-    Union(Arg1 &&left_exp, Arg2, &&right_exp) :
+    Union(Arg1 &&left_exp, Arg2 &&right_exp) :
         m_left_expression{std::forward<Arg1>(left_exp)},
-        m_right_expression{std::forward<Arg1>(right_exp)}
+        m_right_expression{std::forward<Arg2>(right_exp)}
     {
     }
 
     ~Union() = default;
 
-    regular_ptr clone() const;
-
-    regular_ptr operator|(const Regular &reg) const;
-    regular_ptr operator+(const Regular &reg) const;
+    regular_ptr operator|(const regular_ptr &reg) const;
+    regular_ptr operator+(const regular_ptr &reg) const;
     regular_ptr operator^(const Operation &op) const;
-
-    bool operator==(const Regular &reg) const;
+    bool operator==(const regular_ptr &reg) const;
 
   private:
+    regular_ptr clone() const;
+
     regular_ptr m_left_expression;
     regular_ptr m_right_expression;
 };
@@ -145,23 +164,22 @@ class Concatenation : public Regular
     Concatenation &operator=(Concatenation &&) = default;
 
     template<class Arg1, class Arg2>
-    Concatenation(Arg1 &&left_exp, Arg2, &&right_exp) :
+    Concatenation(Arg1 &&left_exp, Arg2 &&right_exp) :
         m_left_expression{std::forward<Arg1>(left_exp)},
-        m_right_expression{std::forward<Arg1>(right_exp)}
+        m_right_expression{std::forward<Arg2>(right_exp)}
     {
     }
 
     ~Concatenation() = default;
 
-    regular_ptr clone() const;
-
-    regular_ptr operator|(const Regular &reg) const;
-    regular_ptr operator+(const Regular &reg) const;
+    regular_ptr operator|(const regular_ptr &reg) const;
+    regular_ptr operator+(const regular_ptr &reg) const;
     regular_ptr operator^(const Operation &op) const;
-
-    bool operator==(const Regular &reg) const;
+    bool operator==(const regular_ptr &reg) const;
 
   private:
+    regular_ptr clone() const;
+
     regular_ptr m_left_expression;
     regular_ptr m_right_expression;
 };
@@ -184,15 +202,14 @@ class ReflexiveClosure : public Regular
 
     ~ReflexiveClosure() = default;
 
-    regular_ptr clone() const;
-
-    regular_ptr operator|(const Regular &reg) const;
-    regular_ptr operator+(const Regular &reg) const;
+    regular_ptr operator|(const regular_ptr &reg) const;
+    regular_ptr operator+(const regular_ptr &reg) const;
     regular_ptr operator^(const Operation &op) const;
-
-    bool operator==(const Regular &reg) const;
+    bool operator==(const regular_ptr &reg) const;
 
   private:
+    regular_ptr clone() const;
+
     regular_ptr m_expression;
 };
 
@@ -214,15 +231,14 @@ class TransitiveClosure : public Regular
 
     ~TransitiveClosure() = default;
 
-    regular_ptr clone() const;
-
-    regular_ptr operator|(const Regular &reg) const;
-    regular_ptr operator+(const Regular &reg) const;
+    regular_ptr operator|(const regular_ptr &reg) const;
+    regular_ptr operator+(const regular_ptr &reg) const;
     regular_ptr operator^(const Operation &op) const;
-
-    bool operator==(const Regular &reg) const;
+    bool operator==(const regular_ptr &reg) const;
 
   private:
+    regular_ptr clone() const;
+
     regular_ptr m_expression;
 };
 
@@ -244,15 +260,14 @@ class Optional : public Regular
 
     ~Optional() = default;
 
-    regular_ptr clone() const;
-
-    regular_ptr operator|(const Regular &reg) const;
-    regular_ptr operator+(const Regular &reg) const;
+    regular_ptr operator|(const regular_ptr &reg) const;
+    regular_ptr operator+(const regular_ptr &reg) const;
     regular_ptr operator^(const Operation &op) const;
-
-    bool operator==(const Regular &reg) const;
+    bool operator==(const regular_ptr &reg) const;
 
   private:
+    regular_ptr clone() const;
+
     regular_ptr m_expression;
 };
 

@@ -1,2 +1,2 @@
-#include "FiniteAutomatonComponents.h"
+#include "FiniteAutomatonComponents.hpp"
 
