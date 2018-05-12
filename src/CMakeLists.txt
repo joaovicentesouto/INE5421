@@ -1,7 +1,7 @@
 ################################################################################
 # This is the CMakeLists file for the:
 #
-#   Ophidian GUI
+#   formal_languages GUI
 #
 # Its main goals are:
 #   - Create an graphic user interface.

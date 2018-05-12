@@ -1,6 +1,6 @@
 #include "../catch.hpp"
 
-#include "../../src/model/GrammarComponents.hpp"
+#include <src/model/GrammarComponents.hpp>
 
 TEST_CASE("Symbol", "[grammar][symbol]")
 {

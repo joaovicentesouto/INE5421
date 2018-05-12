@@ -1,10 +1,12 @@
 #ifndef MODEL_REGULAREXPRESSION_HPP
 #define MODEL_REGULAREXPRESSION_HPP
 
+#include <iostream>
 #include <string>
 #include <utility>
 #include <memory>
 #include <type_traits>
+#include <typeinfo>
 #include <exception>
 
 namespace formal_device
