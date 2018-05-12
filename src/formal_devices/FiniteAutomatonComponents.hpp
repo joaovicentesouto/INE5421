@@ -1,5 +1,5 @@
-#ifndef MODEL_FINITEAUTOMATON_COMPONENTS_H
-#define MODEL_FINITEAUTOMATON_COMPONENTS_H
+#ifndef DEVICES_FINITEAUTOMATON_COMPONENTS_H
+#define DEVICES_FINITEAUTOMATON_COMPONENTS_H
 
 #include <string>
 #include <utility>
@@ -74,4 +74,4 @@ public:
 } // namespace finite_automaton
 } // namespace formal_device
 
-#endif // MODEL_FINITEAUTOMATON_COMPONENTS_H
+#endif // DEVICES_FINITEAUTOMATON_COMPONENTS_H

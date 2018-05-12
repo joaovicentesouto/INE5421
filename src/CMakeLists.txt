@@ -8,7 +8,8 @@
 #
 ################################################################################
 
-add_subdirectory(model)
+add_subdirectory(formal_devices)
+add_subdirectory(parser)
 
 ################################################################################
 # Set flags
@@ -41,7 +42,7 @@ add_executable( formal_languages_gui "./main.cpp")
 
 # Add executable dependencies
 target_link_libraries(formal_languages_gui PUBLIC
-    PRIVATE formal_languages_model
+    PRIVATE formal_languages_devices
 )
 #    PRIVATE Qt5::Widgets
 #)

@@ -1,5 +1,5 @@
-#ifndef MODEL_FINITEAUTOMATON_HPP
-#define MODEL_FINITEAUTOMATON_HPP
+#ifndef DEVICES_FINITEAUTOMATON_HPP
+#define DEVICES_FINITEAUTOMATON_HPP
 
 #include <string>
 #include <unordered_set>
@@ -69,6 +69,8 @@ class Deterministic
     virtual bool finiteness() const;
     virtual bool containment(const Deterministic & machine) const;
     virtual bool equivalence(const Deterministic & machine) const;
+
+    bool operator==(const Deterministic & machine) const;
 
 private:
     symbol_set_type     m_alphabet;
@@ -140,4 +142,4 @@ class NonDeterministicEpsilon : public NonDeterministic
 }  // finite_automaton
 } // namespace formal_device
 
-#endif // MODEL_FINITEAUTOMATON_HPP
+#endif // DEVICES_FINITEAUTOMATON_HPP

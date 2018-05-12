@@ -35,6 +35,15 @@ Deterministic Deterministic::operator^(const Operation &op) const
     return Deterministic();
 }
 
+bool Deterministic::operator==(const Deterministic & machine) const
+{
+    return m_alphabet      == machine.m_alphabet      
+        && m_states        == machine.m_states
+        && m_transitions   == machine.m_transitions
+        && m_final_states  == machine.m_final_states
+        && m_initial_state == machine.m_initial_state;
+}
+
 bool Deterministic::membership(const string_type &sentece) const
 {
     return false;

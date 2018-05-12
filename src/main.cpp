@@ -2,8 +2,9 @@
 //#include <QApplication>
 //#include <cstdlib>
 
-#include "./model/FiniteAutomaton.hpp"
-#include "./model/Grammar.hpp"
+#include <src/formal_devices/FiniteAutomaton.hpp>
+#include <src/formal_devices/Grammar.hpp>
+#include <src/formal_devices/RegularExpression.hpp>
 
 int main(int argc, char *argv[])
 {

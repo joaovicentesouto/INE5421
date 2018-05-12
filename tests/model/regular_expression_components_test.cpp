@@ -1,6 +1,6 @@
 #include "../catch.hpp"
 
-#include <src/model/RegularExpressionComponents.hpp>
+#include <src/formal_devices/RegularExpressionComponents.hpp>
 
 using namespace formal_device::expression;
 

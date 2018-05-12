@@ -13,7 +13,7 @@ file(GLOB_RECURSE formal_languages_tests_source
 add_executable(formal_languages_tests ${formal_languages_tests_source})
 
 target_link_libraries(formal_languages_tests
-    PRIVATE formal_languages_model
+    PRIVATE formal_languages_devices
 )
 
 

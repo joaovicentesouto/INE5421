@@ -1,5 +1,5 @@
-#ifndef MODEL_GRAMMAR_COMPONENTS_HPP
-#define MODEL_GRAMMAR_COMPONENTS_HPP
+#ifndef DEVICES_GRAMMAR_COMPONENTS_HPP
+#define DEVICES_GRAMMAR_COMPONENTS_HPP
 
 #include <utility>
 #include <string>
@@ -188,4 +188,4 @@ class Hasher
 } // namespace grammar
 } // namespace formal_device
 
-#endif // MODEL_GRAMMAR_COMPONENTS_HPP
+#endif // DEVICES_GRAMMAR_COMPONENTS_HPP

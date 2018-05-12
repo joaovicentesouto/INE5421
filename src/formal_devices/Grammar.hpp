@@ -1,5 +1,5 @@
-#ifndef MODEL_GRAMMAR_REGULAR_HPP
-#define MODEL_GRAMMAR_REGULAR_HPP
+#ifndef DEVICES_GRAMMAR_HPP
+#define DEVICES_GRAMMAR_HPP
 
 #include <unordered_set>
 #include <unordered_map>
@@ -26,7 +26,7 @@ class Regular
     using production_map_type = map_type<symbol_type, set_type<production_type_ptr>>;
 
     // Class constructors
-    Regular() = delete;
+    Regular() = default;
 
     Regular(const Regular &) = default;
     Regular &operator=(const Regular &) = default;
@@ -47,10 +47,10 @@ class Regular
     vocabulary_set_type m_vn;
     vocabulary_set_type m_vt;
     production_map_type m_productions;
-    symbol_type         m_initial_symbol;
+    symbol_type         m_initial_symbol{"Error"};
 };
 
 }   // namespace grammar
 }   // namespace formal_device
 
-#endif // MODEL_GRAMMAR_REGULAR_HPP
+#endif // DEVICES_GRAMMAR_HPP

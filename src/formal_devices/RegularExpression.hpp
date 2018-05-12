@@ -1,7 +1,7 @@
-#ifndef MODEL_REGULAREXPRESSION_HPP
-#define MODEL_REGULAREXPRESSION_HPP
+#ifndef DEVICES_REGULAREXPRESSION_HPP
+#define DEVICES_REGULAREXPRESSION_HPP
 
-#include <src/model/RegularExpressionComponents.hpp>
+#include <src/formal_devices/RegularExpressionComponents.hpp>
 
 namespace formal_device
 {
@@ -15,11 +15,7 @@ public:
 
     RegularManipulator() = delete;
 
-    template <class Arg1>
-    RegularManipulator(Arg1 &&exp):
-        m_expression{std::forward<Arg1>(exp)}
-    {
-    }
+    RegularManipulator(const expression_type_ptr &exp);
 
     ~RegularManipulator() = default;
 
@@ -30,4 +26,4 @@ private:
 }   // namespace expression
 }   // namespace formal_device
 
-#endif // MODEL_REGULAREXPRESSION_HPP
+#endif // DEVICES_REGULAREXPRESSION_HPP
