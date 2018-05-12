@@ -67,7 +67,7 @@ regular_ptr Epsilon::clone() const
 
 regular_ptr Epsilon::operator|(const regular_ptr &reg) const
 {
-    return new Optional(reg);
+    return reg ^ Operation::Optional;
 }
 
 regular_ptr Epsilon::operator+(const regular_ptr &reg) const
@@ -94,7 +94,7 @@ regular_ptr Unit::clone() const
 
 regular_ptr Unit::operator|(const regular_ptr &reg) const
 {
-    if (dynamic_cast<const Empty*>(reg.get()))
+    if (dynamic_cast<const Empty*>(reg.get()) || *this == reg)
         return clone();
 
     if (dynamic_cast<const Epsilon*>(reg.get()))
@@ -146,7 +146,7 @@ regular_ptr Union::clone() const
 
 regular_ptr Union::operator|(const regular_ptr &reg) const
 {
-    if (dynamic_cast<const Empty*>(reg.get()))
+    if (dynamic_cast<const Empty*>(reg.get()) || *this == reg)
         return clone();
 
     if (dynamic_cast<const Epsilon*>(reg.get()))
@@ -199,7 +199,7 @@ regular_ptr Concatenation::clone() const
 
 regular_ptr Concatenation::operator|(const regular_ptr &reg) const
 {
-    if (dynamic_cast<const Empty*>(reg.get()))
+    if (dynamic_cast<const Empty*>(reg.get()) || *this == reg)
         return clone();
 
     if (dynamic_cast<const Epsilon*>(reg.get()))
@@ -252,7 +252,7 @@ regular_ptr ReflexiveClosure::clone() const
 
 regular_ptr ReflexiveClosure::operator|(const regular_ptr &reg) const
 {
-    if (dynamic_cast<const Empty*>(reg.get()))
+    if (dynamic_cast<const Empty*>(reg.get()) || *this == reg)
         return clone();
 
     if (dynamic_cast<const Epsilon*>(reg.get()))
@@ -275,13 +275,13 @@ regular_ptr ReflexiveClosure::operator^(const Operation &op) const
     switch (op)
     {
     case Operation::Star :
-        return new ReflexiveClosure(clone());
+        return clone();
 
     case Operation::Plus :
-        return new TransitiveClosure(clone());
+        return clone();
 
     case Operation::Optional :
-        return new Optional(clone());
+        return clone();
     }
 }
 
@@ -299,12 +299,12 @@ bool ReflexiveClosure::operator==(const regular_ptr &reg) const
 
 regular_ptr TransitiveClosure::clone() const
 {
-    return new ReflexiveClosure(m_expression);
+    return new TransitiveClosure(m_expression);
 }
 
 regular_ptr TransitiveClosure::operator|(const regular_ptr &reg) const
 {
-    if (dynamic_cast<const Empty*>(reg.get()))
+    if (dynamic_cast<const Empty*>(reg.get()) || *this == reg)
         return clone();
 
     if (dynamic_cast<const Epsilon*>(reg.get()))
@@ -327,13 +327,13 @@ regular_ptr TransitiveClosure::operator^(const Operation &op) const
     switch (op)
     {
     case Operation::Star :
-        return new ReflexiveClosure(clone());
+        return new ReflexiveClosure(m_expression);
 
     case Operation::Plus :
-        return new TransitiveClosure(clone());
+        return clone();
 
     case Operation::Optional :
-        return new Optional(clone());
+        return new ReflexiveClosure(m_expression);
     }
 }
 
@@ -351,16 +351,15 @@ bool TransitiveClosure::operator==(const regular_ptr &reg) const
 
 regular_ptr Optional::clone() const
 {
-    return new ReflexiveClosure(m_expression);
+    return new Optional(m_expression);
 }
 
 regular_ptr Optional::operator|(const regular_ptr &reg) const
 {
-    if (dynamic_cast<const Empty*>(reg.get()))
+    if (dynamic_cast<const Empty*>(reg.get()) ||
+            dynamic_cast<const Epsilon*>(reg.get()) ||
+            *this == reg)
         return clone();
-
-    if (dynamic_cast<const Epsilon*>(reg.get()))
-        return new Optional(clone());
 
     return new Union(clone(), reg);
 }
@@ -379,13 +378,13 @@ regular_ptr Optional::operator^(const Operation &op) const
     switch (op)
     {
     case Operation::Star :
-        return new ReflexiveClosure(clone());
+        return new ReflexiveClosure(m_expression);
 
     case Operation::Plus :
-        return new TransitiveClosure(clone());
+        return new ReflexiveClosure(m_expression);
 
     case Operation::Optional :
-        return new Optional(clone());
+        return clone();
     }
 }
 
