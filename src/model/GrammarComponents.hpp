@@ -20,7 +20,7 @@ class Symbol
 
     using string_type = std::string;
 
-    Symbol();
+    Symbol() = default;
 
     Symbol(const Symbol &) = default;
     Symbol &operator=(const Symbol &) = default;
@@ -36,7 +36,7 @@ class Symbol
     bool operator==(const string_type &symbol) const;
 
   private:
-    string_type m_symbol;
+    string_type m_symbol{"&"};
 };
 
 class SentencialForm
@@ -97,10 +97,26 @@ class Sentence : public SentencialForm
     bool operator==(const Sentence &form) const;
 };
 
+class Production;
+class ProductionPointer : public std::shared_ptr<Production>
+{
+public:
+
+    ProductionPointer(Production * prod);
+
+    ProductionPointer(const ProductionPointer &) = default;
+    ProductionPointer &operator=(const ProductionPointer &) = default;
+    ProductionPointer(ProductionPointer &&) = default;
+    ProductionPointer &operator=(ProductionPointer &&) = default;
+
+    bool operator==(const ProductionPointer &prod) const;
+};
+
 class Production
 {
   public:
     friend class Hasher;
+
     virtual ~Production() = default;
 
     virtual bool is_terminal() const = 0;
@@ -119,7 +135,6 @@ class TerminalProduction : public Production
 
     TerminalProduction(const TerminalProduction &) = default;
     TerminalProduction &operator=(const TerminalProduction &) = default;
-
     TerminalProduction(TerminalProduction &&) = default;
     TerminalProduction &operator=(TerminalProduction &&) = default;
 
@@ -168,7 +183,7 @@ class Hasher
 {   
   public:
     using symbol_type         = Symbol;
-    using production_type_ptr = std::shared_ptr<Production>;
+    using production_type_ptr = ProductionPointer;
 
     std::size_t operator()(const symbol_type &symbol) const;
     std::size_t operator()(const production_type_ptr &prod) const;

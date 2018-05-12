@@ -20,7 +20,7 @@ class Regular
     using map_type            = std::unordered_map<Key, Value, Hasher>;
 
     using symbol_type         = Symbol;
-    using production_type_ptr = std::shared_ptr<Production>;
+    using production_type_ptr = ProductionPointer;
 
     using vocabulary_set_type = set_type<symbol_type>;
     using production_map_type = map_type<symbol_type, set_type<production_type_ptr>>;

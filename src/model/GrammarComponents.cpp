@@ -5,11 +5,11 @@ namespace formal_device
 namespace grammar
 {
 
-Symbol::Symbol() :
-    m_symbol("&")
-{
+//Symbol::Symbol() :
+//    m_symbol("&")
+//{
 
-}
+//}
 
 Symbol::Symbol(const string_type &symbol) :
     m_symbol{symbol}
@@ -105,6 +105,18 @@ bool Sentence::operator==(const Sentence &form) const
 
 /* ----------------------------------------------------------------------- */
 
+ProductionPointer::ProductionPointer(Production * prod) :
+    std::shared_ptr<Production>(prod)
+{
+}
+
+bool ProductionPointer::operator==(const ProductionPointer &prod) const
+{
+    return (*get()) == *prod;
+}
+
+/* ----------------------------------------------------------------------- */
+
 TerminalProduction::TerminalProduction(const symbol_type &terminal) :
     m_terminal{terminal}
 {
@@ -176,8 +188,7 @@ std::size_t Hasher::operator()(const production_type_ptr &prod) const
     else
     {
         const NonTerminalProduction* term = dynamic_cast<const NonTerminalProduction*>(prod.get());
-        return ((std::hash<std::string>()(term->m_terminal.m_symbol)
-               ^ (std::hash<std::string>()(term->m_non_terminal.m_symbol) << 1)) >> 1);
+        return std::hash<std::string>()(term->m_terminal.m_symbol + term->m_non_terminal.m_symbol);
     }
 }
 

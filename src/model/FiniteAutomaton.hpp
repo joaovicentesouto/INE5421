@@ -1,6 +1,7 @@
 #ifndef MODEL_FINITEAUTOMATON_HPP
 #define MODEL_FINITEAUTOMATON_HPP
 
+#include <string>
 #include <unordered_set>
 #include <unordered_map>
 #include "./FiniteAutomatonComponents.hpp"
@@ -12,10 +13,12 @@ namespace finite_automaton
 
 enum class Operation
 {
-    Reverse
+    Reverse,
+    Complete,
+    Reflexive,
+    Transitive,
+    Optional
 };
-
-class MinimalDeterministic; // Only the Deterministic can build it.
 
 class Deterministic
 {
@@ -25,6 +28,7 @@ class Deterministic
     template <class Key, class Value>
     using map_type            = std::unordered_map<Key, Value, Hasher>;
 
+    using string_type         = std::string;
     using state_type          = State;
     using symbol_type         = Symbol;
     using state_set_type      = set_type<state_type>;
@@ -51,11 +55,20 @@ class Deterministic
 
     // Class member functions
 
-    // union using operator+
-    // denial using operator!
-    // intersection using operator^
-    // difference using operator-
-    // reverse using operator^(char 'r') ???
+    // Basic properties
+    // Deterministic operator!() const; // not
+    // Deterministic operator|(const Deterministic & machine) const; // or
+    // Deterministic operator+(const Deterministic & machine) const; // concat
+    // Deterministic operator&(const Deterministic & machine) const; // and
+    // Deterministic operator-(const Deterministic & machine) const; // difference
+    // Deterministic operator^(const Operation & op) const; // operation
+
+    // // Decision problems
+    // bool membership(const string_type& sentece) const;
+    // bool emptiness() const;
+    // bool finiteness() const;
+    // bool containment(const Deterministic & machine) const;
+    // bool equivalence(const Deterministic & machine) const;
 
 private:
     symbol_set_type     m_alphabet;
@@ -65,10 +78,21 @@ private:
     state_type          m_initial_state;
 };
 
+class MinimalDeterministic : public Deterministic
+{
+public:
+    friend class Deterministic;
+
+private:
+    MinimalDeterministic(); // Only the Deterministic can build it.
+};
+
 class DeterministicEpsilon : public Deterministic
 {
 
 };
+
+class MinimalDeterministic; // Only the Deterministic can build it.
 
 class NonDeterministic
 {
