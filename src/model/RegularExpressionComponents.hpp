@@ -1,5 +1,5 @@
-#ifndef MODEL_REGULAREXPRESSION_HPP
-#define MODEL_REGULAREXPRESSION_HPP
+#ifndef MODEL_REGULAREXPRESSIONCOMPONENTS_HPP
+#define MODEL_REGULAREXPRESSIONCOMPONENTS_HPP
 
 #include <iostream>
 #include <string>
@@ -280,4 +280,4 @@ class Optional : public Regular
 } // namespace expression
 } // namespace formal_device
 
-#endif // MODEL_REGULAREXPRESSION_HPP
+#endif // MODEL_REGULAREXPRESSIONCOMPONENTS_HPP

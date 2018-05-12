@@ -2,38 +2,38 @@
 
 #include <src/model/GrammarComponents.hpp>
 
-TEST_CASE("Symbol", "[grammar][symbol]")
-{
-    using namespace formal_device::grammar;
+using namespace formal_device::grammar;
 
-    SECTION("Symbol: Default constructor", "[grammar][symbol]"){
+TEST_CASE("Grammar's Symbol", "[grammar][symbol]")
+{
+    SECTION("Grammar's Symbol:: Default constructor", "[grammar][symbol]"){
         Symbol a;
 
         CHECK(a == "&");
         CHECK(a.is_terminal());
     }
 
-    SECTION("Symbol: Custom construtors", "[grammar][symbol]"){
+    SECTION("Grammar's Symbol:: Custom construtors", "[grammar][symbol]"){
         Symbol a("a");
 
         CHECK(a == "a");
     }
 
-    SECTION("Symbol: Copy construtors", "[grammar][symbol]"){
+    SECTION("Grammar's Symbol:: Copy construtors", "[grammar][symbol]"){
         Symbol a("a");
         Symbol b(a);
 
         CHECK(b == "a");
     }
 
-    SECTION("Symbol: Move construtors", "[grammar][symbol]"){
+    SECTION("Grammar's Symbol:: Move construtors", "[grammar][symbol]"){
         Symbol a("a");
         Symbol b(std::move(a));
 
         CHECK(b == "a");
     }
 
-    SECTION("Symbol: Terminal check", "[grammar][symbol]"){
+    SECTION("Grammar's Symbol:: Terminal check", "[grammar][symbol]"){
         Symbol a("a");
         Symbol A("A");
 
@@ -41,7 +41,7 @@ TEST_CASE("Symbol", "[grammar][symbol]")
         CHECK(!A.is_terminal());
     }
 
-    SECTION("Symbol: Operator ==", "[grammar][symbol]"){
+    SECTION("Grammar's Symbol:: Operator ==", "[grammar][symbol]"){
         Symbol a("a");
         Symbol b("a");
         Symbol c("c");
@@ -53,8 +53,6 @@ TEST_CASE("Symbol", "[grammar][symbol]")
 
 TEST_CASE("Sentencial Form", "[grammar][sentencial_form]")
 {
-    using namespace formal_device::grammar;
-
     SECTION("Sentencial Form: Custom construtors", "[grammar][sentencial_form]"){
         SentencialForm a("A", "abc");
 
@@ -117,8 +115,6 @@ TEST_CASE("Sentencial Form", "[grammar][sentencial_form]")
 
 TEST_CASE("Sentence Form", "[grammar][sentence]")
 {
-    using namespace formal_device::grammar;
-
     SECTION("Sentence Form: Custom construtors", "[grammar][sentence]"){
         Sentence a("abc");
 
@@ -187,8 +183,6 @@ TEST_CASE("Sentence Form", "[grammar][sentence]")
 
 TEST_CASE("Terminal Production", "[grammar][terminal_production]")
 {
-    using namespace formal_device::grammar;
-
     SECTION("Terminal Production: Custom construtors", "[grammar][terminal_production]"){
         TerminalProduction a(Symbol("a"));
 
@@ -260,8 +254,6 @@ TEST_CASE("Terminal Production", "[grammar][terminal_production]")
 
 TEST_CASE("Non-Terminal Production", "[grammar][non_terminal_production]")
 {
-    using namespace formal_device::grammar;
-
     SECTION("Non-Terminal Production: Custom construtors", "[grammar][non_terminal_production]"){
         NonTerminalProduction a("a", "A");
 
@@ -331,11 +323,9 @@ TEST_CASE("Non-Terminal Production", "[grammar][non_terminal_production]")
     }
 }
 
-TEST_CASE("Hasher Class", "[grammar][hasher]")
+TEST_CASE("Grammar's Hasher Class", "[grammar][hasher]")
 {
-    using namespace formal_device::grammar;
-
-    SECTION("Symbol: set", "[grammar][symbol]"){
+    SECTION("Grammar's Symbol:: set", "[grammar][symbol]"){
         Symbol a("a");
         Symbol b("b");
 
@@ -352,7 +342,7 @@ TEST_CASE("Hasher Class", "[grammar][hasher]")
         CHECK(set.find(Symbol("c")) == set.end());
     }
 
-    SECTION("Symbol: map", "[grammar][symbol]"){
+    SECTION("Grammar's Symbol:: map", "[grammar][symbol]"){
         Symbol a("a");
         Symbol b("b");
 
@@ -399,5 +389,4 @@ TEST_CASE("Hasher Class", "[grammar][hasher]")
         CHECK(set.find(pb2) != set.end());
         CHECK(set.find(pc) == set.end());
     }
-
 }

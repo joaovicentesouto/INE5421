@@ -65,7 +65,7 @@ target_include_directories(formal_languages_model PUBLIC
 )
 
 # Add library target
-add_library(formal_languages_model_static STATIC ${formal_languages_model_source})
+#add_library(formal_languages_model_static STATIC ${formal_languages_model_source})
 
 # Tell cmake target's dependencies
 #target_link_libraries(formal_languages_model_static
@@ -74,7 +74,7 @@ add_library(formal_languages_model_static STATIC ${formal_languages_model_source
 # Tell cmake the path to look for include files for this target
 # This is transitive, so any targets linked with this one will
 # search for headers in the respective paths
-target_include_directories(formal_languages_model_static PUBLIC
-    $<BUILD_INTERFACE:${formal_languages_source_dir}>
-    $<INSTALL_INTERFACE:include>
-)
+#target_include_directories(formal_languages_model_static PUBLIC
+#    $<BUILD_INTERFACE:${formal_languages_source_dir}>
+#    $<INSTALL_INTERFACE:include>
+#)

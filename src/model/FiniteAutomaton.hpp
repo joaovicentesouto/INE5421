@@ -36,7 +36,7 @@ class Deterministic
     using transition_map_type = map_type<state_type, map_type<symbol_type, state_type>>;
 
     // Class constructors
-    Deterministic() = delete;
+    Deterministic() = default;
 
     Deterministic(const Deterministic &) = default;
     Deterministic &operator=(const Deterministic &) = default;
@@ -56,26 +56,26 @@ class Deterministic
     // Class member functions
 
     // Basic properties
-    // Deterministic operator!() const; // not
-    // Deterministic operator|(const Deterministic & machine) const; // or
-    // Deterministic operator+(const Deterministic & machine) const; // concat
-    // Deterministic operator&(const Deterministic & machine) const; // and
-    // Deterministic operator-(const Deterministic & machine) const; // difference
-    // Deterministic operator^(const Operation & op) const; // operation
+    virtual Deterministic operator!() const; // not
+    virtual Deterministic operator|(const Deterministic & machine) const; // or
+    virtual Deterministic operator+(const Deterministic & machine) const; // concat
+    virtual Deterministic operator&(const Deterministic & machine) const; // and
+    virtual Deterministic operator-(const Deterministic & machine) const; // difference
+    virtual Deterministic operator^(const Operation & op) const; // operation
 
-    // // Decision problems
-    // bool membership(const string_type& sentece) const;
-    // bool emptiness() const;
-    // bool finiteness() const;
-    // bool containment(const Deterministic & machine) const;
-    // bool equivalence(const Deterministic & machine) const;
+    // Decision problems
+    virtual bool membership(const string_type& sentece) const;
+    virtual bool emptiness() const;
+    virtual bool finiteness() const;
+    virtual bool containment(const Deterministic & machine) const;
+    virtual bool equivalence(const Deterministic & machine) const;
 
 private:
     symbol_set_type     m_alphabet;
     state_set_type      m_states;
     transition_map_type m_transitions;
     state_set_type      m_final_states;
-    state_type          m_initial_state;
+    state_type          m_initial_state{""};
 };
 
 class MinimalDeterministic : public Deterministic
@@ -91,8 +91,6 @@ class DeterministicEpsilon : public Deterministic
 {
 
 };
-
-class MinimalDeterministic; // Only the Deterministic can build it.
 
 class NonDeterministic
 {

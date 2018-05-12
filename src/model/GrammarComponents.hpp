@@ -24,7 +24,6 @@ class Symbol
 
     Symbol(const Symbol &) = default;
     Symbol &operator=(const Symbol &) = default;
-
     Symbol(Symbol &&) = default;
     Symbol &operator=(Symbol &&) = default;
 
@@ -49,7 +48,6 @@ class SentencialForm
 
     SentencialForm(const SentencialForm &) = default;
     SentencialForm &operator=(const SentencialForm &) = default;
-
     SentencialForm(SentencialForm &&) = default;
     SentencialForm &operator=(SentencialForm &&) = default;
 
@@ -82,7 +80,6 @@ class Sentence : public SentencialForm
 
     Sentence(const Sentence &) = default;
     Sentence &operator=(const Sentence &) = default;
-
     Sentence(Sentence &&) = default;
     Sentence &operator=(Sentence &&) = default;
 
@@ -160,7 +157,6 @@ class NonTerminalProduction : public Production
 
     NonTerminalProduction(const NonTerminalProduction &) = default;
     NonTerminalProduction &operator=(const NonTerminalProduction &) = default;
-
     NonTerminalProduction(NonTerminalProduction &&) = default;
     NonTerminalProduction &operator=(NonTerminalProduction &&) = default;
 

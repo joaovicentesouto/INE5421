@@ -41,7 +41,7 @@ add_executable( formal_languages_gui "./main.cpp")
 
 # Add executable dependencies
 target_link_libraries(formal_languages_gui PUBLIC
-    PRIVATE formal_languages_model_static
+    PRIVATE formal_languages_model
 )
 #    PRIVATE Qt5::Widgets
 #)

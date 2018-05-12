@@ -17,23 +17,23 @@ public:
     friend class Hasher;
     using string_type = std::string;
 
-    Symbol() = delete;
+    Symbol() = default;
 
     Symbol(const Symbol &) = default;
     Symbol &operator=(const Symbol &) = default;
     Symbol(Symbol &&) = default;
     Symbol &operator=(Symbol &&) = default;
 
-    template <class Arg1>
-    Symbol(Arg1 &&value) :
-        m_value{std::forward<Arg1>(value)}
-    {
-    }
+    Symbol(const string_type &symbol);
+    Symbol(string_type &&symbol);
 
     ~Symbol() = default;
 
+    bool operator==(const Symbol &symbol) const;
+    bool operator==(const string_type &symbol) const;
+
 private:
-    const string_type m_value;
+    string_type m_symbol{"&"};
 };
 
 class State
@@ -42,24 +42,23 @@ public:
     friend class Hasher;
     using string_type = std::string;
 
-    State() = delete;
+    State() = default;
 
     State(const State &) = default;
     State &operator=(const State &) = default;
     State(State &&) = default;
     State &operator=(State &&) = default;
 
-    template <class Arg1>
-    State(Arg1 &&value) :
-        m_value{std::forward<Arg1>(value)}
-    {
-    }
+    State(const string_type &state);
+    State(string_type &&state);
 
     ~State() = default;
 
+    bool operator==(const State &state) const;
+    bool operator==(const string_type &state) const;
+
 private:
-    const string_type m_value;
-    bool        m_final; // It is necessary? Because exists a final states set
+    string_type m_state{"Error"}; // error
 };
 
 class Hasher

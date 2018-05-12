@@ -5,12 +5,6 @@ namespace formal_device
 namespace grammar
 {
 
-//Symbol::Symbol() :
-//    m_symbol("&")
-//{
-
-//}
-
 Symbol::Symbol(const string_type &symbol) :
     m_symbol{symbol}
 {
