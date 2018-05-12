@@ -11,6 +11,7 @@ namespace formal_device
 {
 namespace expression
 {
+
 enum class Operation
 {
     Star,
@@ -45,7 +46,7 @@ class Regular
 
     virtual regular_ptr operator|(const regular_ptr &reg) const = 0;  // Union
     virtual regular_ptr operator+(const regular_ptr &reg) const = 0;  // Concatenate
-    virtual regular_ptr operator^(const Operation &op) const = 0; // Closure
+    virtual regular_ptr operator^(const Operation &op) const = 0;     // Closure
     virtual bool operator==(const regular_ptr &reg) const = 0;
 
   private:
@@ -106,8 +107,11 @@ class Unit : public Regular
     Unit(Unit &&) = default;
     Unit &operator=(Unit &&) = default;
 
-    Unit(const string_type& symbol);
-    Unit(string_type&& symbol);
+    template<class Arg1>
+    Unit(Arg1 &&symbol) :
+        m_symbol{std::forward<Arg1>(symbol)}
+    {
+    }
 
     ~Unit() = default;
 

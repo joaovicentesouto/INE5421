@@ -87,18 +87,6 @@ bool Epsilon::operator==(const regular_ptr &reg) const
 
 /* --------------------- Unit --------------------- */
 
-Unit::Unit(const string_type &symbol) :
-    m_symbol{symbol}
-{
-
-}
-
-Unit::Unit(string_type &&symbol) :
-    m_symbol{std::move(symbol)}
-{
-
-}
-
 regular_ptr Unit::clone() const
 {
     return new Unit(m_symbol);

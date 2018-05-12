@@ -10,6 +10,11 @@ namespace formal_device
 namespace finite_automaton
 {
 
+enum class Operation
+{
+    Reverse
+};
+
 class MinimalDeterministic; // Only the Deterministic can build it.
 
 class Deterministic
@@ -31,7 +36,6 @@ class Deterministic
 
     Deterministic(const Deterministic &) = default;
     Deterministic &operator=(const Deterministic &) = default;
-
     Deterministic(Deterministic &&) = default;
     Deterministic &operator=(Deterministic &&) = default;
 
@@ -61,7 +65,7 @@ private:
     state_type          m_initial_state;
 };
 
-class DeterministicEpsilon : private Deterministic
+class DeterministicEpsilon : public Deterministic
 {
 
 };
@@ -85,7 +89,6 @@ public:
 
     NonDeterministic(const NonDeterministic &) = default;
     NonDeterministic &operator=(const NonDeterministic &) = default;
-
     NonDeterministic(NonDeterministic &&) = default;
     NonDeterministic &operator=(NonDeterministic &&) = default;
 
@@ -107,7 +110,7 @@ private:
     state_type          m_initial_state;
 };
 
-class NonDeterministicEpsilon : private NonDeterministic
+class NonDeterministicEpsilon : public NonDeterministic
 {
 
 };
