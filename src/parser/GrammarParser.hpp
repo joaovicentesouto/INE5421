@@ -53,10 +53,10 @@ namespace parser {
     x3::rule<class line_, ast::Line>             line{"line"};
     x3::rule<class document_, ast::Document>     document{"document"};
 
-    const auto identifier     = x3::lexeme[+x3::char_("a-zA-Z") - "\n"];
+    const auto identifier     = x3::lexeme[+x3::char_("a-zA-Z")];
     const auto production_def = identifier;
     const auto line_def       = identifier >> x3::lit("->") >> production % "|";
-    const auto document_def   = line % "\n";
+    const auto document_def   = line % x3::eol;
 
     BOOST_SPIRIT_DEFINE(production, line, document);
 }

@@ -179,39 +179,48 @@ TEST_CASE("Finite Automaton Parser", "[finite_automaton][parser]")
         }
     }
 
-//    SECTION("Document States", "[regular_expression][empty]")
-//    {
-//        std::string str = ("+ | a |  b\n*S | A | S\nA | B | B");
-//        auto f = str.begin();
-//        auto l = str.end();
+    SECTION("Document States", "[regular_expression][empty]")
+    {
+        std::string str = ("+ | a |  b\n*S | A | S\nA | B | C");
+        auto f = str.begin();
+        auto l = str.end();
 
-//        ast::Document doc;
-//        CHECK(phrase_parse(f, l, parser::document, parser::ascii::space, doc));
-//        CHECK(doc.m_lines.size() == 2);
+        ast::Document doc;
+        CHECK(phrase_parse(f, l, parser::document, parser::ascii::blank, doc));
+        CHECK(doc.m_transition_symbols.m_transition_symbols.size() == 2);
+        CHECK(doc.m_states.size() == 2);
 
-//        ast::Line line = doc.m_lines.front();
-//        CHECK(line.m_symbol == "S");
-//        CHECK(line.m_productions.size() == 3);
+        SECTION("Transitions Symbol", "[regular_expression][empty]")
+        {
+            ast::TransitionSymbols & trans = doc.m_transition_symbols;
+            CHECK(trans.m_transition_symbols.front().m_value == "a");
+            CHECK(trans.m_transition_symbols.back().m_value == "b");
+        }
 
-//        for (auto prod : line.m_productions)
-//            CHECK((prod.m_production == "aA" ||
-//                   prod.m_production == "a"  ||
-//                   prod.m_production == "b" ));
+        SECTION("State one", "[regular_expression][empty]")
+        {
+            ast::State state1 = doc.m_states.front();
+            CHECK(state1.m_state.m_value == "*S");
+            CHECK(state1.m_transitions.size() == 2);
 
-//        line = doc.m_lines.back();
-//        CHECK(line.m_symbol == "A");
-//        CHECK(line.m_productions.size() == 3);
+            CHECK(state1.m_transitions.front().m_transitions.size() == 1);
+            CHECK(state1.m_transitions.front().m_transitions.front().m_value == "A");
 
-//        for (auto prod : line.m_productions)
-//            CHECK((prod.m_production == "bS" ||
-//                   prod.m_production == "b"  ||
-//                   prod.m_production == "c" ));
-//    }
+            CHECK(state1.m_transitions.back().m_transitions.size() == 1);
+            CHECK(state1.m_transitions.back().m_transitions.front().m_value == "S");
+        }
+
+        SECTION("State two", "[regular_expression][empty]")
+        {
+            ast::State state2 = doc.m_states.back();
+            CHECK(state2.m_state.m_value == "A");
+            CHECK(state2.m_transitions.size() == 2);
+
+            CHECK(state2.m_transitions.front().m_transitions.size() == 1);
+            CHECK(state2.m_transitions.front().m_transitions.front().m_value == "B");
+
+            CHECK(state2.m_transitions.back().m_transitions.size() == 1);
+            CHECK(state2.m_transitions.back().m_transitions.front().m_value == "C");
+        }
+    }
 }
-
-//const auto identifier             = x3::lexeme[+x3::char_("a-zA-Z0-9")];
-//const auto symbol_def             = identifier;
-//const auto transition_symbols_def = "+" >> symbol % "|";
-//const auto transition_def         = -x3::lit("{") >> (symbol % ",") >> -x3::lit("{");
-//const auto state_def              = symbol >> "|" >> transition % "|";
-//const auto document_def           = transition_symbols >> "\n" >> (state % "\n");

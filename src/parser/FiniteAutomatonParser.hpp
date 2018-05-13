@@ -73,7 +73,7 @@ namespace parser {
     const auto transition_symbols_def = x3::lit("+ |") >> symbol % "|";
     const auto transition_def         = -x3::lit("{") >> (symbol % ",") >> -x3::lit("}");
     const auto state_def              = symbol >> "|" >> transition % "|";
-    const auto document_def           = transition_symbols >> '\n' >> (state % '\n');
+    const auto document_def           = transition_symbols >> x3::eol >> (state % x3::eol);
 
     BOOST_SPIRIT_DEFINE(symbol, transition_symbols, transition, state, document);
 }

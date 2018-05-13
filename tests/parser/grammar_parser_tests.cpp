@@ -60,29 +60,29 @@ TEST_CASE("Grammar Parser", "[grammar][parser]")
 
     SECTION("Document Productions", "[regular_expression][empty]")
     {
-        std::istringstream iss("S -> aA | a | b\nA -> bS | b | c");
-        boost::spirit::istream_iterator f(iss), l;
+        std::string iss("S -> aA | a | b\nA -> bS | b | c");
+        auto f = iss.begin(), l = iss.end();
 
         ast::Document doc;
-        CHECK(phrase_parse(f, l, parser::document, parser::ascii::space, doc));
-//        CHECK(doc.m_lines.size() == 2);
+        CHECK(phrase_parse(f, l, parser::document, parser::ascii::blank, doc));
+        CHECK(doc.m_lines.size() == 2);
 
-//        ast::Line line = doc.m_lines.front();
-//        CHECK(line.m_symbol == "S");
-//        CHECK(line.m_productions.size() == 3);
+        ast::Line line = doc.m_lines.front();
+        CHECK(line.m_symbol == "S");
+        CHECK(line.m_productions.size() == 3);
 
-//        for (auto prod : line.m_productions)
-//            CHECK((prod.m_production == "aA" ||
-//                   prod.m_production == "a"  ||
-//                   prod.m_production == "b" ));
+        for (auto prod : line.m_productions)
+            CHECK((prod.m_production == "aA" ||
+                   prod.m_production == "a"  ||
+                   prod.m_production == "b" ));
 
-//        line = doc.m_lines.back();
-//        CHECK(line.m_symbol == "A");
-//        CHECK(line.m_productions.size() == 3);
+        line = doc.m_lines.back();
+        CHECK(line.m_symbol == "A");
+        CHECK(line.m_productions.size() == 3);
 
-//        for (auto prod : line.m_productions)
-//            CHECK((prod.m_production == "bS" ||
-//                   prod.m_production == "b"  ||
-//                   prod.m_production == "c" ));
+        for (auto prod : line.m_productions)
+            CHECK((prod.m_production == "bS" ||
+                   prod.m_production == "b"  ||
+                   prod.m_production == "c" ));
     }
 }
