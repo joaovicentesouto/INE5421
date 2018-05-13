@@ -15,15 +15,18 @@ class Regular
 {
   public:
     template <class T>
-    using set_type            = std::unordered_set<T, Hasher>;
+    using set_type                     = std::unordered_set<T, Hasher>;
     template <class Key, class Value>
-    using map_type            = std::unordered_map<Key, Value, Hasher>;
+    using map_type                     = std::unordered_map<Key, Value, Hasher>;
 
-    using symbol_type         = Symbol;
-    using production_type_ptr = ProductionPointer;
+    using symbol_type                  = Symbol;
+    using terminal_production_type     = TerminalProduction;
+    using non_terminal_production_type = NonTerminalProduction;
+    using production_type_ptr          = ProductionPointer;
 
-    using vocabulary_set_type = set_type<symbol_type>;
-    using production_map_type = map_type<symbol_type, set_type<production_type_ptr>>;
+    using vocabulary_set_type          = set_type<symbol_type>;
+    using production_map_type          = map_type<symbol_type, set_type<production_type_ptr>>;
+    using pair_production_type         = std::pair<symbol_type, set_type<production_type_ptr>>;
 
     // Class constructors
     Regular() = default;
