@@ -69,7 +69,7 @@ namespace parser {
     x3::rule<class state_, ast::State>           state{"state"};
     x3::rule<class document_, ast::Document>     document{"document"};
 
-    const auto identifier             = x3::lexeme[+x3::char_("a-zA-Z0-9*") - '\n'];
+    const auto identifier             = x3::lexeme[+x3::char_("->a-zA-Z0-9*") - '\n'];
     const auto symbol_def             = identifier;
     const auto transition_symbols_def = x3::lit("+ |") >> symbol % "|";
     const auto transition_def         = -x3::lit("{") >> (symbol % ",") >> -x3::lit("}");

@@ -99,6 +99,7 @@ class ProductionPointer : public std::shared_ptr<Production>
 {
 public:
 
+    ProductionPointer() = default;
     ProductionPointer(Production * prod);
 
     ProductionPointer(const ProductionPointer &) = default;

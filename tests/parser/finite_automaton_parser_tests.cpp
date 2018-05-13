@@ -281,7 +281,7 @@ TEST_CASE("Finite Automaton: : File non deterministc", "[regular_expression][emp
     SECTION("State one", "[regular_expression][empty]")
     {
         ast::State state1 = doc.m_states.front();
-        CHECK(state1.m_state.m_value == "*S");
+        CHECK(state1.m_state.m_value == "->S");
         CHECK(state1.m_transitions.size() == 2);
 
         CHECK(state1.m_transitions.front().m_transitions.size() == 1);
@@ -294,7 +294,7 @@ TEST_CASE("Finite Automaton: : File non deterministc", "[regular_expression][emp
     SECTION("State two", "[regular_expression][empty]")
     {
         ast::State state2 = doc.m_states.back();
-        CHECK(state2.m_state.m_value == "A");
+        CHECK(state2.m_state.m_value == "*A");
         CHECK(state2.m_transitions.size() == 2);
 
         CHECK(state2.m_transitions.front().m_transitions.size() == 2);
