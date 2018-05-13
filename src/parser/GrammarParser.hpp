@@ -9,22 +9,27 @@
 #include <boost/spirit/include/support_istream_iterator.hpp>
 #include <iostream>
 #include <sstream>
+#include <fstream>
 
-namespace formal_devices
+#include <src/formal_devices/Grammar.hpp>
+
+namespace formal_device
 {
 namespace grammar
 {
+
+using string_type = Regular::symbol_type::string_type;
+
 namespace ast
 {
-
 struct Production
 {
-    std::string m_production;
+    string_type m_production;
 };
 
 struct Line
 {
-    std::string m_symbol;
+    string_type m_symbol;
     std::vector<Production> m_productions;
 };
 
@@ -32,20 +37,22 @@ struct Document
 {
     std::vector<Line> m_lines;
 };
+}   // namespace ast
+}   // namespace grammar
+}   // namespace formal_devices
 
-}
-}
-}
+BOOST_FUSION_ADAPT_STRUCT(formal_device::grammar::ast::Production, m_production)
+BOOST_FUSION_ADAPT_STRUCT(formal_device::grammar::ast::Line, m_symbol, m_productions)
+BOOST_FUSION_ADAPT_STRUCT(formal_device::grammar::ast::Document, m_lines)
 
-BOOST_FUSION_ADAPT_STRUCT(formal_devices::grammar::ast::Production, m_production)
-BOOST_FUSION_ADAPT_STRUCT(formal_devices::grammar::ast::Line, m_symbol, m_productions)
-BOOST_FUSION_ADAPT_STRUCT(formal_devices::grammar::ast::Document, m_lines)
-
-namespace formal_devices
+namespace formal_device
 {
 namespace grammar
 {
-namespace parser {
+namespace parser
+{
+    Regular make_regular_grammar(const string_type & file);
+
     namespace x3    = boost::spirit::x3;
     namespace ascii = x3::ascii;
 
@@ -59,8 +66,8 @@ namespace parser {
     const auto document_def   = line % x3::eol;
 
     BOOST_SPIRIT_DEFINE(production, line, document);
-}
-}
-}
+}   // namespace ast
+}   // namespace grammar
+}   // namespace formal_devices
 
 #endif

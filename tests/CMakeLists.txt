@@ -14,6 +14,13 @@ add_executable(formal_languages_tests ${formal_languages_tests_source})
 
 target_link_libraries(formal_languages_tests
     PRIVATE formal_languages_devices
+    PRIVATE formal_languages_parser
+)
+
+message("Creating symlink for test files")
+execute_process(
+    COMMAND ln -f -s ${PROJECT_SOURCE_DIR}/tests/files ${PROJECT_BINARY_DIR}/tests/.
+    RESULT_VARIABLE result
 )
 
 

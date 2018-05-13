@@ -9,8 +9,9 @@
 #include <boost/spirit/include/support_istream_iterator.hpp>
 #include <iostream>
 #include <sstream>
+#include <fstream>
 
-namespace formal_devices
+namespace formal_device
 {
 namespace finite_automaton
 {
@@ -48,13 +49,13 @@ struct Document
 }
 }
 
-BOOST_FUSION_ADAPT_STRUCT(formal_devices::finite_automaton::ast::Symbol, m_value)
-BOOST_FUSION_ADAPT_STRUCT(formal_devices::finite_automaton::ast::TransitionSymbols, m_transition_symbols)
-BOOST_FUSION_ADAPT_STRUCT(formal_devices::finite_automaton::ast::Transition, m_transitions)
-BOOST_FUSION_ADAPT_STRUCT(formal_devices::finite_automaton::ast::State, m_state, m_transitions)
-BOOST_FUSION_ADAPT_STRUCT(formal_devices::finite_automaton::ast::Document, m_transition_symbols, m_states)
+BOOST_FUSION_ADAPT_STRUCT(formal_device::finite_automaton::ast::Symbol, m_value)
+BOOST_FUSION_ADAPT_STRUCT(formal_device::finite_automaton::ast::TransitionSymbols, m_transition_symbols)
+BOOST_FUSION_ADAPT_STRUCT(formal_device::finite_automaton::ast::Transition, m_transitions)
+BOOST_FUSION_ADAPT_STRUCT(formal_device::finite_automaton::ast::State, m_state, m_transitions)
+BOOST_FUSION_ADAPT_STRUCT(formal_device::finite_automaton::ast::Document, m_transition_symbols, m_states)
 
-namespace formal_devices
+namespace formal_device
 {
 namespace finite_automaton
 {
