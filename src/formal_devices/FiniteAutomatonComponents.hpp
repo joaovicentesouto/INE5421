@@ -57,6 +57,9 @@ public:
     bool operator==(const State &state) const;
     bool operator==(const string_type &state) const;
 
+    State operator+(const State &sufix) const;
+    State operator+(const string_type &sufix) const;
+
 private:
     string_type m_state{"Error"}; // error
 };

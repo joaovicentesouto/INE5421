@@ -19,7 +19,7 @@ enum class Operation
     Transitive,
     Optional
 };
-
+class NonDeterministic;
 class Deterministic
 {
   public:
@@ -57,7 +57,7 @@ class Deterministic
 
     // Basic properties
     virtual Deterministic operator!() const; // not
-    virtual Deterministic operator|(const Deterministic & machine) const; // or
+    virtual NonDeterministic operator|(const Deterministic & machine) const; // or
     virtual Deterministic operator+(const Deterministic & machine) const; // concat
     virtual Deterministic operator&(const Deterministic & machine) const; // and
     virtual Deterministic operator-(const Deterministic & machine) const; // difference
@@ -87,11 +87,6 @@ public:
 
 private:
     MinimalDeterministic(); // Only the Deterministic can build it.
-};
-
-class DeterministicEpsilon : public Deterministic
-{
-
 };
 
 class NonDeterministic
@@ -126,17 +121,14 @@ public:
     {
     }
 
+    bool operator==(const NonDeterministic & machine) const;
+
 private:
     symbol_set_type     m_alphabet;
     state_set_type      m_states;
     transition_map_type m_transitions;
     state_set_type      m_final_states;
     state_type          m_initial_state;
-};
-
-class NonDeterministicEpsilon : public NonDeterministic
-{
-
 };
 
 }  // finite_automaton

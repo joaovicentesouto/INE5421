@@ -47,6 +47,16 @@ bool State::operator==(const string_type &state) const
     return m_state == state;
 }
 
+State State::operator+(const State &sufix) const
+{
+    return m_state + sufix.m_state;
+}
+
+State State::operator+(const string_type &sufix) const
+{
+    return m_state + m_state;
+}
+
 std::size_t Hasher::operator()(const symbol_type &symbol) const
 {
     return std::hash<std::string>()(symbol.m_symbol);
