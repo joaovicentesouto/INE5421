@@ -87,19 +87,19 @@ TEST_CASE("Finite Automaton: Union", "[finite_automaton][symbol]")
     {
         symbol_type a("a");
         symbol_type b("b");
-        state_type q0q0("q0q0"), q0("q0"), q1("q1"), q0_M2("q0_M2"), q1_M2("q1_M2");
+        state_type q0("q0"), q1("q1"), q2("q2"), q3("q3"), q4("q4");
 
         symbol_set_type alphabet{a, b};
-        state_set_type  states{q0q0, q0, q1, q0_M2, q1_M2};
-        state_set_type  final_states{q1, q1_M2};
+        state_set_type  states{q0, q1, q2, q3, q4};
+        state_set_type  final_states{q2, q4};
 
         NonDeterministic::transition_map_type transitions;
-        transitions[q0q0][a].insert(q1);
-        transitions[q0q0][b].insert(q1_M2);
-        transitions[q0][a].insert(q1);
-        transitions[q0_M2][b].insert(q1_M2);
+        transitions[q0][a].insert(q2);
+        transitions[q0][b].insert(q4);
+        transitions[q1][a].insert(q2);
+        transitions[q3][b].insert(q4);
 
-        NonDeterministic union_(alphabet, states, transitions, final_states, q0q0);
+        NonDeterministic union_(alphabet, states, transitions, final_states, q0);
 
         CHECK(((m1 | m2) == union_));
     }

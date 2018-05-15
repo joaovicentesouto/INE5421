@@ -13,7 +13,7 @@
 ################################################################################
 
 # Set up minimal cmake version
-cmake_minimum_required(VERSION 3.5.2)
+cmake_minimum_required(VERSION 3.5.1)
 
 # Set project name
 project(formal_languages)
@@ -35,7 +35,7 @@ OPTION(GUI OFF)
 ################################################################################
 
 # Find Boost
-find_package(Boost 1.59 REQUIRED)
+find_package(Boost 1.58 REQUIRED)
 
 # Find GUI Dependencies
 IF(GUI)
