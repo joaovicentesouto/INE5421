@@ -11,7 +11,7 @@
 #include <sstream>
 #include <fstream>
 
-#include <src/formal_devices/Grammar.hpp>
+#include <formal_languages/devices/Grammar.hpp>
 
 namespace formal_device
 {
@@ -39,7 +39,7 @@ struct Document
 };
 }   // namespace ast
 }   // namespace grammar
-}   // namespace formal_devices
+}   // namespace formal_device
 
 BOOST_FUSION_ADAPT_STRUCT(formal_device::grammar::ast::Production, m_production)
 BOOST_FUSION_ADAPT_STRUCT(formal_device::grammar::ast::Line, m_symbol, m_productions)

@@ -21,7 +21,7 @@
 
 # Set the include path for installed target
 set(formal_languages_devices_install_include_dir 
-    ${formal_languages_install_include_dir}/formal_languages/parser
+    ${formal_languages_install_include_dir}/formal_languages/devices
 )
 
 ################################################################################

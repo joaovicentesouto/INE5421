@@ -1,7 +1,7 @@
 #ifndef DEVICES_REGULAREXPRESSION_HPP
 #define DEVICES_REGULAREXPRESSION_HPP
 
-#include <src/formal_devices/RegularExpressionComponents.hpp>
+#include <formal_languages/devices/RegularExpressionComponents.hpp>
 
 namespace formal_device
 {

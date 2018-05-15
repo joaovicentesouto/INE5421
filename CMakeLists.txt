@@ -43,11 +43,14 @@ IF(GUI)
     find_package(Qt5 REQUIRED COMPONENTS Widgets)
 ENDIF(GUI)
 
-
 ################################################################################
 # Project logic 
 ################################################################################
 
 # Add subdirectories
-add_subdirectory(src)
+add_subdirectory(formal_languages)
 add_subdirectory(tests)
+
+IF(GUI)
+    add_subdirectory(gui)
+ENDIF(GUI)

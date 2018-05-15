@@ -1,6 +1,6 @@
 #include "../catch.hpp"
 
-#include <src/parser/GrammarParser.hpp>
+#include <formal_languages/parsers/GrammarParser.hpp>
 
 using namespace formal_device::grammar;
 

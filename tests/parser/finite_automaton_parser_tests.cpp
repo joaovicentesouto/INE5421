@@ -1,6 +1,6 @@
 #include "../catch.hpp"
 
-#include <src/parser/FiniteAutomatonParser.hpp>
+#include <formal_languages/parsers/FiniteAutomatonParser.hpp>
 
 using namespace formal_device::finite_automaton;
 

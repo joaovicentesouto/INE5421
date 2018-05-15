@@ -20,7 +20,7 @@
 ################################################################################
 
 # Set the include path for installed target
-set(formal_languages_parser_install_include_dir 
+set(formal_languages_parsers_install_include_dir 
     ${formal_languages_install_include_dir}/formal_languages/parser
 )
 
@@ -29,12 +29,12 @@ set(formal_languages_parser_install_include_dir
 ################################################################################
 
 # Fetch .ccp files for library creation
-file(GLOB formal_languages_parser_source
+file(GLOB formal_languages_parsers_source
     "*.cpp"
 )
 
 # Fetch .h files for library creation
-file(GLOB formal_languages_parser_headers
+file(GLOB formal_languages_parsers_headers
     "*.h"
 )
 
@@ -43,38 +43,38 @@ file(GLOB formal_languages_parser_headers
 ################################################################################
 
 # Add library target
-add_library(formal_languages_parser SHARED ${formal_languages_parser_source})
+add_library(formal_languages_parsers SHARED ${formal_languages_parsers_source})
 
 # Set shared library version, this will make cmake create a link
-set_target_properties(formal_languages_parser PROPERTIES
+set_target_properties(formal_languages_parsers PROPERTIES
     VERSION ${formal_languages_VERSION}
     SOVERSION ${formal_languages_VERSION}
 )
 
 # Tell cmake target's dependencies
-target_link_libraries(formal_languages_parser
+target_link_libraries(formal_languages_parsers
    PRIVATE formal_languages_devices
 )
 
 # Tell cmake the path to look for include files for this target
 # This is transitive, so any targets linked with this one will
 # search for headers in the respective paths
-target_include_directories(formal_languages_parser PUBLIC
+target_include_directories(formal_languages_parsers PUBLIC
     $<BUILD_INTERFACE:${formal_languages_source_dir}>
     $<INSTALL_INTERFACE:include>
 )
 
 # Add library target
-#add_library(formal_languages_parser_static STATIC ${formal_languages_parser_source})
+#add_library(formal_languages_parsers_static STATIC ${formal_languages_parsers_source})
 
 # Tell cmake target's dependencies
-#target_link_libraries(formal_languages_parser_static
+#target_link_libraries(formal_languages_parsers_static
 #)
 
 # Tell cmake the path to look for include files for this target
 # This is transitive, so any targets linked with this one will
 # search for headers in the respective paths
-#target_include_directories(formal_languages_parser_static PUBLIC
+#target_include_directories(formal_languages_parsers_static PUBLIC
 #    $<BUILD_INTERFACE:${formal_languages_source_dir}>
 #    $<INSTALL_INTERFACE:include>
 #)
