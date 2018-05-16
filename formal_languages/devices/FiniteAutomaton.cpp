@@ -73,13 +73,13 @@ NonDeterministic Deterministic::operator|(const Deterministic &machine) const
     Deterministic::map_type<state_type, state_type> state_map_m1, state_map_m2;
 
     for (auto state : m_states) {
-        auto q = state_type("q" + i++);
+        state_type q{ "q" + std::to_string(i++) };
         state_map_m1[state] = q;
         new_states.insert(q);
     }
 
     for (auto state : machine.m_states) {
-        auto q = state_type("q" + i++);
+        state_type q{ "q" + std::to_string(i++) };
         state_map_m2[state] = q;
         new_states.insert(q);
     }
@@ -98,11 +98,13 @@ NonDeterministic Deterministic::operator|(const Deterministic &machine) const
     for (auto state : machine.m_final_states)
         new_final_states.insert(state_map_m2[state]);
 
-    for (auto target : Deterministic::transition_map_type(m_transitions)[m_initial_state])
-        new_transitions[state_map_m1[m_initial_state]][target.first].insert(state_map_m1[target.second]);
-    
-    for (auto target : Deterministic::transition_map_type(machine.m_transitions)[machine.m_initial_state])
-        new_transitions[state_map_m2[m_initial_state]][target.first].insert(state_map_m2[target.second]);
+    Deterministic::transition_map_type copy = m_transitions;
+    for (auto target : copy[m_initial_state])
+        new_transitions[new_initial_state][target.first].insert(state_map_m1[target.second]);
+
+    copy = machine.m_transitions;
+    for (auto target : copy[machine.m_initial_state])
+        new_transitions[new_initial_state][target.first].insert(state_map_m2[target.second]);
 
     if (m_final_states.find(m_initial_state) != m_final_states.end() || 
         machine.m_final_states.find(machine.m_initial_state) != machine.m_final_states.end())

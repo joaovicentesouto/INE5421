@@ -211,97 +211,97 @@ TEST_CASE("Finite Automaton: Document States", "[regular_expression][empty]")
     }
 }
 
-// TEST_CASE("Finite Automaton: : File deterministic", "[regular_expression][empty]")
-// {
-//     std::ifstream ifs("./files/dfa.txt");
-//     CHECK(ifs.is_open());
-//     ifs >> std::noskipws;
+ TEST_CASE("Finite Automaton: : File deterministic", "[regular_expression][empty]")
+ {
+     std::ifstream ifs("./files/dfa.txt");
+     CHECK(ifs.is_open());
+     ifs >> std::noskipws;
 
-//     boost::spirit::istream_iterator f(ifs), l;
+     boost::spirit::istream_iterator f(ifs), l;
 
-//     ast::Document doc;
-//     CHECK(phrase_parse(f, l, parser::document, parser::ascii::blank, doc));
-//     CHECK(doc.m_transition_symbols.m_transition_symbols.size() == 2);
-//     CHECK(doc.m_states.size() == 2);
+     ast::Document doc;
+     CHECK(phrase_parse(f, l, parser::document, parser::ascii::blank, doc));
+     CHECK(doc.m_transition_symbols.m_transition_symbols.size() == 2);
+     CHECK(doc.m_states.size() == 2);
 
-//     SECTION("Transitions Symbol", "[regular_expression][empty]")
-//     {
-//         ast::TransitionSymbols & trans = doc.m_transition_symbols;
-//         CHECK(trans.m_transition_symbols.front().m_value == "a");
-//         CHECK(trans.m_transition_symbols.back().m_value == "b");
-//     }
+     SECTION("Transitions Symbol", "[regular_expression][empty]")
+     {
+         ast::TransitionSymbols & trans = doc.m_transition_symbols;
+         CHECK(trans.m_transition_symbols.front().m_value == "a");
+         CHECK(trans.m_transition_symbols.back().m_value == "b");
+     }
 
-//     SECTION("State one", "[regular_expression][empty]")
-//     {
-//         ast::State state1 = doc.m_states.front();
-//         CHECK(state1.m_state.m_value == "*S");
-//         CHECK(state1.m_transitions.size() == 2);
+     SECTION("State one", "[regular_expression][empty]")
+     {
+         ast::State state1 = doc.m_states.front();
+         CHECK(state1.m_state.m_value == "*S");
+         CHECK(state1.m_transitions.size() == 2);
 
-//         CHECK(state1.m_transitions.front().m_transitions.size() == 1);
-//         CHECK(state1.m_transitions.front().m_transitions.front().m_value == "A");
+         CHECK(state1.m_transitions.front().m_transitions.size() == 1);
+         CHECK(state1.m_transitions.front().m_transitions.front().m_value == "A");
 
-//         CHECK(state1.m_transitions.back().m_transitions.size() == 1);
-//         CHECK(state1.m_transitions.back().m_transitions.front().m_value == "S");
-//     }
+         CHECK(state1.m_transitions.back().m_transitions.size() == 1);
+         CHECK(state1.m_transitions.back().m_transitions.front().m_value == "S");
+     }
 
-//     SECTION("State two", "[regular_expression][empty]")
-//     {
-//         ast::State state2 = doc.m_states.back();
-//         CHECK(state2.m_state.m_value == "A");
-//         CHECK(state2.m_transitions.size() == 2);
+     SECTION("State two", "[regular_expression][empty]")
+     {
+         ast::State state2 = doc.m_states.back();
+         CHECK(state2.m_state.m_value == "A");
+         CHECK(state2.m_transitions.size() == 2);
 
-//         CHECK(state2.m_transitions.front().m_transitions.size() == 1);
-//         CHECK(state2.m_transitions.front().m_transitions.front().m_value == "B");
+         CHECK(state2.m_transitions.front().m_transitions.size() == 1);
+         CHECK(state2.m_transitions.front().m_transitions.front().m_value == "B");
 
-//         CHECK(state2.m_transitions.back().m_transitions.size() == 1);
-//         CHECK(state2.m_transitions.back().m_transitions.front().m_value == "C");
-//     }
-// }
+         CHECK(state2.m_transitions.back().m_transitions.size() == 1);
+         CHECK(state2.m_transitions.back().m_transitions.front().m_value == "C");
+     }
+ }
 
-// TEST_CASE("Finite Automaton: : File non deterministc", "[regular_expression][empty]")
-// {
-//     std::ifstream ifs("./files/ndfa.txt");
-//     CHECK(ifs.is_open());
-//     ifs >> std::noskipws;
+ TEST_CASE("Finite Automaton: : File non deterministc", "[regular_expression][empty]")
+ {
+     std::ifstream ifs("./files/ndfa.txt");
+     CHECK(ifs.is_open());
+     ifs >> std::noskipws;
 
-//     boost::spirit::istream_iterator f(ifs), l;
+     boost::spirit::istream_iterator f(ifs), l;
 
-//     ast::Document doc;
-//     CHECK(phrase_parse(f, l, parser::document, parser::ascii::blank, doc));
-//     CHECK(doc.m_transition_symbols.m_transition_symbols.size() == 2);
-//     CHECK(doc.m_states.size() == 2);
+     ast::Document doc;
+     CHECK(phrase_parse(f, l, parser::document, parser::ascii::blank, doc));
+     CHECK(doc.m_transition_symbols.m_transition_symbols.size() == 2);
+     CHECK(doc.m_states.size() == 2);
 
-//     SECTION("Transitions Symbol", "[regular_expression][empty]")
-//     {
-//         ast::TransitionSymbols & trans = doc.m_transition_symbols;
-//         CHECK(trans.m_transition_symbols.front().m_value == "a");
-//         CHECK(trans.m_transition_symbols.back().m_value == "b");
-//     }
+     SECTION("Transitions Symbol", "[regular_expression][empty]")
+     {
+         ast::TransitionSymbols & trans = doc.m_transition_symbols;
+         CHECK(trans.m_transition_symbols.front().m_value == "a");
+         CHECK(trans.m_transition_symbols.back().m_value == "b");
+     }
 
-//     SECTION("State one", "[regular_expression][empty]")
-//     {
-//         ast::State state1 = doc.m_states.front();
-//         CHECK(state1.m_state.m_value == "->S");
-//         CHECK(state1.m_transitions.size() == 2);
+     SECTION("State one", "[regular_expression][empty]")
+     {
+         ast::State state1 = doc.m_states.front();
+         CHECK(state1.m_state.m_value == "->S");
+         CHECK(state1.m_transitions.size() == 2);
 
-//         CHECK(state1.m_transitions.front().m_transitions.size() == 1);
-//         CHECK(state1.m_transitions.front().m_transitions.front().m_value == "A");
+         CHECK(state1.m_transitions.front().m_transitions.size() == 1);
+         CHECK(state1.m_transitions.front().m_transitions.front().m_value == "A");
 
-//         CHECK(state1.m_transitions.back().m_transitions.size() == 1);
-//         CHECK(state1.m_transitions.back().m_transitions.front().m_value == "S");
-//     }
+         CHECK(state1.m_transitions.back().m_transitions.size() == 1);
+         CHECK(state1.m_transitions.back().m_transitions.front().m_value == "S");
+     }
 
-//     SECTION("State two", "[regular_expression][empty]")
-//     {
-//         ast::State state2 = doc.m_states.back();
-//         CHECK(state2.m_state.m_value == "*A");
-//         CHECK(state2.m_transitions.size() == 2);
+     SECTION("State two", "[regular_expression][empty]")
+     {
+         ast::State state2 = doc.m_states.back();
+         CHECK(state2.m_state.m_value == "*A");
+         CHECK(state2.m_transitions.size() == 2);
 
-//         CHECK(state2.m_transitions.front().m_transitions.size() == 2);
-//         CHECK(state2.m_transitions.front().m_transitions.front().m_value == "A");
-//         CHECK(state2.m_transitions.front().m_transitions.back().m_value == "B");
+         CHECK(state2.m_transitions.front().m_transitions.size() == 2);
+         CHECK(state2.m_transitions.front().m_transitions.front().m_value == "A");
+         CHECK(state2.m_transitions.front().m_transitions.back().m_value == "B");
 
-//         CHECK(state2.m_transitions.back().m_transitions.size() == 1);
-//         CHECK(state2.m_transitions.back().m_transitions.front().m_value == "C");
-//     }
-// }
+         CHECK(state2.m_transitions.back().m_transitions.size() == 1);
+         CHECK(state2.m_transitions.back().m_transitions.front().m_value == "C");
+     }
+ }
