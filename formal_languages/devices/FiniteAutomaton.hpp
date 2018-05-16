@@ -23,6 +23,7 @@ class NonDeterministic;
 class Deterministic
 {
   public:
+    friend class NonDeterministic;
     template <class T>
     using set_type            = std::unordered_set<T, Hasher>;
     template <class Key, class Value>
@@ -117,6 +118,8 @@ public:
     // Class constructors
     NonDeterministic() = default;
 
+    NonDeterministic(const Deterministic &machine);
+
     NonDeterministic(const NonDeterministic &) = default;
     NonDeterministic &operator=(const NonDeterministic &) = default;
     NonDeterministic(NonDeterministic &&) = default;
@@ -132,9 +135,21 @@ public:
     {
     }
 
+    NonDeterministic operator!() const; // not
+    NonDeterministic operator|(const NonDeterministic & machine) const; // or
+    NonDeterministic operator+(const NonDeterministic & machine) const; // concat
+    NonDeterministic operator&(const NonDeterministic & machine) const; // and
+    NonDeterministic operator-(const NonDeterministic & machine) const; // difference
+    NonDeterministic operator^(const Operation & op) const; // operation
+
     bool operator==(const NonDeterministic & machine) const;
 
 private:
+    NonDeterministic reflexive() const;
+    NonDeterministic transitive() const;
+    NonDeterministic optional() const;
+    NonDeterministic reverse() const;
+
     symbol_set_type     m_alphabet;
     state_set_type      m_states;
     transition_map_type m_transitions;
