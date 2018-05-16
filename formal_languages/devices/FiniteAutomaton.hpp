@@ -24,6 +24,7 @@ class Deterministic
 {
   public:
     friend class NonDeterministic;
+
     template <class T>
     using set_type            = std::unordered_set<T, Hasher>;
     template <class Key, class Value>
@@ -134,6 +135,8 @@ public:
         m_initial_state{std::forward<Arg5>(initial_state)}
     {
     }
+
+    Deterministic determination();
 
     NonDeterministic operator!() const; // not
     NonDeterministic operator|(const NonDeterministic & machine) const; // or

@@ -67,11 +67,17 @@ private:
 class Hasher
 {
 public:
-  using symbol_type = Symbol;
-  using state_type  = State;
+    template <class T>
+    using set_type            = std::unordered_set<T, Hasher>;
+    template <class Key, class Value>
+    using map_type            = std::unordered_map<Key, Value, Hasher>;
 
-  std::size_t operator()(const symbol_type &symbol) const;
-  std::size_t operator()(const state_type &state) const;
+    using symbol_type = Symbol;
+    using state_type  = State;
+
+    std::size_t operator()(const symbol_type &symbol) const;
+    std::size_t operator()(const state_type &state) const;
+    std::size_t operator()(const set_type<state_type> &set) const;
 };
 
 } // namespace finite_automaton
