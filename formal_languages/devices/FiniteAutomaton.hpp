@@ -58,10 +58,13 @@ class Deterministic
     // Basic properties
     virtual Deterministic operator!() const; // not
     virtual NonDeterministic operator|(const Deterministic & machine) const; // or
-    virtual Deterministic operator+(const Deterministic & machine) const; // concat
-    virtual Deterministic operator&(const Deterministic & machine) const; // and
-    virtual Deterministic operator-(const Deterministic & machine) const; // difference
-    virtual Deterministic operator^(const Operation & op) const; // operation
+    virtual NonDeterministic operator+(const Deterministic & machine) const; // concat
+    virtual NonDeterministic operator&(const Deterministic & machine) const; // and
+    virtual NonDeterministic operator-(const Deterministic & machine) const; // difference
+    virtual NonDeterministic operator^(const Operation & op) const; // operation
+
+    virtual Deterministic complete() const;
+    virtual NonDeterministic remove_epsilon_transition() const;
 
     // Decision problems
     virtual bool membership(const string_type& sentece) const;
@@ -70,14 +73,22 @@ class Deterministic
     virtual bool containment(const Deterministic & machine) const;
     virtual bool equivalence(const Deterministic & machine) const;
 
+    virtual bool is_complete() const;
+    virtual bool contains_epsilon_transition() const;
+
     bool operator==(const Deterministic & machine) const;
 
 private:
+    NonDeterministic reflexive() const;
+    NonDeterministic transitive() const;
+    NonDeterministic optional() const;
+    NonDeterministic reverse() const;
+
     symbol_set_type     m_alphabet;
     state_set_type      m_states;
     transition_map_type m_transitions;
     state_set_type      m_final_states;
-    state_type          m_initial_state{""};
+    state_type          m_initial_state;
 };
 
 class MinimalDeterministic : public Deterministic
@@ -104,7 +115,7 @@ public:
     using transition_map_type = map_type<state_type, map_type<symbol_type, set_type<state_type>>>;
 
     // Class constructors
-    NonDeterministic() = delete;
+    NonDeterministic() = default;
 
     NonDeterministic(const NonDeterministic &) = default;
     NonDeterministic &operator=(const NonDeterministic &) = default;
