@@ -117,33 +117,70 @@ NonDeterministic Deterministic::operator|(const Deterministic &machine) const
                          std::move(new_initial_state));
 }
 
-Deterministic Deterministic::operator+(const Deterministic &machine) const
+NonDeterministic Deterministic::operator+(const Deterministic &machine) const
+{
+    return NonDeterministic();
+}
+
+NonDeterministic Deterministic::operator&(const Deterministic &machine) const
+{
+    return /*!*/(!(*this) | !machine);
+}
+
+NonDeterministic Deterministic::operator-(const Deterministic &machine) const
+{
+    return *this & !machine;
+}
+
+NonDeterministic Deterministic::operator^(const Operation &op) const
+{
+    switch (op)
+    {
+    case Operation::Reflexive:
+        return reflexive();
+
+    case Operation::Transitive:
+        return transitive();
+
+    case Operation::Optional:
+        return optional();
+
+    case Operation::Reverse:
+        return reverse();
+
+    default:
+        return NonDeterministic();
+    }
+}
+
+NonDeterministic Deterministic::reflexive() const
+{
+    return NonDeterministic();
+}
+
+NonDeterministic Deterministic::transitive() const
+{
+    return NonDeterministic();
+}
+
+NonDeterministic Deterministic::optional() const
+{
+    return NonDeterministic();
+}
+
+NonDeterministic Deterministic::reverse() const
+{
+    return NonDeterministic();
+}
+
+Deterministic Deterministic::complete() const
 {
     return Deterministic();
 }
 
-Deterministic Deterministic::operator&(const Deterministic &machine) const
+NonDeterministic Deterministic::remove_epsilon_transition() const
 {
-    return Deterministic();
-}
-
-Deterministic Deterministic::operator-(const Deterministic &machine) const
-{
-    return Deterministic();
-}
-
-Deterministic Deterministic::operator^(const Operation &op) const
-{
-    return Deterministic();
-}
-
-bool Deterministic::operator==(const Deterministic & machine) const
-{
-    return m_alphabet      == machine.m_alphabet      
-        && m_states        == machine.m_states
-        && m_transitions   == machine.m_transitions
-        && m_final_states  == machine.m_final_states
-        && m_initial_state == machine.m_initial_state;
+    return NonDeterministic();
 }
 
 bool Deterministic::membership(const string_type &sentece) const
@@ -169,6 +206,25 @@ bool Deterministic::containment(const Deterministic &machine) const
 bool Deterministic::equivalence(const Deterministic &machine) const
 {
     return false;
+}
+
+bool Deterministic::is_complete() const
+{
+    return false;
+}
+
+bool Deterministic::contains_epsilon_transition() const
+{
+    return false;
+}
+
+bool Deterministic::operator==(const Deterministic & machine) const
+{
+    return m_alphabet      == machine.m_alphabet
+        && m_states        == machine.m_states
+        && m_transitions   == machine.m_transitions
+        && m_final_states  == machine.m_final_states
+        && m_initial_state == machine.m_initial_state;
 }
 
 bool NonDeterministic::operator==(const NonDeterministic & machine) const
