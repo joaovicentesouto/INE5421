@@ -341,4 +341,56 @@ TEST_CASE("NonDeterministic: Determination", "[finite_automaton][symbol]")
 
         CHECK((machine.determination() == det));
     }
+
+    SECTION("Remove & transition", "[finite_automaton][fa]")
+    {
+        det_transition_map_type transitions_determination;
+        transitions_determination[q0][a] = q1;
+        transitions_determination[q0][b] = q0;
+        transitions_determination[q1][a] = q1;
+        transitions_determination[q1][b] = q0;
+        transitions_determination[q1][c] = q2;
+        transitions_determination[q2][c] = q2;
+
+        Deterministic det(alphabet, states, transitions_determination, final_states, q0);
+
+        CHECK((machine.remove_epsilon() == det));
+    }
+}
+
+TEST_CASE("NonDeterministic: Remove & Epsilon", "[finite_automaton][symbol]")
+{
+    symbol_type a("a");
+    symbol_type b("b");
+    symbol_type epsilon("&");
+    state_type q0("q0"), q1("q1"), q2("q2"), q3("q3"), q4("q4"), q5("q5");
+
+    symbol_set_type alphabet{a, b, epsilon};
+    state_set_type  states{q0, q1, q2, q3, q4, q5};
+    state_set_type  final_states{q5};
+
+    non_det_transition_map_type transitions;
+    transitions[q0][epsilon].insert(q1);
+    transitions[q0][epsilon].insert(q3);
+    transitions[q1][a].insert(q2);
+    transitions[q2][epsilon].insert(q5);
+    transitions[q3][b].insert(q4);
+    transitions[q4][epsilon].insert(q5);
+
+    NonDeterministic machine(alphabet, states, transitions, final_states, q0);
+
+    SECTION("Remove & transition", "[finite_automaton][fa]")
+    {
+        symbol_set_type alphabet_epsilon{a, b};
+        state_set_type  states_epsilon{q0, q1, q2};
+        state_set_type  final_states_epsilon{q1, q2};
+
+        det_transition_map_type transitions_epsilon;
+        transitions_epsilon[q0][a] = q1;
+        transitions_epsilon[q0][b] = q2;
+
+        Deterministic det(alphabet_epsilon, states_epsilon, transitions_epsilon, final_states_epsilon, q0);
+
+        CHECK((machine.remove_epsilon() == det));
+    }
 }

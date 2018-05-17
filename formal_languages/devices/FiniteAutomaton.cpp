@@ -422,7 +422,125 @@ NonDeterministic::NonDeterministic(const Deterministic &machine) :
             m_transitions[trans.first][target.first].insert(target.second);
 }
 
-Deterministic NonDeterministic::determination()
+
+Deterministic NonDeterministic::remove_epsilon() const
+{
+    if (m_alphabet.find(symbol_type("&")) == m_alphabet.end())
+        return determination();
+
+    using map_of_states_set_type = std::unordered_map<state_set_type, state_type, Hasher>;
+    using state_to_states_set_type = std::unordered_map<state_type, state_set_type, Hasher>;
+    using deque_of_states_set_type = std::deque<state_set_type>;
+    using vector_of_states_set_type = std::vector<state_set_type>;
+
+    Deterministic::symbol_set_type     new_alphabet;
+    Deterministic::state_set_type      new_final_states;
+    Deterministic::transition_map_type new_transitions;
+    Deterministic::state_set_type      new_states;
+
+    for (auto symbol : m_alphabet)
+        if (!(symbol == "&"))
+            new_alphabet.insert(symbol);
+
+
+    /* ------ Parcial Epsilon Closure ------ */
+
+    state_to_states_set_type epsilon_closure;
+
+    for (auto state : state_set_type(m_states))
+    {
+        state_set_type set;
+        build_closure(set, state);
+        epsilon_closure[state] = set;
+    }
+
+    /* ------ Determination ------ */
+
+    map_of_states_set_type new_states_map;
+    deque_of_states_set_type queue;
+    vector_of_states_set_type created_sets;
+
+    /* ------ New initial state ------ */
+
+    Deterministic::state_type new_initial_state("q0");
+    state_set_type initial_set{epsilon_closure[m_initial_state]};
+
+    new_states_map[initial_set] = new_initial_state;
+    new_states.insert(new_initial_state);
+
+    queue.push_back(initial_set);
+    created_sets.push_back(initial_set);
+
+    /* ------ New states and New transitions ------ */
+
+    int i = 1;
+    while (!queue.empty())
+    {
+        auto current_set = queue.front();
+        queue.pop_front();
+
+        for (auto symbol : m_alphabet)
+        {
+            if (symbol == "&")
+                continue;
+
+            state_set_type target_set;
+
+            for (auto state : current_set)
+            {
+                transition_map_type copy(m_transitions);
+                for (auto target_state : copy[state][symbol])
+                {
+                    target_set.insert(target_state);
+
+                    for (auto epsilon_state : epsilon_closure[target_state])
+                        target_set.insert(epsilon_state);
+                }
+            }
+
+            if (target_set.empty())
+                continue;
+
+            if (new_states_map[target_set] == "Error")
+            {
+                state_type q{ "q" + std::to_string(i++) };
+                new_states_map[target_set] = q;
+                new_states.insert(q);
+
+                queue.push_back(target_set);
+                created_sets.push_back(target_set);
+            }
+
+            new_transitions[new_states_map[current_set]][symbol] = new_states_map[target_set];
+        }
+    }
+
+    /* ------ New final states ------ */
+
+    for (auto set : created_sets)
+        for (auto state : set)
+            if (m_final_states.find(state) != m_final_states.end())
+                new_final_states.insert(new_states_map[set]);
+
+    return Deterministic(std::move(new_alphabet),
+                         std::move(new_states),
+                         std::move(new_transitions),
+                         std::move(new_final_states),
+                         std::move(new_initial_state));
+}
+
+void NonDeterministic::build_closure(state_set_type& set, state_type state) const
+{
+    if (set.find(state) == set.end())
+        set.insert(state);
+
+    transition_map_type copy(m_transitions);
+    for (auto target_state : copy[state][symbol_type("&")])
+        if (set.find(target_state) == set.end())
+            build_closure(set, target_state);
+}
+
+Deterministic NonDeterministic::determination() const
 {
     using map_of_states_set_type = std::unordered_map<state_set_type, state_type, Hasher>;
     using deque_of_states_set_type = std::deque<state_set_type>;
@@ -463,8 +581,11 @@ Deterministic NonDeterministic::determination()
             state_set_type target_set;
 
             for (auto state : current_set)
-                for (auto target_state : state_set_type(m_transitions[state][symbol]))
+            {
+                transition_map_type copy(m_transitions);
+                for (auto target_state : copy[state][symbol])
                     target_set.insert(target_state);
+            }
 
             if (target_set.empty())
                 continue;
@@ -570,12 +691,12 @@ NonDeterministic NonDeterministic::operator|(const NonDeterministic & machine) c
 
     /* ------ New transitions ------ */
 
-    for (auto trans : NonDeterministic::transition_map_type(m_transitions))
+    for (auto trans : transition_map_type(m_transitions))
         for (auto target : trans.second)
             for (auto state_target : target.second)
                 new_transitions[state_map_m1[trans.first]][target.first].insert(state_map_m1[state_target]);
 
-    for (auto trans : NonDeterministic::transition_map_type(machine.m_transitions))
+    for (auto trans : transition_map_type(machine.m_transitions))
         for (auto target : trans.second)
             for (auto state_target : target.second)
                 new_transitions[state_map_m2[trans.first]][target.first].insert(state_map_m2[state_target]);

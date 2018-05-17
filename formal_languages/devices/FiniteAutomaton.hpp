@@ -4,6 +4,7 @@
 #include <string>
 #include <deque>
 #include <vector>
+#include <functional>
 #include <unordered_set>
 #include <unordered_map>
 #include "./FiniteAutomatonComponents.hpp"
@@ -138,7 +139,8 @@ public:
     {
     }
 
-    Deterministic determination();
+    Deterministic remove_epsilon() const;
+    Deterministic determination() const;
 
     NonDeterministic operator!() const; // not
     NonDeterministic operator|(const NonDeterministic & machine) const; // or
@@ -154,6 +156,7 @@ private:
     NonDeterministic transitive() const;
     NonDeterministic optional() const;
     NonDeterministic reverse() const;
+    void build_closure(state_set_type& set, state_type state) const;
 
     symbol_set_type     m_alphabet;
     state_set_type      m_states;
