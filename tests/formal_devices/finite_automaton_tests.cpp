@@ -306,3 +306,39 @@ TEST_CASE("Finite Automaton: Complement NonDeterministic", "[finite_automaton][s
         CHECK((!machine == complement));
     }
 }
+
+TEST_CASE("NonDeterministic: Determination", "[finite_automaton][symbol]")
+{
+    symbol_type a("a");
+    symbol_type b("b");
+    symbol_type c("c");
+    state_type q0("q0"), q1("q1"), q2("q2");
+
+    symbol_set_type alphabet{a, b, c};
+    state_set_type  states{q0, q1, q2};
+    state_set_type  final_states{q2};
+
+    non_det_transition_map_type transitions;
+    transitions[q0][a].insert(q0);
+    transitions[q0][a].insert(q1);
+    transitions[q0][b].insert(q0);
+    transitions[q1][c].insert(q2);
+    transitions[q2][c].insert(q2);
+
+    NonDeterministic machine(alphabet, states, transitions, final_states, q0);
+
+    SECTION("Determination", "[finite_automaton][fa]")
+    {
+        det_transition_map_type transitions_determination;
+        transitions_determination[q0][a] = q1;
+        transitions_determination[q0][b] = q0;
+        transitions_determination[q1][a] = q1;
+        transitions_determination[q1][b] = q0;
+        transitions_determination[q1][c] = q2;
+        transitions_determination[q2][c] = q2;
+
+        Deterministic det(alphabet, states, transitions_determination, final_states, q0);
+
+        CHECK((machine.determination() == det));
+    }
+}

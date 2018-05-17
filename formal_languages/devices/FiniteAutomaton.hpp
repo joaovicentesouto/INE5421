@@ -2,6 +2,8 @@
 #define DEVICES_FINITEAUTOMATON_HPP
 
 #include <string>
+#include <deque>
+#include <vector>
 #include <unordered_set>
 #include <unordered_map>
 #include "./FiniteAutomatonComponents.hpp"
