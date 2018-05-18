@@ -67,5 +67,15 @@ std::size_t Hasher::operator()(const state_type &state) const
     return std::hash<std::string>()(state.m_state);
 }
 
+std::size_t Hasher::operator()(const set_type<state_type> &set) const
+{
+    std::size_t acum = 0;
+
+    for (auto state : set)
+        acum += operator ()(state);
+
+    return acum;
+}
+
 } // namespace finite_automaton
 } // namespace formal_device
