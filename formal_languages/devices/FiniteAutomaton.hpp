@@ -3,8 +3,10 @@
 
 #include <string>
 #include <deque>
+#include <list>
 #include <vector>
 #include <functional>
+#include <exception>
 #include <unordered_set>
 #include <unordered_map>
 #include "./FiniteAutomatonComponents.hpp"
@@ -88,11 +90,60 @@ class Deterministic
 
     bool operator==(const Deterministic & machine) const;
 
+    void equivalence_classes(set_type<state_set_type> & set);
 private:
     NonDeterministic reflexive() const;
     NonDeterministic transitive() const;
     NonDeterministic optional() const;
     NonDeterministic reverse() const;
+
+    bool topologicalOrdering()
+    {
+        std::list<state_type> list;
+        state_set_type temporary;
+        state_set_type permanent;
+        state_set_type sink_set;
+
+        for (auto state : m_states)
+            if (m_transitions[state].empty())
+                sink_set.insert(state);
+
+        while (!sink_set.empty())
+        {
+
+            state_type state = *sink_set.begin();
+            sink_set.erase(state);
+
+            visit(state, list, temporary, permanent);
+        }
+
+        return true;
+    }
+
+    void visit(state_type state, std::list<state_type> & list, state_set_type & temporary, state_set_type & permanent)
+    {
+
+        if (permanent.find(state) != permanent.end())
+            return;
+
+        if (temporary.find(state) != temporary.end())
+            throw std::out_of_range("Is not a DAG, contains a cycle!");
+
+        temporary.emplace(state);
+
+        for (auto state_pred : m_states)
+        {
+            transition_map_type copy(m_transitions);
+            for (auto trans : copy[state_pred])
+                if (trans.second == state)
+                    visit(state_pred, list, temporary, permanent);
+        }
+
+        temporary.erase(state);
+        permanent.emplace(state);
+
+        list.push_back(state);
+    }
 
     symbol_set_type     m_alphabet;
     state_set_type      m_states;

@@ -5,20 +5,6 @@ namespace formal_device
 namespace finite_automaton
 {
 
-//using string_type         = std::string;
-//using state_type          = State;
-//using symbol_type         = Symbol;
-//using state_set_type      = set_type<state_type>;
-//using symbol_set_type     = set_type<symbol_type>;
-//using transition_map_type = map_type<state_type, map_type<symbol_type, state_type>>;
-
-// symbol_set_type     m_alphabet;
-// state_set_type      m_states;
-// transition_map_type m_transitions;
-// state_set_type      m_final_states;
-// state_type          m_initial_state;
-
-
 Deterministic Deterministic::operator!() const
 {
     Deterministic complement = complete();
@@ -34,8 +20,6 @@ Deterministic Deterministic::operator!() const
 
     return Deterministic(std::move(complement));
 }
-
-//map_type< state_type, map_type< symbol_type, set_type<state_type>>>;
 
 NonDeterministic Deterministic::operator|(const Deterministic &machine) const
 {
@@ -367,20 +351,136 @@ NonDeterministic Deterministic::remove_epsilon_transition() const
 
 Deterministic Deterministic::minimization() const
 {
+    using map_of_states_set_type = std::unordered_map<state_set_type, state_type, Hasher>;
+    using deque_of_states_set_type = std::deque<state_set_type>;
+    using vector_of_states_set_type = std::vector<state_set_type>;
+
     Deterministic assistant = remove_unreachable_states();
     assistant = assistant.remove_dead_states();
 
     symbol_set_type     new_alphabet = assistant.m_alphabet;
     state_set_type      new_states;
     transition_map_type new_transitions;
-    state_set_type      new_final_states = m_final_states;
-    state_type          new_initial_state;
+    state_set_type      new_final_states;
 
-    state_set_type not_final;
-    for (auto state : m_states)
+    state_set_type not_final_states;
+    state_set_type final_states = assistant.m_final_states;
+    for (auto state : assistant.m_states)
+        if (final_states.find(state) == final_states.end())
+            not_final_states.insert(state);
 
+    not_final_states.insert(state_type("Error"));
 
-    return Deterministic();
+    set_type<state_set_type> equivalent_classes{not_final_states};
+    if (!final_states.empty())
+        equivalent_classes.insert(final_states);
+
+    auto complet = assistant.complete();
+
+    complet.equivalence_classes(equivalent_classes);
+
+    /* ------ New initial state ------ */
+
+    Deterministic::state_type new_initial_state;
+
+    map_type<state_set_type, state_type> class_to_new_state;
+    map_type<state_type, state_set_type> old_state_to_class;
+
+    int i = 1;
+    for (auto set : equivalent_classes)
+    {
+        if(set.find(state_type("Error")) != set.end())
+            continue;
+
+        if (set.find(complet.m_initial_state) != set.end())
+        {
+            new_initial_state = state_type("q0");
+            class_to_new_state[set] = new_initial_state;
+        }
+        else
+        {
+            state_type q{ "q" + std::to_string(i++) };
+            class_to_new_state[set] = q;
+        }
+
+        new_states.insert(class_to_new_state[set]);
+
+        for (auto state : set)
+        {
+            old_state_to_class[state] = set;
+            if (complet.m_final_states.find(state) != complet.m_final_states.end())
+                new_final_states.insert(class_to_new_state[old_state_to_class[state]]);
+        }
+    }
+
+    /* ------ New states and New transitions ------ */
+
+    for (auto set : equivalent_classes)
+    {
+        auto state = *set.begin();
+
+        for (auto trans : complet.m_transitions[state])
+            if (!(trans.second == "Error"))
+                new_transitions[ class_to_new_state[ old_state_to_class[state] ] ][trans.first]
+                        = class_to_new_state[old_state_to_class[trans.second]];
+    }
+
+    return Deterministic(std::move(new_alphabet),
+                         std::move(new_states),
+                         std::move(new_transitions),
+                         std::move(new_final_states),
+                         std::move(new_initial_state));
+}
+
+void Deterministic::equivalence_classes(set_type<state_set_type> & set)
+{
+    set_type<state_set_type> aux_set;
+
+    for (auto equivalent_class : set)
+    {
+        state_set_type equal;
+        state_set_type not_equal;
+
+        auto first_state = *equivalent_class.begin();
+        equal.insert(first_state);
+
+        for (auto state : equivalent_class)
+        {
+            if (first_state == state)
+                continue;
+
+            bool different = false;
+            for (auto symbol : m_alphabet)
+            {
+                auto target_first = m_transitions[first_state][symbol];
+                auto target_state = m_transitions[state][symbol];
+
+                if (target_first == target_state)
+                    continue;
+
+                for (auto eq_class : set)
+                    different |= (eq_class.find(target_first) != eq_class.end()) ^ (eq_class.find(target_state) != eq_class.end());
+
+                if (different)
+                    break;
+            }
+
+            if (different)
+                not_equal.insert(state);
+            else
+                equal.insert(state);
+        }
+
+        aux_set.insert(equal);
+        if (!not_equal.empty())
+            aux_set.insert(not_equal);
+    }
+
+    if (aux_set != set)
+    {
+        set = aux_set;
+        equivalence_classes(set);
+    }
 }
 
 Deterministic Deterministic::remove_dead_states() const
@@ -485,12 +585,26 @@ bool Deterministic::membership(const string_type &sentece) const
 
 bool Deterministic::emptiness() const
 {
-    return false;
+    state_type error;
+    state_set_type states_empty;
+    transition_map_type empty_transitions;
+
+    Deterministic empty(m_alphabet, states_empty, empty_transitions, states_empty, error);
+
+    return minimization() == empty;
 }
 
 bool Deterministic::finiteness() const
 {
-    return false;
+    auto minimum = minimization();
+
+    try
+    {
+        return minimum.topologicalOrdering();
+    } catch (std::exception& e)
+    {
+        return false;
+    }
 }
 
 bool Deterministic::containment(const Deterministic &machine) const
