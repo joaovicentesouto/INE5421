@@ -2,19 +2,22 @@
 #define DEVICES_REGULAREXPRESSION_HPP
 
 #include <unordered_set>
+#include <unordered_map>
 
 namespace formal_device
 {
 namespace expression
 {
 
-class State;
+// class State;
+// class Hasher;
 struct DeSimoneNode;
-using dfa_type = int;
+
+// using dfa_type = int;
 using string_type = std::string;
-using state_type = State;
-using composition_type = int;
+using state_type = string_type; // usar o state?
 using node_set_type = std::unordered_set<DeSimoneNode*>;
+using composition_type = std::unordered_map<state_type, node_set_type>;
 
 struct DeSimoneNode
 {
@@ -101,6 +104,7 @@ struct OptionalNode : public DeSimoneNode
 }   // namespace formal_device
 
 #include <formal_languages/devices/RegularExpressionComponents.hpp>
+#include <formal_languages/devices/FiniteAutomaton.hpp>
 
 namespace formal_device
 {
@@ -110,12 +114,12 @@ namespace expression
 class DeSimoneTree
 {
 public:
-	// using dfa_type;
+	using dfa_type = finite_automaton::Deterministic;
 
-	DeSimoneTree() = default;
+	DeSimoneTree(RegularPointer exp);
 	~DeSimoneTree() = default;
 
-	// dfa_type execute()
+	dfa_type execute();
 	// 	{
 
 	// 	queue_type<state_type> to_process;
