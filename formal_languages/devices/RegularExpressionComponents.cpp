@@ -58,6 +58,11 @@ bool Empty::operator==(const regular_ptr &reg) const
     return dynamic_cast<const Empty*>(reg.get());
 }
 
+simone_node_ptr Empty::node_myself()
+{
+    return new UnitNode("Empty");
+}
+
 /* --------------------- Epsilon --------------------- */
 
 regular_ptr Epsilon::clone() const
@@ -83,6 +88,11 @@ regular_ptr Epsilon::operator^(const Operation &op) const
 bool Epsilon::operator==(const regular_ptr &reg) const
 {
     return dynamic_cast<const Epsilon*>(reg.get());
+}
+
+simone_node_ptr Epsilon::node_myself()
+{
+    return new UnitNode("&");
 }
 
 /* --------------------- Unit --------------------- */
@@ -135,6 +145,11 @@ bool Unit::operator==(const regular_ptr &reg) const
         return false;
 
     return m_symbol == check->m_symbol;
+}
+
+simone_node_ptr Unit::node_myself()
+{
+    return new UnitNode(m_symbol);
 }
 
 /* --------------------- Union --------------------- */
@@ -190,6 +205,16 @@ bool Union::operator==(const regular_ptr &reg) const
            m_right_expression == check->m_right_expression;
 }
 
+simone_node_ptr Union::node_myself()
+{
+    auto union_ptr = new UnionNode();
+    
+    union_ptr->m_left = m_left_expression->node_myself();
+    union_ptr->m_right = m_right_expression->node_myself();
+    
+    return union_ptr;
+}
+
 /* --------------------- Concatenation --------------------- */
 
 regular_ptr Concatenation::clone() const
@@ -241,6 +266,16 @@ bool Concatenation::operator==(const regular_ptr &reg) const
 
     return m_left_expression == check->m_left_expression &&
            m_right_expression == check->m_right_expression;
+}
+
+simone_node_ptr Concatenation::node_myself()
+{
+    auto concatenation_ptr = new ConcatenationNode();
+    
+    concatenation_ptr->m_left = m_left_expression->node_myself();
+    concatenation_ptr->m_right = m_right_expression->node_myself();
+    
+    return concatenation_ptr;
 }
 
 /* --------------------- ReflexiveClosure --------------------- */
@@ -295,6 +330,15 @@ bool ReflexiveClosure::operator==(const regular_ptr &reg) const
     return m_expression == check->m_expression;
 }
 
+simone_node_ptr ReflexiveClosure::node_myself()
+{
+    auto reflexive_ptr = new ReflexiveNode();
+    
+    reflexive_ptr->m_left = m_expression->node_myself();
+    
+    return reflexive_ptr;
+}
+
 /* --------------------- TransitiveClosure --------------------- */
 
 regular_ptr TransitiveClosure::clone() const
@@ -347,6 +391,16 @@ bool TransitiveClosure::operator==(const regular_ptr &reg) const
     return m_expression == check->m_expression;
 }
 
+simone_node_ptr TransitiveClosure::node_myself()
+{
+    auto transitive_ptr = new ConcatenationNode();
+    
+    transitive_ptr->m_left = new ReflexiveNode();
+    transitive_ptr->m_left->m_left = m_expression->node_myself();
+    
+    return transitive_ptr;
+}
+
 /* --------------------- Optional --------------------- */
 
 regular_ptr Optional::clone() const
@@ -396,6 +450,15 @@ bool Optional::operator==(const regular_ptr &reg) const
         return false;
 
     return m_expression == check->m_expression;
+}
+
+simone_node_ptr Optional::node_myself()
+{
+    auto optional_ptr = new OptionalNode();
+    
+    optional_ptr->m_left-> = m_expression->node_myself();
+    
+    return optional_ptr;
 }
 
 } // namespace expression

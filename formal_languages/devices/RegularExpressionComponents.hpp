@@ -8,6 +8,7 @@
 #include <type_traits>
 #include <typeinfo>
 #include <exception>
+#include <formal_languages/devices/RegularExpression.hpp>
 
 namespace formal_device
 {
@@ -40,6 +41,7 @@ class RegularPointer : public std::shared_ptr<Regular>
 
 using string_type = std::string;
 using regular_ptr = RegularPointer;
+using simone_node_ptr = DeSimoneNode*;
 
 class Regular
 {
@@ -50,6 +52,8 @@ class Regular
     virtual regular_ptr operator+(const regular_ptr &reg) const = 0;  // Concatenate
     virtual regular_ptr operator^(const Operation &op) const = 0;     // Closure
     virtual bool operator==(const regular_ptr &reg) const = 0;
+
+    virtual simone_node_ptr node_myself() = 0;
 
   private:
     virtual regular_ptr clone() const = 0;
@@ -72,6 +76,8 @@ class Empty : public Regular
     regular_ptr operator^(const Operation &op) const;
     bool operator==(const regular_ptr &reg) const;
 
+    simone_node_ptr node_myself();
+
   private:
     regular_ptr clone() const;
 };
@@ -92,6 +98,8 @@ class Epsilon : public Regular
     regular_ptr operator+(const regular_ptr &reg) const;
     regular_ptr operator^(const Operation &op) const;
     bool operator==(const regular_ptr &reg) const;
+
+    simone_node_ptr node_myself();
 
   private:
     regular_ptr clone() const;
@@ -122,6 +130,8 @@ class Unit : public Regular
     regular_ptr operator^(const Operation &op) const;
     bool operator==(const regular_ptr &reg) const;
 
+    simone_node_ptr node_myself();
+
   private:
     regular_ptr clone() const;
 
@@ -151,6 +161,8 @@ class Union : public Regular
     regular_ptr operator+(const regular_ptr &reg) const;
     regular_ptr operator^(const Operation &op) const;
     bool operator==(const regular_ptr &reg) const;
+
+    simone_node_ptr node_myself();
 
   private:
     regular_ptr clone() const;
@@ -183,6 +195,8 @@ class Concatenation : public Regular
     regular_ptr operator^(const Operation &op) const;
     bool operator==(const regular_ptr &reg) const;
 
+    simone_node_ptr node_myself();
+
   private:
     regular_ptr clone() const;
 
@@ -213,6 +227,8 @@ class ReflexiveClosure : public Regular
     regular_ptr operator^(const Operation &op) const;
     bool operator==(const regular_ptr &reg) const;
 
+    simone_node_ptr node_myself();
+
   private:
     regular_ptr clone() const;
 
@@ -242,6 +258,8 @@ class TransitiveClosure : public Regular
     regular_ptr operator^(const Operation &op) const;
     bool operator==(const regular_ptr &reg) const;
 
+    simone_node_ptr node_myself();
+
   private:
     regular_ptr clone() const;
 
@@ -270,6 +288,8 @@ class Optional : public Regular
     regular_ptr operator+(const regular_ptr &reg) const;
     regular_ptr operator^(const Operation &op) const;
     bool operator==(const regular_ptr &reg) const;
+
+    simone_node_ptr node_myself();
 
   private:
     regular_ptr clone() const;
