@@ -362,7 +362,120 @@ Deterministic Deterministic::complete() const
 
 NonDeterministic Deterministic::remove_epsilon_transition() const
 {
-    return NonDeterministic();
+    return NonDeterministic(*this).determination();
+}
+
+Deterministic Deterministic::minimization() const
+{
+    Deterministic assistant = remove_unreachable_states();
+    assistant = assistant.remove_dead_states();
+
+    symbol_set_type     new_alphabet = assistant.m_alphabet;
+    state_set_type      new_states;
+    transition_map_type new_transitions;
+    state_set_type      new_final_states = m_final_states;
+    state_type          new_initial_state;
+
+    state_set_type not_final;
+    for (auto state : m_states)
+
+
+    return Deterministic();
+}
+
+Deterministic Deterministic::remove_dead_states() const
+{
+    symbol_set_type     new_alphabet = m_alphabet;
+    state_set_type      new_states;
+    transition_map_type new_transitions;
+    state_set_type      new_final_states = m_final_states;
+    state_type          new_initial_state;
+
+    NonDeterministic::transition_map_type inverted_transitions;
+
+    state_set_type states(m_states);
+    for (auto state : states)
+    {
+        transition_map_type transitions(m_transitions);
+        for (auto trans : transitions[state])
+            inverted_transitions[trans.second][trans.first].insert(state);
+    }
+
+    std::deque<state_type> reachable(m_final_states.begin(), m_final_states.end());
+
+    while (!reachable.empty())
+    {
+        auto current = reachable.front();
+        reachable.pop_front();
+
+        new_states.insert(current);
+
+        for (auto trans : inverted_transitions[current])
+            for (auto target_state : trans.second)
+            {
+                if (new_states.find(target_state) == new_states.end())
+                    reachable.push_back(target_state);
+
+                new_transitions[target_state][trans.first] = current;
+            }
+    }
+
+    if (new_states.find(m_initial_state) != new_states.end())
+        new_initial_state = m_initial_state;
+
+    return Deterministic(std::move(new_alphabet),
+                         std::move(new_states),
+                         std::move(new_transitions),
+                         std::move(new_final_states),
+                         std::move(new_initial_state));
+}
+
+Deterministic Deterministic::remove_unreachable_states() const
+{
+    symbol_set_type     new_alphabet = m_alphabet;
+    state_set_type      new_states{m_initial_state};
+    transition_map_type new_transitions;
+    state_set_type      new_final_states;
+    state_type          new_initial_state = m_initial_state;
+
+    std::deque<state_type> reachable{new_initial_state};
+    state_set_type marked;
+
+    while (!reachable.empty())
+    {
+        auto current = reachable.front();
+        reachable.pop_front();
+
+        marked.insert(current);
+
+        if (m_final_states.find(current) != m_final_states.end())
+            new_final_states.insert(current);
+
+        transition_map_type copy(m_transitions);
+        if (copy.find(current) != copy.end())
+            new_transitions[current] = copy[current];
+        else
+            continue;
+
+        for (auto trans : copy[current])
+            if (marked.find(trans.second) == marked.end())
+            {
+                reachable.push_back(trans.second);
+                new_states.insert(trans.second);
+            }
+    }
+
+    return Deterministic(std::move(new_alphabet),
+                         std::move(new_states),
+                         std::move(new_transitions),
+                         std::move(new_final_states),
+                         std::move(new_initial_state));
+}
+
+Deterministic Deterministic::remove_equivalent_states() const
+{
+
+    return Deterministic();
 }
 
 bool Deterministic::membership(const string_type &sentece) const

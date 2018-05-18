@@ -394,3 +394,106 @@ TEST_CASE("NonDeterministic: Remove & Epsilon", "[finite_automaton][symbol]")
         CHECK((machine.remove_epsilon() == det));
     }
 }
+
+TEST_CASE("Deterministic: Remove unreachable", "[finite_automaton][symbol]")
+{
+    symbol_type a("a");
+    symbol_type b("b");
+    symbol_type c("c");
+    state_type q0("q0"), q1("q1"), q2("q2"), q3("q3"),
+               q4("q4"), q5("q5"), q6("q6"), q7("q7"), q8("q8");
+
+    symbol_set_type alphabet{a, b, c};
+    state_set_type  states{q0, q1, q2, q3, q4, q5, q6, q7, q8};
+    state_set_type  final_states{q2, q4, q8};
+
+    det_transition_map_type transitions;
+    transitions[q0][a] = q1;
+    transitions[q0][b] = q3;
+    transitions[q1][a] = q1;
+    transitions[q1][b] = q5;
+    transitions[q1][c] = q2;
+    transitions[q3][a] = q0;
+    transitions[q3][b] = q6;
+    transitions[q3][c] = q4;
+    transitions[q6][c] = q6;
+    transitions[q7][b] = q8;
+
+    Deterministic machine(alphabet, states, transitions, final_states, q0);
+
+    state_set_type  states_r{q0, q1, q2, q3, q4, q5, q6};
+    state_set_type  final_r{q2, q4};
+    det_transition_map_type transitions_r;
+    transitions_r[q0][a] = q1;
+    transitions_r[q0][b] = q3;
+    transitions_r[q1][a] = q1;
+    transitions_r[q1][b] = q5;
+    transitions_r[q1][c] = q2;
+    transitions_r[q3][a] = q0;
+    transitions_r[q3][b] = q6;
+    transitions_r[q3][c] = q4;
+    transitions_r[q6][c] = q6;
+
+    Deterministic m_r(alphabet, states_r, transitions_r, final_r, q0);
+
+    CHECK((machine.remove_unreachable_states() == m_r));
+
+    SECTION("Remove dead states", "[finite_automaton][fa]")
+    {
+        state_set_type  states_alive{q0, q1, q2, q3, q4};
+        state_set_type  final_alive{q2, q4};
+        det_transition_map_type transitions_alive;
+        transitions_alive[q0][a] = q1;
+        transitions_alive[q0][b] = q3;
+        transitions_alive[q1][a] = q1;
+        transitions_alive[q1][c] = q2;
+        transitions_alive[q3][a] = q0;
+        transitions_alive[q3][c] = q4;
+
+        Deterministic m_alive(alphabet, states_alive, transitions_alive, final_alive, q0);
+
+        CHECK((machine.remove_unreachable_states().remove_dead_states() == m_alive));
+    }
+}
+
+TEST_CASE("Deterministic: Remove dead states", "[finite_automaton][symbol]")
+{
+    symbol_type a("a");
+    symbol_type b("b");
+    symbol_type c("c");
+    state_type q0("q0"), q1("q1"), q2("q2"), q3("q3"),
+               q4("q4"), q5("q5"), q6("q6"), q7("q7"), q8("q8");
+
+    symbol_set_type alphabet{a, b, c};
+    state_set_type  states{q0, q1, q2, q3, q4, q5, q6, q7, q8};
+    state_set_type  final_states{q2, q4, q8};
+
+    det_transition_map_type transitions;
+    transitions[q0][a] = q1;
+    transitions[q0][b] = q3;
+    transitions[q1][a] = q1;
+    transitions[q1][b] = q5;
+    transitions[q1][c] = q2;
+    transitions[q3][a] = q0;
+    transitions[q3][b] = q6;
+    transitions[q3][c] = q4;
+    transitions[q6][c] = q6;
+    transitions[q7][b] = q8;
+
+    Deterministic machine(alphabet, states, transitions, final_states, q0);
+
+    state_set_type  states_alive{q0, q1, q2, q3, q4, q7, q8};
+    state_set_type  final_alive{q2, q4, q8};
+    det_transition_map_type transitions_alive;
+    transitions_alive[q0][a] = q1;
+    transitions_alive[q0][b] = q3;
+    transitions_alive[q1][a] = q1;
+    transitions_alive[q1][c] = q2;
+    transitions_alive[q3][a] = q0;
+    transitions_alive[q3][c] = q4;
+    transitions_alive[q7][b] = q8;
+
+    Deterministic m_alive(alphabet, states_alive, transitions_alive, final_alive, q0);
+
+    CHECK((machine.remove_dead_states() == m_alive));
+}
