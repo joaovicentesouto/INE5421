@@ -60,7 +60,9 @@ bool Empty::operator==(const regular_ptr &reg) const
 
 simone_node_ptr Empty::node_myself()
 {
-    return new UnitNode("Empty");
+    auto unit = new UnitNode();
+    unit->m_symbol = "Empty";
+    return unit;
 }
 
 /* --------------------- Epsilon --------------------- */
@@ -92,7 +94,9 @@ bool Epsilon::operator==(const regular_ptr &reg) const
 
 simone_node_ptr Epsilon::node_myself()
 {
-    return new UnitNode("&");
+    auto unit = new UnitNode();
+    unit->m_symbol = "&";
+    return unit;
 }
 
 /* --------------------- Unit --------------------- */
@@ -149,7 +153,9 @@ bool Unit::operator==(const regular_ptr &reg) const
 
 simone_node_ptr Unit::node_myself()
 {
-    return new UnitNode(m_symbol);
+    auto unit = new UnitNode();
+    unit->m_symbol = m_symbol;
+    return unit;
 }
 
 /* --------------------- Union --------------------- */
@@ -394,9 +400,9 @@ bool TransitiveClosure::operator==(const regular_ptr &reg) const
 simone_node_ptr TransitiveClosure::node_myself()
 {
     auto transitive_ptr = new ConcatenationNode();
-    
-    transitive_ptr->m_left = new ReflexiveNode();
-    transitive_ptr->m_left->m_left = m_expression->node_myself();
+    auto reflexive_ptr = new ReflexiveNode();
+    transitive_ptr->m_left = reflexive_ptr;
+    reflexive_ptr->m_left = m_expression->node_myself();
     
     return transitive_ptr;
 }
@@ -456,7 +462,7 @@ simone_node_ptr Optional::node_myself()
 {
     auto optional_ptr = new OptionalNode();
     
-    optional_ptr->m_left-> = m_expression->node_myself();
+    optional_ptr->m_left = m_expression->node_myself();
     
     return optional_ptr;
 }

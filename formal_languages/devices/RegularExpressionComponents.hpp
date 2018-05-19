@@ -8,7 +8,7 @@
 #include <type_traits>
 #include <typeinfo>
 #include <exception>
-#include <formal_languages/devices/RegularExpression.hpp>
+#include <formal_languages/devices/DeSimoneTreeComponents.hpp>
 
 namespace formal_device
 {

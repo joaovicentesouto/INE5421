@@ -378,6 +378,7 @@ Deterministic Deterministic::minimization() const
 
     state_set_type not_final;
     for (auto state : m_states)
+        true;
 
 
     return Deterministic();
