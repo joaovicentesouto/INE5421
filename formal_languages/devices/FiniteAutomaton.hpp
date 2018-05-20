@@ -10,7 +10,8 @@
 #include <set>
 #include <unordered_map>
 #include <map>
-#include "./FiniteAutomatonComponents.hpp"
+#include <formal_languages/components/FiniteAutomatonComponents.hpp>
+
 
 namespace formal_device
 {

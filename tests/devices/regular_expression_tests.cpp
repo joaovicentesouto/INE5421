@@ -1,6 +1,6 @@
 #include "../catch.hpp"
 
-#include <formal_languages/devices/RegularExpressionComponents.hpp>
+#include <formal_languages/devices/RegularExpression.hpp>
 
 using namespace formal_device::expression;
 
@@ -315,5 +315,146 @@ TEST_CASE("Regular Expression: Optional", "[regular_expression][optional]")
         CHECK((opt ^ Operation::Star)     == new ReflexiveClosure(a));
         CHECK((opt ^ Operation::Plus)     == new ReflexiveClosure(a));
         CHECK((opt ^ Operation::Optional) == opt);
+    }
+}
+
+TEST_CASE("Regular Expression: Construction of DeSimoneTree", "[regular_expression][de_simone]")
+{
+    SECTION("Regular Expression: Empty", "[regular_expression][empty]")
+    {
+        Empty a;
+        simone_node_ptr unit = a.node_myself();
+
+        const UnitNode * a_ = dynamic_cast<const UnitNode*>(unit);
+
+        CHECK(a_->m_symbol == "Empty");
+        CHECK(!a_->m_seam);
+
+        delete unit;
+    }
+
+    SECTION("Regular Expression: Epsilon", "[regular_expression][epsilon]")
+    {
+        Epsilon a;
+        simone_node_ptr unit = a.node_myself();
+
+        const UnitNode * a_ = dynamic_cast<const UnitNode*>(unit);
+
+        CHECK(a_->m_symbol == "&");
+        CHECK(!a_->m_seam);
+
+        delete unit;
+    }
+
+    SECTION("Regular Expression: Unit", "[regular_expression][epsilon]")
+    {
+        Unit a("a");
+        simone_node_ptr unit = a.node_myself();
+
+        const UnitNode * a_ = dynamic_cast<const UnitNode*>(unit);
+
+        CHECK(a_->m_symbol == "a");
+        CHECK(!a_->m_seam);
+
+        delete unit;
+    }
+
+    SECTION("Regular Expression: Union", "[regular_expression][union]")
+    {
+        RegularPointer a(new Unit("a"));
+        RegularPointer b(new Unit("b"));
+        Union un(a, b);
+
+        simone_node_ptr un_ = un.node_myself();
+
+        const UnionNode * union_ = dynamic_cast<const UnionNode*>(un_);
+        const UnitNode * a_ = dynamic_cast<const UnitNode*>(union_->m_left);
+        const UnitNode * b_ = dynamic_cast<const UnitNode*>(union_->m_right);
+
+        CHECK(a_->m_symbol == "a");
+        CHECK(!a_->m_seam);
+
+        CHECK(b_->m_symbol == "b");
+        CHECK(!b_->m_seam);
+
+        delete un_;
+    }
+
+    SECTION("Regular Expression: Concatenation", "[regular_expression][concatenation]")
+    {
+        RegularPointer a(new Unit("a"));
+        RegularPointer b(new Unit("b"));
+        Concatenation con(a, b);
+
+        simone_node_ptr con_ = con.node_myself();
+
+        const ConcatenationNode * concat_ = dynamic_cast<const ConcatenationNode*>(con_);
+        const UnitNode * a_ = dynamic_cast<const UnitNode*>(concat_->m_left);
+        const UnitNode * b_ = dynamic_cast<const UnitNode*>(concat_->m_right);
+
+        CHECK(a_->m_symbol == "a");
+        CHECK(!a_->m_seam);
+
+        CHECK(b_->m_symbol == "b");
+        CHECK(!b_->m_seam);
+
+        delete con_;
+    }
+
+    SECTION("Regular Expression: ReflexiveClosure", "[regular_expression][reflexive][closure]")
+    {
+        RegularPointer a(new Unit("a"));
+        ReflexiveClosure reflex(a);
+
+        simone_node_ptr reflex_ = reflex.node_myself();
+
+        const ReflexiveNode * reflexive = dynamic_cast<const ReflexiveNode*>(reflex_);
+        const UnitNode * a_ = dynamic_cast<const UnitNode*>(reflexive->m_left);
+
+        CHECK(a_->m_symbol == "a");
+        CHECK(!a_->m_seam);
+        CHECK(!reflexive->m_seam);
+
+        delete reflex_;
+    }
+
+    SECTION("Regular Expression: TransitiveClosure", "[regular_expression][transitive][closure]")
+    {
+        RegularPointer a(new Unit("a"));
+        TransitiveClosure trans(a);
+
+        simone_node_ptr trans_ = trans.node_myself();
+
+        const ConcatenationNode * concat = dynamic_cast<const ConcatenationNode*>(trans_);
+        const UnitNode * a_ = dynamic_cast<const UnitNode*>(concat->m_left);
+        const ReflexiveNode * reflex_ = dynamic_cast<const ReflexiveNode*>(concat->m_right);
+        const UnitNode * reflex_unit_ = dynamic_cast<const UnitNode*>(reflex_->m_left);
+
+        CHECK(a_->m_symbol == "a");
+        CHECK(!a_->m_seam);
+
+        CHECK(reflex_unit_->m_symbol == "a");
+        CHECK(!reflex_unit_->m_seam);
+
+        CHECK(!reflex_->m_seam);
+
+        delete trans_;
+    }
+
+    SECTION("Regular Expression: Optional", "[regular_expression][optional]")
+    {
+        RegularPointer a(new Unit("a"));
+        Optional opt(a);
+
+        simone_node_ptr opt_ = opt.node_myself();
+
+        const OptionalNode * optional = dynamic_cast<const OptionalNode*>(opt_);
+        const UnitNode * a_ = dynamic_cast<const UnitNode*>(optional->m_left);
+
+        CHECK(a_->m_symbol == "a");
+        CHECK(!a_->m_seam);
+        CHECK(!optional->m_seam);
+
+        delete opt_;
     }
 }

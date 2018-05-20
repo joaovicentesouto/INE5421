@@ -1,4 +1,4 @@
-#include "./Grammar.hpp"
+#include "Grammar.hpp"
 
 namespace formal_device
 {
