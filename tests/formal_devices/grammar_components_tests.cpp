@@ -1,5 +1,6 @@
 #include "../catch.hpp"
 
+#include <unordered_set>
 #include <formal_languages/devices/GrammarComponents.hpp>
 
 using namespace formal_device::grammar;
@@ -329,6 +330,7 @@ TEST_CASE("Grammar's Hasher Class", "[grammar][hasher]")
         Symbol a("a");
         Symbol b("b");
 
+
         std::unordered_set<Symbol, Hasher> set;
 
         set.insert(a);
@@ -373,7 +375,7 @@ TEST_CASE("Grammar's Hasher Class", "[grammar][hasher]")
 
         SentencialForm sent("B", "abc");
 
-        std::unordered_set<prod_ptr, Hasher> set;
+        std::set<prod_ptr> set;
 
         set.insert(pa);
         set.insert(pb);

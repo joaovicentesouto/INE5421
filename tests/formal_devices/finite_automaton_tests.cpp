@@ -92,13 +92,13 @@ TEST_CASE("Finite Automaton: Union", "[finite_automaton][symbol]")
 
         symbol_set_type alphabet{a, b};
         state_set_type  states{q0, q1, q2, q3, q4};
-        state_set_type  final_states{q1, q3};
+        state_set_type  final_states{q2, q4};
 
         non_det_transition_map_type transitions;
-        transitions[q0][a].insert(q1);
-        transitions[q0][b].insert(q3);
-        transitions[q2][a].insert(q1);
-        transitions[q4][b].insert(q3);
+        transitions[q0][a].insert(q2);
+        transitions[q0][b].insert(q4);
+        transitions[q1][a].insert(q2);
+        transitions[q3][b].insert(q4);
 
         NonDeterministic union_(alphabet, states, transitions, final_states, q0);
 
@@ -133,12 +133,12 @@ TEST_CASE("Finite Automaton: Concatenation", "[finite_automaton][symbol]")
 
         symbol_set_type alphabet_m3{a, b};
         state_set_type  states_m3{q0, q1, q2, q3};
-        state_set_type  final_states_m3{q2};
+        state_set_type  final_states_m3{q3};
 
         non_det_transition_map_type transitions_m3;
         transitions_m3[q0][a].insert(q1);
-        transitions_m3[q1][b].insert(q2);
-        transitions_m3[q3][b].insert(q2);
+        transitions_m3[q2][b].insert(q3);
+        transitions_m3[q1][b].insert(q3);
 
         NonDeterministic concat(alphabet_m3, states_m3, transitions_m3, final_states_m3, q0);
 
@@ -175,8 +175,8 @@ TEST_CASE("Finite Automaton: Concatenation", "[finite_automaton][symbol]")
 
         non_det_transition_map_type transitions_m3;
         transitions_m3[q0][a].insert(q1);
-        transitions_m3[q1][b].insert(q2);
-        transitions_m3[q3][b].insert(q2);
+        transitions_m3[q1][b].insert(q3);
+        transitions_m3[q2][b].insert(q3);
 
         NonDeterministic concat(alphabet_m3, states_m3, transitions_m3, final_states_m3, q0);
 
@@ -236,18 +236,19 @@ TEST_CASE("Finite Automaton: Operations", "[finite_automaton][symbol]")
         Deterministic machine(alphabet, states, transitions, final_states, q0);
 
         state_set_type  states_reverse{q0, q1, q2, q3};
-        state_set_type  final_states_reverse{q2};
+        state_set_type  final_states_reverse{q1};
 
         non_det_transition_map_type transitions_reverse;
         transitions_reverse[q0][a].insert(q1);
         transitions_reverse[q0][a].insert(q2);
         transitions_reverse[q0][a].insert(q3);
-        transitions_reverse[q1][b].insert(q1);
-        transitions_reverse[q1][b].insert(q3);
-        transitions_reverse[q1][b].insert(q2);
-        transitions_reverse[q3][a].insert(q2);
-        transitions_reverse[q3][a].insert(q1);
-        transitions_reverse[q3][a].insert(q3);
+
+        transitions_reverse[q2][a].insert(q1);
+        transitions_reverse[q3][b].insert(q1);
+        transitions_reverse[q2][a].insert(q2);
+        transitions_reverse[q3][b].insert(q2);
+        transitions_reverse[q2][a].insert(q3);
+        transitions_reverse[q3][b].insert(q3);
 
         NonDeterministic reverse(alphabet, states_reverse, transitions_reverse, final_states_reverse, q0);
 
@@ -496,4 +497,200 @@ TEST_CASE("Deterministic: Remove dead states", "[finite_automaton][symbol]")
     Deterministic m_alive(alphabet, states_alive, transitions_alive, final_alive, q0);
 
     CHECK((machine.remove_dead_states() == m_alive));
+}
+
+TEST_CASE("Deterministic: Complete FA", "[finite_automaton][symbol]")
+{
+    symbol_type a("a");
+    symbol_type b("b");
+    state_type q0("q0"), q1("q1"), q2("q2");
+
+    symbol_set_type alphabet{a, b};
+    state_set_type  states{q0, q1, q2};
+    state_set_type  final_states{q2};
+
+    det_transition_map_type transitions;
+    transitions[q0][a] = q1;
+    transitions[q1][b] = q2;
+    transitions[q2][a] = q0;
+
+    Deterministic machine(alphabet, states, transitions, final_states, q0);
+
+    state_type error;
+    state_set_type  states_c{q0, q1, q2, error};
+    det_transition_map_type transitions_c;
+    transitions_c[q0][a] = q1;
+    transitions_c[q0][b] = error;
+    transitions_c[q1][a] = error;
+    transitions_c[q1][b] = q2;
+    transitions_c[q2][a] = q0;
+    transitions_c[q2][b] = error;
+    transitions_c[error][a] = error;
+    transitions_c[error][b] = error;
+
+    Deterministic complet(alphabet, states_c, transitions_c, final_states, q0);
+
+    CHECK((machine.complete() == complet));
+}
+
+TEST_CASE("Deterministic: Classes of Equivalence FA", "[finite_automaton][symbol]")
+{
+    symbol_type a("a");
+    symbol_type b("b");
+    state_type q0("q0"), q1("q1"), q2("q2"), error;
+
+    symbol_set_type alphabet{a, b};
+    state_set_type  states{q0, q1, q2};
+    state_set_type  final_states{q0};
+
+    det_transition_map_type transitions;
+    transitions[q0][a] = q1;
+    transitions[q1][a] = q0;
+    transitions[q1][b] = q2;
+    transitions[q2][a] = q0;
+    transitions[q2][b] = q1;
+
+    Deterministic machine = Deterministic(alphabet, states, transitions, final_states, q0).complete();
+
+    state_set_type one{q0};
+    state_set_type two{q1, q2};
+    state_set_type three{error};
+    state_set_type initial_not_final{q1, q2, error};
+
+    Deterministic::set_type<state_set_type> classes{one, initial_not_final};
+
+    machine.equivalence_classes(classes);
+
+    Deterministic::set_type<state_set_type> eq_classes{one, two, three};
+    CHECK(classes == eq_classes);
+}
+
+TEST_CASE("Deterministic: Minimization FA", "[finite_automaton][symbol]")
+{
+    symbol_type a("a");
+    symbol_type b("b");
+    state_type q0("q0"), q1("q1"), q2("q2");
+
+    symbol_set_type alphabet{a, b};
+    state_set_type  states{q0, q1, q2};
+    state_set_type  final_states{q0};
+
+    det_transition_map_type transitions;
+    transitions[q0][a] = q1;
+    transitions[q1][a] = q0;
+    transitions[q1][b] = q2;
+    transitions[q2][a] = q0;
+    transitions[q2][b] = q1;
+
+    Deterministic machine(alphabet, states, transitions, final_states, q0);
+
+    state_set_type  states_minimum{q0, q1};
+
+    det_transition_map_type transitions_minimum;
+    transitions_minimum[q0][a] = q1;
+    transitions_minimum[q1][b] = q1;
+    transitions_minimum[q1][a] = q0;
+
+    Deterministic minimum(alphabet, states_minimum, transitions_minimum, final_states, q0);
+
+    CHECK(machine.minimization() == minimum);
+}
+
+TEST_CASE("Deterministic: Remove unreacheble and dead states of Empty Language FA", "[finite_automaton][symbol]")
+{
+    symbol_type a("a");
+    symbol_type b("b");
+    state_type q0("q0"), q1("q1"), q2("q2"), error;
+
+    symbol_set_type alphabet{a, b};
+    state_set_type  states{q0, q1, q2};
+    state_set_type  final_states{q2};
+
+    det_transition_map_type transitions;
+    transitions[q1][a] = q2;
+    transitions[q1][b] = q0;
+    transitions[q2][a] = q1;
+    transitions[q2][b] = q2;
+
+    Deterministic machine(alphabet, states, transitions, final_states, q0);
+
+    SECTION("Only q0", "[a]")
+    {
+        state_set_type states_{q0};
+        state_set_type empty_states;
+        det_transition_map_type empty_transitions;
+
+        Deterministic only_q0(alphabet, states_, empty_transitions, empty_states, q0);
+
+        CHECK(machine.remove_unreachable_states() == only_q0);
+    }
+
+    SECTION("Only q0", "[a]")
+    {
+        state_set_type empty_states;
+        det_transition_map_type empty_transitions;
+
+        Deterministic empty(alphabet, empty_states, empty_transitions, empty_states, error);
+
+        CHECK((machine.remove_unreachable_states().remove_dead_states() == empty));
+    }
+}
+
+TEST_CASE("Deterministic: Minimization Empty Language FA", "[finite_automaton][symbol]")
+{
+    symbol_type a("a");
+    symbol_type b("b");
+    state_type q0("q0"), q1("q1"), q2("q2"), error;
+
+    symbol_set_type alphabet{a, b};
+    state_set_type  states{q0, q1, q2};
+    state_set_type  final_states{q2};
+
+    det_transition_map_type transitions;
+    transitions[q1][a] = q2;
+    transitions[q1][b] = q0;
+    transitions[q2][a] = q1;
+    transitions[q2][b] = q2;
+
+    Deterministic machine(alphabet, states, transitions, final_states, q0);
+
+    state_set_type states_empty;
+    det_transition_map_type empty_transitions;
+
+    Deterministic minimum(alphabet, states_empty, empty_transitions, states_empty, error);
+
+    CHECK((machine.minimization() == minimum));
+    CHECK((machine.emptiness()));
+}
+
+TEST_CASE("Deterministic: Finitiness FA", "[finite_automaton][symbol]")
+{
+    symbol_type a("a");
+    symbol_type b("b");
+    state_type q0("q0"), q1("q1");
+
+    symbol_set_type alphabet{a, b};
+    state_set_type  states{q0, q1};
+    state_set_type  final_states{q1};
+
+    SECTION("Finite")
+    {
+        det_transition_map_type transitions;
+        transitions[q0][a] = q1;
+
+        Deterministic machine(alphabet, states, transitions, final_states, q0);
+
+        CHECK(machine.finiteness());
+    }
+
+    SECTION("Finite")
+    {
+        det_transition_map_type transitions;
+        transitions[q0][a] = q1;
+        transitions[q1][b] = q1;
+
+        Deterministic machine(alphabet, states, transitions, final_states, q0);
+
+        CHECK(!machine.emptiness());
+    }
 }

@@ -1,8 +1,8 @@
 #ifndef DEVICES_GRAMMAR_HPP
 #define DEVICES_GRAMMAR_HPP
 
-#include <unordered_set>
-#include <unordered_map>
+#include <set>
+#include <map>
 #include "./GrammarComponents.hpp"
 
 
@@ -15,9 +15,9 @@ class Regular
 {
   public:
     template <class T>
-    using set_type                     = std::unordered_set<T, Hasher>;
+    using set_type                     = std::set<T>;
     template <class Key, class Value>
-    using map_type                     = std::unordered_map<Key, Value, Hasher>;
+    using map_type                     = std::map<Key, Value>;
 
     using symbol_type                  = Symbol;
     using terminal_production_type     = TerminalProduction;

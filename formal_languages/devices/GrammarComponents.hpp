@@ -4,7 +4,7 @@
 #include <utility>
 #include <string>
 #include <regex>
-#include <unordered_set>
+#include <set>
 #include <unordered_map>
 
 namespace formal_device
@@ -16,6 +16,8 @@ class Symbol
 {
   public:
     friend class SentencialForm;
+    friend class TerminalProduction;
+    friend class NonTerminalProduction;
     friend class Hasher;
 
     using string_type = std::string;
@@ -34,8 +36,10 @@ class Symbol
     bool operator==(const Symbol &symbol) const;
     bool operator==(const string_type &symbol) const;
 
+    bool operator<(const Symbol &symbol) const;
+
   private:
-    string_type m_symbol{"&"};
+    string_type m_value{"&"};
 };
 
 class SentencialForm
@@ -108,6 +112,7 @@ public:
     ProductionPointer &operator=(ProductionPointer &&) = default;
 
     bool operator==(const ProductionPointer &prod) const;
+    bool operator<(const ProductionPointer &prod) const;
 };
 
 class Production
@@ -120,6 +125,7 @@ class Production
     virtual bool is_terminal() const = 0;
     virtual SentencialForm operator<<(const SentencialForm &form) const = 0;
     virtual bool operator==(const Production &form) const = 0;
+    virtual bool operator<(const Production &prod) const = 0;
 };
 
 class TerminalProduction : public Production
@@ -142,6 +148,7 @@ class TerminalProduction : public Production
     bool is_terminal() const;
     SentencialForm operator<<(const SentencialForm &form) const;
     bool operator==(const Production &prod) const;
+    bool operator<(const Production &prod) const;
 
   private:
     symbol_type m_terminal;
@@ -171,6 +178,7 @@ class NonTerminalProduction : public Production
     bool is_terminal() const;
     SentencialForm operator<<(const SentencialForm &form) const;
     bool operator==(const Production &prod) const;
+    bool operator<(const Production &prod) const;
 
   private:
     symbol_type m_terminal, m_non_terminal;

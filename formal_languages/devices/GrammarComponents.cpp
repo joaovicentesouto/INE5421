@@ -5,29 +5,34 @@ namespace formal_device
 namespace grammar
 {
 
-Symbol::Symbol(const string_type &symbol) :
-    m_symbol{symbol}
+Symbol::Symbol(const string_type &value) :
+    m_value{value}
 {
 }
 
-Symbol::Symbol(string_type &&symbol) :
-    m_symbol{std::move(symbol)}
+Symbol::Symbol(string_type &&value) :
+    m_value{std::move(value)}
 {
 }
 
 bool Symbol::is_terminal() const
 {
-    return std::regex_match(m_symbol, std::regex("[a-z]")) || m_symbol == "&";
+    return std::regex_match(m_value, std::regex("[a-z]")) || m_value == "&";
 }
 
 bool Symbol::operator==(const Symbol& symbol) const
 {
-    return m_symbol == symbol.m_symbol;
+    return m_value == symbol.m_value;
 }
 
-bool Symbol::operator==(const string_type &symbol) const
+bool Symbol::operator==(const string_type &value) const
 {
-    return m_symbol == symbol;
+    return m_value == value;
+}
+
+bool Symbol::operator<(const Symbol &symbol) const
+{
+    return m_value < symbol.m_value;
 }
 
 /* ----------------------------------------------------------------------- */
@@ -50,9 +55,9 @@ SentencialForm::string_type SentencialForm::setence()
 SentencialForm SentencialForm::operator+(const symbol_type& symbol) const
 {
     if (symbol.is_terminal())
-        return std::move(SentencialForm{"&", m_sentence + symbol.m_symbol});
+        return SentencialForm{"&", m_sentence + symbol.m_value};
     else
-        return std::move(SentencialForm{symbol, m_sentence});
+        return SentencialForm{symbol, m_sentence};
 }
 
 bool SentencialForm::operator==(const SentencialForm &form) const
@@ -84,7 +89,7 @@ Sentence::string_type Sentence::setence()
 
 SentencialForm Sentence::operator+(const symbol_type& symbol) const
 {
-    return std::move(SentencialForm::operator+(symbol));
+    return SentencialForm::operator+(symbol);
 }
 
 bool Sentence::operator==(const SentencialForm &form) const
@@ -109,6 +114,11 @@ bool ProductionPointer::operator==(const ProductionPointer &prod) const
     return (*get()) == *prod;
 }
 
+bool ProductionPointer::operator<(const ProductionPointer &prod) const
+{
+    return (*get()) < *prod;
+}
+
 /* ----------------------------------------------------------------------- */
 
 TerminalProduction::TerminalProduction(const symbol_type &terminal) :
@@ -128,18 +138,26 @@ bool TerminalProduction::is_terminal() const
 
 SentencialForm TerminalProduction::operator<<(const SentencialForm& form) const
 {
-    return std::move(form + m_terminal);
+    return form + m_terminal;
 }
 
 bool TerminalProduction::operator==(const Production& prod) const
 {
     if (!prod.is_terminal())
         return false;
-    else
-    {
-        const TerminalProduction* term = dynamic_cast<const TerminalProduction*>(&prod);
-        return m_terminal == term->m_terminal;
-    }
+
+    const TerminalProduction* term = dynamic_cast<const TerminalProduction*>(&prod);
+    return m_terminal == term->m_terminal;
+}
+
+bool TerminalProduction::operator<(const Production &prod) const
+{
+    if (!prod.is_terminal())
+        return true;
+
+    const TerminalProduction* term = dynamic_cast<const TerminalProduction*>(&prod);
+
+    return m_terminal.m_value < term->m_terminal.m_value;
 }
 
 /* ----------------------------------------------------------------------- */
@@ -151,25 +169,36 @@ bool NonTerminalProduction::is_terminal() const
 
 SentencialForm NonTerminalProduction::operator<<(const SentencialForm& form) const
 {
-    return std::move(form + m_terminal + m_non_terminal);
+    return form + m_terminal + m_non_terminal;
 }
 
 bool NonTerminalProduction::operator==(const Production& prod) const
 {
     if (prod.is_terminal())
         return false;
-    else
-    {
-        const NonTerminalProduction* term = dynamic_cast<const NonTerminalProduction*>(&prod);
-        return m_terminal == term->m_terminal && m_non_terminal == term->m_non_terminal;
-    }
+
+    const NonTerminalProduction* term = dynamic_cast<const NonTerminalProduction*>(&prod);
+    return m_terminal == term->m_terminal && m_non_terminal == term->m_non_terminal;
+}
+
+bool NonTerminalProduction::operator<(const Production &prod) const
+{
+    if (prod.is_terminal())
+        return false;
+
+    const NonTerminalProduction* term = dynamic_cast<const NonTerminalProduction*>(&prod);
+
+    symbol_type::string_type value = m_terminal.m_value + m_non_terminal.m_value;
+    symbol_type::string_type other_value = term->m_terminal.m_value + term->m_non_terminal.m_value;
+
+    return value < other_value;
 }
 
 /* ----------------------------------------------------------------------- */
 
 std::size_t Hasher::operator()(const symbol_type &symbol) const
 {
-    return std::hash<std::string>()(symbol.m_symbol);
+    return std::hash<std::string>()(symbol.m_value);
 }
 
 std::size_t Hasher::operator()(const production_type_ptr &prod) const
@@ -177,12 +206,12 @@ std::size_t Hasher::operator()(const production_type_ptr &prod) const
     if (prod->is_terminal())
     {
         const TerminalProduction* term = dynamic_cast<const TerminalProduction*>(prod.get());
-        return std::hash<std::string>()(term->m_terminal.m_symbol);
+        return std::hash<std::string>()(term->m_terminal.m_value);
     }
     else
     {
         const NonTerminalProduction* term = dynamic_cast<const NonTerminalProduction*>(prod.get());
-        return std::hash<std::string>()(term->m_terminal.m_symbol + term->m_non_terminal.m_symbol);
+        return std::hash<std::string>()(term->m_terminal.m_value + term->m_non_terminal.m_value);
     }
 }
 
