@@ -7,8 +7,9 @@
 #include <vector>
 #include <functional>
 #include <exception>
-#include <unordered_set>
+#include <set>
 #include <unordered_map>
+#include <map>
 #include "./FiniteAutomatonComponents.hpp"
 
 namespace formal_device
@@ -31,9 +32,9 @@ class Deterministic
     friend class NonDeterministic;
 
     template <class T>
-    using set_type            = std::unordered_set<T, Hasher>;
+    using set_type            = std::set<T>;
     template <class Key, class Value>
-    using map_type            = std::unordered_map<Key, Value, Hasher>;
+    using map_type            = std::map<Key, Value>;
 
     using string_type         = std::string;
     using state_type          = State;
@@ -71,7 +72,7 @@ class Deterministic
     NonDeterministic operator^(const Operation & op) const; // operation
 
     Deterministic complete() const;
-    NonDeterministic remove_epsilon_transition() const;
+    Deterministic remove_epsilon_transition() const;
     Deterministic minimization() const;
 
     Deterministic remove_dead_states() const;

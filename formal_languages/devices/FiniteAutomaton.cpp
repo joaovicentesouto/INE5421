@@ -344,7 +344,7 @@ Deterministic Deterministic::complete() const
                          std::move(new_initial_state));
 }
 
-NonDeterministic Deterministic::remove_epsilon_transition() const
+Deterministic Deterministic::remove_epsilon_transition() const
 {
     return NonDeterministic(*this).determination();
 }

@@ -3,7 +3,7 @@
 
 #include <string>
 #include <utility>
-#include <unordered_set>
+#include <set>
 #include <unordered_map>
 
 namespace formal_device
@@ -31,6 +31,8 @@ public:
 
     bool operator==(const Symbol &symbol) const;
     bool operator==(const string_type &symbol) const;
+
+    bool operator<(const Symbol &symbol) const;
 
 private:
     string_type m_symbol{"&"};
@@ -60,6 +62,8 @@ public:
     State operator+(const State &sufix) const;
     State operator+(const string_type &sufix) const;
 
+    bool operator<(const State &state) const;
+
 private:
     string_type m_state{"Error"}; // error
 };
@@ -68,7 +72,7 @@ class Hasher
 {
 public:
     template <class T>
-    using set_type            = std::unordered_set<T, Hasher>;
+    using set_type            = std::set<T>;
     template <class Key, class Value>
     using map_type            = std::unordered_map<Key, Value, Hasher>;
 

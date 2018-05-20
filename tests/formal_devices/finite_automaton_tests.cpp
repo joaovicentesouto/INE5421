@@ -92,13 +92,13 @@ TEST_CASE("Finite Automaton: Union", "[finite_automaton][symbol]")
 
         symbol_set_type alphabet{a, b};
         state_set_type  states{q0, q1, q2, q3, q4};
-        state_set_type  final_states{q1, q3};
+        state_set_type  final_states{q2, q4};
 
         non_det_transition_map_type transitions;
-        transitions[q0][a].insert(q1);
-        transitions[q0][b].insert(q3);
-        transitions[q2][a].insert(q1);
-        transitions[q4][b].insert(q3);
+        transitions[q0][a].insert(q2);
+        transitions[q0][b].insert(q4);
+        transitions[q1][a].insert(q2);
+        transitions[q3][b].insert(q4);
 
         NonDeterministic union_(alphabet, states, transitions, final_states, q0);
 
@@ -133,12 +133,12 @@ TEST_CASE("Finite Automaton: Concatenation", "[finite_automaton][symbol]")
 
         symbol_set_type alphabet_m3{a, b};
         state_set_type  states_m3{q0, q1, q2, q3};
-        state_set_type  final_states_m3{q2};
+        state_set_type  final_states_m3{q3};
 
         non_det_transition_map_type transitions_m3;
         transitions_m3[q0][a].insert(q1);
-        transitions_m3[q1][b].insert(q2);
-        transitions_m3[q3][b].insert(q2);
+        transitions_m3[q2][b].insert(q3);
+        transitions_m3[q1][b].insert(q3);
 
         NonDeterministic concat(alphabet_m3, states_m3, transitions_m3, final_states_m3, q0);
 
@@ -175,8 +175,8 @@ TEST_CASE("Finite Automaton: Concatenation", "[finite_automaton][symbol]")
 
         non_det_transition_map_type transitions_m3;
         transitions_m3[q0][a].insert(q1);
-        transitions_m3[q1][b].insert(q2);
-        transitions_m3[q3][b].insert(q2);
+        transitions_m3[q1][b].insert(q3);
+        transitions_m3[q2][b].insert(q3);
 
         NonDeterministic concat(alphabet_m3, states_m3, transitions_m3, final_states_m3, q0);
 
@@ -236,18 +236,19 @@ TEST_CASE("Finite Automaton: Operations", "[finite_automaton][symbol]")
         Deterministic machine(alphabet, states, transitions, final_states, q0);
 
         state_set_type  states_reverse{q0, q1, q2, q3};
-        state_set_type  final_states_reverse{q2};
+        state_set_type  final_states_reverse{q1};
 
         non_det_transition_map_type transitions_reverse;
         transitions_reverse[q0][a].insert(q1);
         transitions_reverse[q0][a].insert(q2);
         transitions_reverse[q0][a].insert(q3);
-        transitions_reverse[q1][b].insert(q1);
-        transitions_reverse[q1][b].insert(q3);
-        transitions_reverse[q1][b].insert(q2);
-        transitions_reverse[q3][a].insert(q2);
-        transitions_reverse[q3][a].insert(q1);
-        transitions_reverse[q3][a].insert(q3);
+
+        transitions_reverse[q2][a].insert(q1);
+        transitions_reverse[q3][b].insert(q1);
+        transitions_reverse[q2][a].insert(q2);
+        transitions_reverse[q3][b].insert(q2);
+        transitions_reverse[q2][a].insert(q3);
+        transitions_reverse[q3][b].insert(q3);
 
         NonDeterministic reverse(alphabet, states_reverse, transitions_reverse, final_states_reverse, q0);
 
