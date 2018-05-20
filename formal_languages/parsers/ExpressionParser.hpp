@@ -26,10 +26,22 @@ using concatenation_type   = expression::Concatenation;
 using reflexive_type       = expression::ReflexiveClosure;
 using transitive_type      = expression::TransitiveClosure;
 using optional_type        = expression::Optional;
+using operations_type      = expression::Operation;
+
+struct IteratorWrapper
+{
+    IteratorWrapper(const string_iterator_type &it);
+
+    string_iterator_type next();
+    string_iterator_type iterator() const;
+
+    string_iterator_type m_iterator;
+};
 
 regular_ptr make_regular_expression(const string_type & file_path);
 
-regular_ptr parse(string_iterator_type &begin, const string_iterator_type &end);
+regular_ptr union_parser(IteratorWrapper &begin, const IteratorWrapper &end);
+regular_ptr parse(IteratorWrapper &begin, const IteratorWrapper &end);
 
 }   // namespace parser
 }   // namespace formal_device
