@@ -57,8 +57,8 @@ class SentencialForm
 
     template <class Arg1, class Arg2>
     SentencialForm(Arg1 &&non_terminal, Arg2 &&sentence) :
-        m_non_terminal{std::forward<Arg1>(non_terminal)},
-        m_sentence{std::forward<Arg2>(sentence)}
+        m_sentence{std::forward<Arg2>(sentence)},
+        m_non_terminal{std::forward<Arg1>(non_terminal)}
     {
     }
 

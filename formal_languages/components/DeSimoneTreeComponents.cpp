@@ -7,7 +7,7 @@ namespace expression
 
 void UnitNode::up(const state_name_type& state, composition_type & composition, node_set_type & marked)
 {
-
+    scape(state, composition, marked);
 }
 
 void UnitNode::down(const state_name_type& state, composition_type & composition, node_set_type & marked)
@@ -152,7 +152,7 @@ void OptionalNode::down(const state_name_type& state, composition_type & composi
 	marked.insert(this);
 	m_left->down(state, composition, marked);
 	if (m_seam)
-		m_seam->down(state, composition, marked);
+        m_seam->up(state, composition, marked);
 	else
 		composition[state]["&"].insert(nullptr);
 }

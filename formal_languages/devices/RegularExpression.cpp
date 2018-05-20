@@ -401,8 +401,14 @@ simone_node_ptr TransitiveClosure::node_myself()
 {
     auto transitive_ptr = new ConcatenationNode();
     auto reflexive_ptr = new ReflexiveNode();
-    transitive_ptr->m_left = reflexive_ptr;
-    reflexive_ptr->m_left = m_expression->node_myself();
+
+    auto transitive_left_ptr = m_expression->node_myself();
+    auto reflexive_left_ptr = m_expression->node_myself();
+
+    transitive_ptr->m_left = transitive_left_ptr;
+    transitive_ptr->m_right = reflexive_ptr;
+
+    reflexive_ptr->m_left = reflexive_left_ptr;
     
     return transitive_ptr;
 }
