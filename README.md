@@ -48,7 +48,8 @@ Prepare an application to handle Finite Automaton (FA), Regular Grammar (RG) and
  $ cd build
  $ cmake ..
  $ make
- $ ./tests/formal_languages_tests
+ $ cd tests/
+ $ ./formal_languages_tests
 ```
 
 # Credits

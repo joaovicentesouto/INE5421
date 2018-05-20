@@ -86,7 +86,7 @@ TEST_CASE("FA's Hasher Class", "[grammar][hasher]")
         Symbol a("a");
         Symbol b("b");
 
-        std::unordered_set<Symbol, Hasher> set;
+        std::set<Symbol> set;
 
         set.insert(a);
         set.insert(b);
@@ -103,7 +103,7 @@ TEST_CASE("FA's Hasher Class", "[grammar][hasher]")
         State a("A");
         State b("B");
 
-        std::unordered_set<State, Hasher> set;
+        std::set<State> set;
 
         set.insert(a);
         set.insert(b);
