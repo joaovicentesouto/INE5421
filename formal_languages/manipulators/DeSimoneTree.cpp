@@ -120,13 +120,16 @@ DeSimoneTree::dfa_type DeSimoneTree::execute()
         {
             // Existe equivalente então devo substituir esse cara
             states.erase(current);
-            predecessors.erase(current);
             they_made_me.erase(current);
+            compositions.erase(current);
 
-            for (auto state : states)
-                for (auto transition : transitions[state])
-                    if (transition.second == current)
-                        transition.second = equivalent;
+            for (auto transition : transitions[predecessors[current]])
+                if (transition.second == current) {
+                    transition.second = equivalent;
+                    transitions[predecessors[current]][transition.first] = equivalent;
+                }
+
+            predecessors.erase(current);
         }
     }
 
@@ -151,7 +154,12 @@ DeSimoneTree::dfa_type DeSimoneTree::execute()
 
     for (auto state: states)
         for (auto transition : transitions[state])
+        {
+            auto s = mapping[state];
+            auto alfa = transition.first;
+            auto t = mapping[transition.second];
             new_transitions[mapping[state]][transition.first] = mapping[transition.second];
+        }
 
     for (auto final_state : final_states)
         new_final_states.insert(mapping[final_state]);
