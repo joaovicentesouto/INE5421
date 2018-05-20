@@ -8,7 +8,7 @@
 #include <algorithm>
 #include <regex>
 
-#include <formal_languages/devices/RegularExpressionComponents.hpp>
+#include <formal_languages/devices/RegularExpression.hpp>
 
 namespace formal_device
 {

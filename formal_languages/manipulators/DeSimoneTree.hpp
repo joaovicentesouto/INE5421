@@ -1,7 +1,8 @@
 #ifndef DESIMONETREE_H
 #define DESIMONETREE_H
 
-#include <formal_languages/devices/RegularExpressionComponents.hpp>
+#include <formal_languages/components/DeSimoneTreeComponents.hpp>
+#include <formal_languages/devices/RegularExpression.hpp>
 #include <formal_languages/devices/FiniteAutomaton.hpp>
 
 namespace formal_device

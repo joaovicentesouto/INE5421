@@ -1,4 +1,4 @@
-#include "./RegularExpressionComponents.hpp"
+#include "RegularExpression.hpp"
 
 namespace formal_device
 {

@@ -3,7 +3,7 @@
 
 #include <set>
 #include <map>
-#include "./GrammarComponents.hpp"
+#include <formal_languages/components/GrammarComponents.hpp>
 
 
 namespace formal_device

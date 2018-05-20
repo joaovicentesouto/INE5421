@@ -1,7 +1,7 @@
 #include "../catch.hpp"
 
 #include <unordered_set>
-#include <formal_languages/devices/GrammarComponents.hpp>
+#include <formal_languages/components/GrammarComponents.hpp>
 
 using namespace formal_device::grammar;
 
