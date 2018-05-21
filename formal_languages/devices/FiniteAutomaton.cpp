@@ -179,7 +179,7 @@ NonDeterministic Deterministic::operator+(const Deterministic &machine) const
 
 NonDeterministic Deterministic::operator&(const Deterministic &machine) const
 {
-    return !(!(*this) | !machine);
+    return !( (!(*this) | !machine).determination() );
 }
 
 NonDeterministic Deterministic::operator-(const Deterministic &machine) const
@@ -572,12 +572,6 @@ Deterministic Deterministic::remove_unreachable_states() const
                          std::move(new_initial_state));
 }
 
-Deterministic Deterministic::remove_equivalent_states() const
-{
-
-    return Deterministic();
-}
-
 bool Deterministic::membership(const string_type &sentece) const
 {
     return false;
@@ -609,22 +603,28 @@ bool Deterministic::finiteness() const
 
 bool Deterministic::containment(const Deterministic &machine) const
 {
-    return false;
+    return (machine - *this).emptiness();
 }
 
 bool Deterministic::equivalence(const Deterministic &machine) const
 {
-    return false;
+    return containment(machine) && machine.containment(*this);
 }
 
 bool Deterministic::is_complete() const
 {
-    return false;
+    int symbol_amount = m_alphabet.size();
+
+    for (auto state : m_states)
+        if (transition_map_type(m_transitions)[state].size() != symbol_amount)
+            return false;
+
+    return true;
 }
 
 bool Deterministic::contains_epsilon_transition() const
 {
-    return false;
+    return m_alphabet.find(symbol_type("&")) != m_alphabet.end();
 }
 
 bool Deterministic::operator==(const Deterministic & machine) const
@@ -1185,6 +1185,29 @@ NonDeterministic NonDeterministic::reverse() const
                             std::move(new_transitions),
                             std::move(new_final_states),
                             std::move(new_initial_state));
+}
+
+bool NonDeterministic::membership(const string_type& sentece) const
+{
+    return determination().membership(sentece);
+}
+
+bool NonDeterministic::emptiness() const
+{
+    return determination().emptiness();
+}
+bool NonDeterministic::finiteness() const
+{
+    return determination().finiteness();
+}
+bool NonDeterministic::containment(const NonDeterministic & machine) const
+{
+    return determination().containment(machine.determination());
+}
+bool NonDeterministic::equivalence(const NonDeterministic & machine) const
+{
+    return determination().containment(machine.determination())
+            && determination().containment(machine.determination());
 }
 
 }  // namespace finite_automaton

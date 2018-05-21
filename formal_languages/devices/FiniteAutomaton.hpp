@@ -78,7 +78,6 @@ class Deterministic
 
     Deterministic remove_dead_states() const;
     Deterministic remove_unreachable_states() const;
-    Deterministic remove_equivalent_states() const;
 
     // decision problems
     bool membership(const string_type& sentece) const;
@@ -162,6 +161,7 @@ public:
     template <class Key, class Value>
     using map_type            = Deterministic::map_type<Key, Value>;
 
+    using string_type         = Deterministic::string_type;
     using state_type          = Deterministic::state_type;
     using symbol_type         = Deterministic::symbol_type;
     using state_set_type      = Deterministic::state_set_type;
@@ -190,6 +190,12 @@ public:
 
     Deterministic remove_epsilon() const;
     Deterministic determination() const;
+
+    bool membership(const string_type& sentece) const;
+    bool emptiness() const;
+    bool finiteness() const;
+    bool containment(const NonDeterministic & machine) const;
+    bool equivalence(const NonDeterministic & machine) const;
 
     NonDeterministic operator!() const; // not
     NonDeterministic operator|(const NonDeterministic & machine) const; // or

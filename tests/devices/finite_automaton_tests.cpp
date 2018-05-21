@@ -694,3 +694,155 @@ TEST_CASE("Deterministic: Finitiness FA", "[finite_automaton][symbol]")
         CHECK(!machine.emptiness());
     }
 }
+
+TEST_CASE("Deterministic: containment FA", "[finite_automaton][symbol]")
+{
+    symbol_type a("a");
+    symbol_type b("b");
+//    symbol_type c("c");
+    state_type q0("q0"), q1("q1"), q2("q2");
+
+    symbol_set_type alphabet_m1{a, b};
+    state_set_type  states{q0, q1, q2};
+    state_set_type  final_states{q2};
+
+    det_transition_map_type transitions_m1;
+    transitions_m1[q0][a] = q1;
+    transitions_m1[q1][b] = q2;
+    transitions_m1[q2][a] = q2;
+    transitions_m1[q2][b] = q2;
+
+    Deterministic m1(alphabet_m1, states, transitions_m1, final_states, q0);
+
+    symbol_set_type alphabet_m2{a, b};
+
+    det_transition_map_type transitions_m2;
+    transitions_m2[q0][a] = q1;
+    transitions_m2[q1][b] = q2;
+
+    Deterministic m2(alphabet_m2, states, transitions_m2, final_states, q0);
+
+    SECTION("Contains")
+    {
+        CHECK(m1.containment(m1));
+    }
+
+    SECTION("Contains2")
+    {
+        CHECK(m2.containment(m2));
+    }
+
+    SECTION("Contains2")
+    {
+        CHECK(!m2.containment(m1));
+    }
+
+    SECTION("Equivalence")
+    {
+        CHECK(m2.equivalence(m2));
+        CHECK(m1.equivalence(m1));
+        CHECK(!m2.equivalence(m1));
+        CHECK(!m1.equivalence(m2));
+    }
+}
+
+TEST_CASE("Deterministic: containment FA with dead state", "[finite_automaton][symbol]")
+{
+    symbol_type a("a");
+    symbol_type b("b");
+//    symbol_type c("c");
+    state_type q0("q0"), q1("q1"), q2("q2"), q3("q3");
+
+    symbol_set_type alphabet_m1{a, b};
+    state_set_type  states{q0, q1, q2};
+    state_set_type  final_states{q2};
+
+    det_transition_map_type transitions_m1;
+    transitions_m1[q0][a] = q1;
+    transitions_m1[q1][b] = q2;
+    transitions_m1[q2][a] = q2;
+    transitions_m1[q2][b] = q2;
+
+    Deterministic m1(alphabet_m1, states, transitions_m1, final_states, q0);
+
+    symbol_set_type alphabet_m2{a, b};
+    state_set_type  states_m2{q0, q1, q2, q3};
+
+    det_transition_map_type transitions_m2;
+    transitions_m2[q0][a] = q1;
+    transitions_m2[q1][b] = q2;
+    transitions_m2[q3][a] = q3;
+
+    Deterministic m2(alphabet_m2, states_m2, transitions_m2, final_states, q0);
+
+    SECTION("Contains")
+    {
+        CHECK(m1.containment(m1));
+    }
+
+    SECTION("Contains2")
+    {
+        CHECK(m2.containment(m2));
+    }
+
+    SECTION("Contains2")
+    {
+        CHECK(!m2.containment(m1));
+    }
+
+    SECTION("Equivalence")
+    {
+        CHECK(m2.equivalence(m2));
+        CHECK(m1.equivalence(m1));
+        CHECK(!m2.equivalence(m1));
+        CHECK(!m1.equivalence(m2));
+    }
+}
+
+TEST_CASE("Deterministic: completeness", "[finite_automaton][symbol]")
+{
+    SECTION("Contains")
+    {
+        symbol_type a("a");
+        symbol_type b("b");
+        state_type q0("q0"), q1("q1"), q2("q2");
+
+        symbol_set_type alphabet{a, b};
+        state_set_type  states{q0, q1, q2};
+        state_set_type  final_states{q2};
+
+        det_transition_map_type transitions;
+        transitions[q0][a] = q1;
+        transitions[q1][b] = q2;
+        transitions[q2][a] = q2;
+        transitions[q2][b] = q2;
+
+        Deterministic machine(alphabet, states, transitions, final_states, q0);
+
+        CHECK(!machine.is_complete());
+
+        machine = machine.complete();
+        CHECK(machine.is_complete());
+    }
+
+    SECTION("Contains")
+    {
+        symbol_type a("a");
+        symbol_type b("b");
+        state_type q0("q0"), q1("q1");
+
+        symbol_set_type alphabet{a, b};
+        state_set_type  states{q0, q1};
+        state_set_type  final_states{q1};
+
+        det_transition_map_type transitions;
+        transitions[q0][a] = q1;
+        transitions[q0][b] = q0;
+        transitions[q1][a] = q0;
+        transitions[q1][b] = q1;
+
+        Deterministic machine(alphabet, states, transitions, final_states, q0);
+
+        CHECK(machine.is_complete());
+    }
+}
