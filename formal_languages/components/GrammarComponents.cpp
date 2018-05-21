@@ -47,17 +47,19 @@ SentencialForm::symbol_type SentencialForm::non_terminal()
     return m_non_terminal;
 }
 
-SentencialForm::string_type SentencialForm::setence()
+SentencialForm::string_type SentencialForm::sentence()
 {
     return m_sentence;
 }
 
 SentencialForm SentencialForm::operator+(const symbol_type& symbol) const
 {
+    auto sent = m_sentence == "&" ? "" : m_sentence;
+
     if (symbol.is_terminal())
-        return SentencialForm{"&", m_sentence + symbol.m_value};
+        return SentencialForm{"&", sent + symbol.m_value};
     else
-        return SentencialForm{symbol, m_sentence};
+        return SentencialForm{symbol, sent};
 }
 
 bool SentencialForm::operator==(const SentencialForm &form) const
@@ -82,9 +84,9 @@ bool Sentence::is_sentence() const
     return SentencialForm::is_sentence();
 }
 
-Sentence::string_type Sentence::setence()
+Sentence::string_type Sentence::sentence()
 {
-    return SentencialForm::setence();
+    return SentencialForm::sentence();
 }
 
 SentencialForm Sentence::operator+(const symbol_type& symbol) const
@@ -117,6 +119,11 @@ bool ProductionPointer::operator==(const ProductionPointer &prod) const
 bool ProductionPointer::operator<(const ProductionPointer &prod) const
 {
     return (*get()) < *prod;
+}
+
+SentencialForm ProductionPointer::operator<<(const SentencialForm &form) const
+{
+    return (*get()) << form;
 }
 
 /* ----------------------------------------------------------------------- */

@@ -574,7 +574,17 @@ Deterministic Deterministic::remove_unreachable_states() const
 
 bool Deterministic::membership(const string_type &sentece) const
 {
-    return false;
+    auto machine = complete();
+
+    auto current = machine.m_initial_state;
+
+
+    for (auto symbol : sentece) {
+        string_type caracter(&symbol, (&symbol)+1);
+        current = machine.m_transitions[current][caracter];
+    }
+
+    return machine.m_final_states.find(current) != machine.m_final_states.end();
 }
 
 bool Deterministic::emptiness() const
@@ -1187,9 +1197,9 @@ NonDeterministic NonDeterministic::reverse() const
                             std::move(new_initial_state));
 }
 
-bool NonDeterministic::membership(const string_type& sentece) const
+bool NonDeterministic::membership(const string_type& sentence) const
 {
-    return determination().membership(sentece);
+    return determination().membership(sentence);
 }
 
 bool NonDeterministic::emptiness() const

@@ -846,3 +846,27 @@ TEST_CASE("Deterministic: completeness", "[finite_automaton][symbol]")
         CHECK(machine.is_complete());
     }
 }
+
+TEST_CASE("Deterministic: membership", "[finite_automaton][symbol]")
+{
+    symbol_type a("a");
+    symbol_type b("b");
+    state_type q0("q0"), q1("q1");
+
+    symbol_set_type alphabet{a, b};
+    state_set_type  states{q0, q1};
+    state_set_type  final_states{q1};
+
+    det_transition_map_type transitions;
+    transitions[q0][a] = q1;
+    transitions[q0][b] = q0;
+    transitions[q1][a] = q0;
+    transitions[q1][b] = q1;
+
+    Deterministic machine(alphabet, states, transitions, final_states, q0);
+
+    CHECK(!machine.membership("bbb"));
+    CHECK(machine.membership("bab"));
+    CHECK(!machine.membership("aaaaaaaaaaaaaa"));
+    CHECK(machine.membership("babbabbabaababbab"));
+}

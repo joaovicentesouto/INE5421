@@ -64,7 +64,7 @@ class SentencialForm
 
     bool is_sentence() const;
     symbol_type non_terminal();
-    string_type setence();
+    string_type sentence();
 
     SentencialForm operator+(const symbol_type &symbol) const;
     bool operator==(const SentencialForm &from) const;
@@ -91,7 +91,7 @@ class Sentence : public SentencialForm
     Sentence(string_type &&sentence);
 
     bool is_sentence() const;
-    string_type setence();
+    string_type sentence();
 
     SentencialForm operator+(const symbol_type &symbol) const;
     bool operator==(const SentencialForm &form) const;
@@ -110,6 +110,7 @@ public:
     ProductionPointer &operator=(const ProductionPointer &) = default;
     ProductionPointer(ProductionPointer &&) = default;
     ProductionPointer &operator=(ProductionPointer &&) = default;
+    SentencialForm operator<<(const SentencialForm &form) const;
 
     bool operator==(const ProductionPointer &prod) const;
     bool operator<(const ProductionPointer &prod) const;

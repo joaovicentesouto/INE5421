@@ -191,7 +191,7 @@ public:
     Deterministic remove_epsilon() const;
     Deterministic determination() const;
 
-    bool membership(const string_type& sentece) const;
+    bool membership(const string_type& sentence) const;
     bool emptiness() const;
     bool finiteness() const;
     bool containment(const NonDeterministic & machine) const;

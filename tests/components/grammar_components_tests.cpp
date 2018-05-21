@@ -58,7 +58,7 @@ TEST_CASE("Sentencial Form", "[grammar][sentencial_form]")
         SentencialForm a("A", "abc");
 
         CHECK(a.non_terminal() == "A");
-        CHECK(a.setence() == "abc");
+        CHECK(a.sentence() == "abc");
         CHECK(!a.is_sentence());
     }
 
@@ -67,7 +67,7 @@ TEST_CASE("Sentencial Form", "[grammar][sentencial_form]")
         SentencialForm b(a);
 
         CHECK(b.non_terminal() == "A");
-        CHECK(b.setence() == "abc");
+        CHECK(b.sentence() == "abc");
         CHECK(!b.is_sentence());
     }
 
@@ -76,7 +76,7 @@ TEST_CASE("Sentencial Form", "[grammar][sentencial_form]")
         SentencialForm b(std::move(a));
 
         CHECK(b.non_terminal() == "A");
-        CHECK(b.setence() == "abc");
+        CHECK(b.sentence() == "abc");
         CHECK(!b.is_sentence());
     }
 
@@ -103,13 +103,13 @@ TEST_CASE("Sentencial Form", "[grammar][sentencial_form]")
         a = a + Symbol("b");
 
         CHECK(a.non_terminal() == "&");
-        CHECK(a.setence() == "abcb");
+        CHECK(a.sentence() == "abcb");
         CHECK(a.is_sentence());
 
         a = a + Symbol("B");
 
         CHECK(a.non_terminal() == "B");
-        CHECK(a.setence() == "abcb");
+        CHECK(a.sentence() == "abcb");
         CHECK(!a.is_sentence());
     }
 }
@@ -119,7 +119,7 @@ TEST_CASE("Sentence Form", "[grammar][sentence]")
     SECTION("Sentence Form: Custom construtors", "[grammar][sentence]"){
         Sentence a("abc");
 
-        CHECK(a.setence() == "abc");
+        CHECK(a.sentence() == "abc");
         CHECK(a.is_sentence());
     }
 
@@ -127,7 +127,7 @@ TEST_CASE("Sentence Form", "[grammar][sentence]")
         Sentence a("abc");
         Sentence b(a);
 
-        CHECK(b.setence() == "abc");
+        CHECK(b.sentence() == "abc");
         CHECK(b.is_sentence());
     }
 
@@ -135,7 +135,7 @@ TEST_CASE("Sentence Form", "[grammar][sentence]")
         Sentence a("abc");
         Sentence b(std::move(a));
 
-        CHECK(b.setence() == "abc");
+        CHECK(b.sentence() == "abc");
         CHECK(b.is_sentence());
     }
 
@@ -159,13 +159,13 @@ TEST_CASE("Sentence Form", "[grammar][sentence]")
         SentencialForm b = a + Symbol("A");
 
         CHECK(b.non_terminal() == "A");
-        CHECK(b.setence() == "abc");
+        CHECK(b.sentence() == "abc");
         CHECK(!b.is_sentence());
 
         b = b + Symbol("b");
 
         CHECK(b.non_terminal() == "&");
-        CHECK(b.setence() == "abcb");
+        CHECK(b.sentence() == "abcb");
         CHECK(b.is_sentence());
     }
 
@@ -176,7 +176,7 @@ TEST_CASE("Sentence Form", "[grammar][sentence]")
 
         Sentence* b = static_cast<Sentence*>(&a);
 
-        CHECK(b->setence() == "abc");
+        CHECK(b->sentence() == "abc");
         CHECK(b->is_sentence());
         CHECK(a == *b);
     }
@@ -226,7 +226,7 @@ TEST_CASE("Terminal Production", "[grammar][terminal_production]")
         b = prod << b;
 
         CHECK(b.non_terminal() == "&");
-        CHECK(b.setence() == "abcb");
+        CHECK(b.sentence() == "abcb");
         CHECK(b.is_sentence());
     }
 
@@ -246,7 +246,7 @@ TEST_CASE("Terminal Production", "[grammar][terminal_production]")
         sent = *a << sent;
 
         CHECK(sent.non_terminal() == "&");
-        CHECK(sent.setence() == "abcb");
+        CHECK(sent.sentence() == "abcb");
         CHECK(sent.is_sentence());
 
         delete a;
@@ -297,7 +297,7 @@ TEST_CASE("Non-Terminal Production", "[grammar][non_terminal_production]")
         b = prod << b;
 
         CHECK(b.non_terminal() == "B");
-        CHECK(b.setence() == "abcb");
+        CHECK(b.sentence() == "abcb");
         CHECK(!b.is_sentence());
     }
 
@@ -317,7 +317,7 @@ TEST_CASE("Non-Terminal Production", "[grammar][non_terminal_production]")
         sent = *a << sent;
 
         CHECK(sent.non_terminal() == "B");
-        CHECK(sent.setence() == "abcb");
+        CHECK(sent.sentence() == "abcb");
         CHECK(!sent.is_sentence());
 
         delete a;
