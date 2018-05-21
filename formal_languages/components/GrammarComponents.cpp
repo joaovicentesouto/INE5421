@@ -35,6 +35,11 @@ bool Symbol::operator<(const Symbol &symbol) const
     return m_value < symbol.m_value;
 }
 
+Symbol::string_type Symbol::value() const
+{
+    return m_value;
+}
+
 /* ----------------------------------------------------------------------- */
 
 bool SentencialForm::is_sentence() const
@@ -167,6 +172,16 @@ bool TerminalProduction::operator<(const Production &prod) const
     return m_terminal.m_value < term->m_terminal.m_value;
 }
 
+Production::string_type TerminalProduction::non_terminal() const
+{
+    return "";
+}
+
+Production::string_type TerminalProduction::terminal() const
+{
+    return m_terminal.value();
+}
+
 /* ----------------------------------------------------------------------- */
 
 bool NonTerminalProduction::is_terminal() const
@@ -200,6 +215,17 @@ bool NonTerminalProduction::operator<(const Production &prod) const
 
     return value < other_value;
 }
+
+NonTerminalProduction::string_type NonTerminalProduction::non_terminal() const
+{
+    return m_non_terminal.value();
+}
+
+NonTerminalProduction::string_type NonTerminalProduction::terminal() const
+{
+    return m_terminal.value();
+}
+
 
 /* ----------------------------------------------------------------------- */
 

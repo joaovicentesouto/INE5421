@@ -32,6 +32,7 @@ class Symbol
     Symbol(const string_type &symbol);
     Symbol(string_type &&symbol);
 
+    string_type value() const;
     bool is_terminal() const;
     bool operator==(const Symbol &symbol) const;
     bool operator==(const string_type &symbol) const;
@@ -120,9 +121,12 @@ class Production
 {
   public:
     friend class Hasher;
+    using string_type = std::string;
 
     virtual ~Production() = default;
 
+    virtual string_type non_terminal() const = 0;
+    virtual string_type terminal() const = 0;
     virtual bool is_terminal() const = 0;
     virtual SentencialForm operator<<(const SentencialForm &form) const = 0;
     virtual bool operator==(const Production &form) const = 0;
@@ -146,6 +150,8 @@ class TerminalProduction : public Production
     TerminalProduction(const symbol_type &terminal);
     TerminalProduction(symbol_type &&terminal);
 
+    string_type non_terminal() const;
+    string_type terminal() const;
     bool is_terminal() const;
     SentencialForm operator<<(const SentencialForm &form) const;
     bool operator==(const Production &prod) const;
@@ -176,6 +182,8 @@ class NonTerminalProduction : public Production
     {
     }
 
+    string_type non_terminal() const;
+    string_type terminal() const;
     bool is_terminal() const;
     SentencialForm operator<<(const SentencialForm &form) const;
     bool operator==(const Production &prod) const;

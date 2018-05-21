@@ -11,9 +11,16 @@ namespace formal_device
 namespace grammar
 {
 
+namespace converter
+{
+    class DevicesConverter;
+}
+
 class Regular
 {
   public:
+    friend class converter::DevicesConverter;
+
     template <class T>
     using set_type                     = std::set<T>;
     template <class Key, class Value>
@@ -49,7 +56,7 @@ class Regular
 
     set_type<string_type> sentences_generator(int n) const;
 
-  private:
+  public:
     vocabulary_set_type m_vn;
     vocabulary_set_type m_vt;
     production_map_type m_productions;
