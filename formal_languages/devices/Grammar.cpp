@@ -9,11 +9,19 @@ Regular::set_type<Regular::string_type> Regular::sentences_generator(int n) cons
 {
     std::vector<SentencialForm> sentencial_forms{SentencialForm(m_initial_symbol, "&")};
 
-    for (auto sentence: sentencial_forms) {
+    int current_size = 0;
+    while (current_size < sentencial_forms.size())
+    {
+        auto sentence = sentencial_forms[current_size++];
+
         if (sentence.is_sentence())
             continue;
 
-        for (auto production: production_map_type(m_productions)[sentence.non_terminal()]) {
+        production_map_type copy(m_productions);
+        for (auto production: copy[sentence.non_terminal()]) {
+            if (!production.get())
+                continue;
+
             SentencialForm new_form = production << sentence;
             if (new_form.sentence().size() <= n)
                 sentencial_forms.push_back(new_form);
