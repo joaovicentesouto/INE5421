@@ -1,6 +1,6 @@
 #include "../catch.hpp"
 
-#include <formal_languages/manipulators/DevicesConverter.h>
+#include <formal_languages/manipulators/DevicesConverter.hpp>
 
 using namespace formal_device;
 
@@ -52,4 +52,45 @@ TEST_CASE("Devices converter: Grammar to NDFA", "[expression][parser]")
     CHECK((ndfa == machine));
 
     CHECK(ndfa.determination() == machine.determination());
+}
+
+TEST_CASE("Devices converter: NDFA to Grammar", "[expression][parser]")
+{
+    grammar::Regular::symbol_type S("q0"), A("q1"), a("a"), b("b");
+    grammar::Regular::vocabulary_set_type vn{S, A}, vt{a, b};
+
+    grammar::Regular::production_type_ptr p1(new grammar::NonTerminalProduction(a, A)),
+                                            p2(new grammar::NonTerminalProduction(b, A)),
+                                 p3(new grammar::TerminalProduction(a)),
+                                 p4(new grammar::TerminalProduction(b));
+
+    grammar::Regular::production_map_type productions;
+    productions[S] = {p1, p3};
+    productions[A] = {p2, p4};
+
+    grammar::Regular regular(vn, vt, productions, S);
+
+    // ----------------------
+
+    finite_automaton::Deterministic::symbol_type a_("a");
+    finite_automaton::Deterministic::symbol_type b_("b");
+    finite_automaton::Deterministic::state_type q0("q0"), q1("q1");
+
+    finite_automaton::Deterministic::symbol_set_type alphabet{a_, b_};
+
+    finite_automaton::Deterministic::state_set_type  states{q0, q1};
+    finite_automaton::Deterministic::state_set_type  final_states{q1};
+
+    finite_automaton::Deterministic::transition_map_type transitions;
+    transitions[q0][a_] = q1;
+    transitions[q1][b_] = q1;
+
+    finite_automaton::Deterministic machine(alphabet, states, transitions, final_states, q0);
+
+    // -------------
+
+    converter::DevicesConverter converter;
+    auto gram = converter.convert(machine);
+
+    CHECK((gram == regular));
 }

@@ -15,6 +15,12 @@
 
 namespace formal_device
 {
+
+namespace converter
+{
+    class DevicesConverter;
+}
+
 namespace finite_automaton
 {
 
@@ -26,10 +32,13 @@ enum class Operation
     Transitive,
     Optional
 };
+
 class NonDeterministic;
+
 class Deterministic
 {
   public:
+    friend class converter::DevicesConverter;
     friend class NonDeterministic;
 
     template <class T>
@@ -190,6 +199,7 @@ public:
 
     Deterministic remove_epsilon() const;
     Deterministic determination() const;
+    Deterministic minimization() const;
 
     bool membership(const string_type& sentence) const;
     bool emptiness() const;

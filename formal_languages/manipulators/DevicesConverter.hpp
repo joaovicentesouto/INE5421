@@ -12,6 +12,7 @@ namespace converter
 class DevicesConverter
 {
   public:
+    using dfa_type     = finite_automaton::Deterministic;
     using ndfa_type    = finite_automaton::NonDeterministic;
     using grammar_type = grammar::Regular;
 

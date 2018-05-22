@@ -38,5 +38,13 @@ Regular::set_type<Regular::string_type> Regular::sentences_generator(int n) cons
     return sentences;
 }
 
+bool Regular::operator==(const Regular &regular)
+{
+    return m_vn == regular.m_vn &&
+           m_vt == regular.m_vt &&
+           m_productions == regular.m_productions &&
+           m_initial_symbol == regular.m_initial_symbol;
+}
+
 }   // namespace grammar
 }   // namespace formal_device

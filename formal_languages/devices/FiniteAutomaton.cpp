@@ -1197,6 +1197,11 @@ NonDeterministic NonDeterministic::reverse() const
                             std::move(new_initial_state));
 }
 
+Deterministic NonDeterministic::minimization() const
+{
+    return determination().minimization();
+}
+
 bool NonDeterministic::membership(const string_type& sentence) const
 {
     return determination().membership(sentence);

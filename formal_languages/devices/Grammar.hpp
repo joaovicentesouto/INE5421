@@ -8,13 +8,13 @@
 
 namespace formal_device
 {
-namespace grammar
-{
-
 namespace converter
 {
     class DevicesConverter;
 }
+namespace grammar
+{
+
 
 class Regular
 {
@@ -55,6 +55,8 @@ class Regular
     }
 
     set_type<string_type> sentences_generator(int n) const;
+
+    bool operator==(const Regular &regular);
 
   public:
     vocabulary_set_type m_vn;
