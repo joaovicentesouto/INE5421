@@ -5,6 +5,26 @@ namespace formal_device
 namespace grammar
 {
 
+const Regular::vocabulary_set_type& Regular::vn() const
+{
+    return m_vn;
+}
+
+const Regular::vocabulary_set_type& Regular::vt() const
+{
+    return m_vt;
+}
+
+const Regular::production_map_type& Regular::productions() const
+{
+    return m_productions;
+}
+
+const Regular::symbol_type& Regular::initial_symbol() const
+{
+    return m_initial_symbol;
+}
+
 Regular::set_type<Regular::string_type> Regular::sentences_generator(int n) const
 {
     std::vector<SentencialForm> sentencial_forms{SentencialForm(m_initial_symbol, "&")};

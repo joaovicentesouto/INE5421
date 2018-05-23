@@ -16,7 +16,7 @@
 namespace formal_device
 {
 
-namespace converter
+namespace manipulator
 {
     class DevicesConverter;
 }
@@ -38,7 +38,7 @@ class NonDeterministic;
 class Deterministic
 {
   public:
-    friend class converter::DevicesConverter;
+    friend class manipulator::DevicesConverter;
     friend class NonDeterministic;
 
     template <class T>
@@ -72,6 +72,11 @@ class Deterministic
     }
 
     // Class member functions
+    const symbol_set_type& alphabet() const;
+    const state_set_type& states() const;
+    const transition_map_type& transitions() const;
+    const state_set_type& final_states() const;
+    const state_type& initial_state() const;
 
     // Basic properties
     Deterministic operator!() const; // not

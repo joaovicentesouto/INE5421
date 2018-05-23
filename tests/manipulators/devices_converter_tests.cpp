@@ -4,7 +4,7 @@
 
 using namespace formal_device;
 
-TEST_CASE("Devices converter: Grammar to NDFA", "[expression][parser]")
+TEST_CASE("Devices manipulator: Grammar to NDFA", "[expression][parser]")
 {
     grammar::Regular::symbol_type S("S"), A("A"), B("B"), C("C"), a("a"), b("b");
     grammar::Regular::vocabulary_set_type vn{S, A, B, C}, vt{a, b};
@@ -46,7 +46,7 @@ TEST_CASE("Devices converter: Grammar to NDFA", "[expression][parser]")
 
     // -------------
 
-    converter::DevicesConverter converter;
+    manipulator::DevicesConverter converter;
     auto ndfa = converter.convert(regular);
 
     CHECK((ndfa == machine));
@@ -54,7 +54,7 @@ TEST_CASE("Devices converter: Grammar to NDFA", "[expression][parser]")
     CHECK(ndfa.determination() == machine.determination());
 }
 
-TEST_CASE("Devices converter: NDFA to Grammar", "[expression][parser]")
+TEST_CASE("Devices manipulator: NDFA to Grammar", "[expression][parser]")
 {
     grammar::Regular::symbol_type S("q0"), A("q1"), a("a"), b("b");
     grammar::Regular::vocabulary_set_type vn{S, A}, vt{a, b};
@@ -89,7 +89,7 @@ TEST_CASE("Devices converter: NDFA to Grammar", "[expression][parser]")
 
     // -------------
 
-    converter::DevicesConverter converter;
+    manipulator::DevicesConverter converter;
     auto gram = converter.convert(machine);
 
     CHECK((gram == regular));

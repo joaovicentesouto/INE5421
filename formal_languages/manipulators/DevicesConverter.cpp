@@ -2,7 +2,7 @@
 
 namespace formal_device
 {
-namespace converter
+namespace manipulator
 {
 
 DevicesConverter::ndfa_type DevicesConverter::convert(const grammar_type & grammar)
@@ -88,5 +88,5 @@ DevicesConverter::grammar_type DevicesConverter::convert(const ndfa_type & ndfa)
                         std::move(initial_symbol));
 }
 
-}   // namespace converter
+}   // namespace manipulator
 }   // namespace formal_device

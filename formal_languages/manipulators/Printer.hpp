@@ -1,0 +1,18 @@
+#ifndef PRINTER_H
+#define PRINTER_H
+
+#include<string>
+#include<iostream>
+#include <formal_languages/devices/FiniteAutomaton.hpp>
+#include <formal_languages/devices/Grammar.hpp>
+
+namespace formal_device
+{
+
+std::ostream& operator<<(std::ostream& os, const finite_automaton::Deterministic& machine);
+std::ostream& operator<<(std::ostream& os, const finite_automaton::NonDeterministic& machine);
+std::ostream& operator<<(std::ostream& os, const grammar::Regular& reg_grammar);
+
+}   // namespace formal_devices
+
+#endif // PRINTER_H

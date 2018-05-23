@@ -8,7 +8,7 @@
 
 namespace formal_device
 {
-namespace converter
+namespace manipulator
 {
     class DevicesConverter;
 }
@@ -19,7 +19,7 @@ namespace grammar
 class Regular
 {
   public:
-    friend class converter::DevicesConverter;
+    friend class manipulator::DevicesConverter;
 
     template <class T>
     using set_type                     = std::set<T>;
@@ -53,6 +53,11 @@ class Regular
         m_initial_symbol{std::forward<Arg4>(initial_symbol)}
     {
     }
+
+    const vocabulary_set_type& vn() const;
+    const vocabulary_set_type& vt() const;
+    const production_map_type& productions() const;
+    const symbol_type& initial_symbol() const;
 
     set_type<string_type> sentences_generator(int n) const;
 

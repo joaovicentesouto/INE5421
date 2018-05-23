@@ -6,7 +6,7 @@
 
 namespace formal_device
 {
-namespace converter
+namespace manipulator
 {
 
 class DevicesConverter
@@ -29,7 +29,7 @@ class DevicesConverter
     grammar_type convert(const ndfa_type & ndfa);
 };
 
-}   // namespace converter
+}   // namespace manipulator
 }   // namespace formal_device
 
 #endif // DEVICESCONVERTER_H

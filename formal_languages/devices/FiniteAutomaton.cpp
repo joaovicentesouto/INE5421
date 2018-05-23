@@ -5,6 +5,31 @@ namespace formal_device
 namespace finite_automaton
 {
 
+const Deterministic::symbol_set_type& Deterministic::alphabet() const
+{
+    return m_alphabet;
+}
+
+const Deterministic::state_set_type& Deterministic::states() const
+{
+    return m_states;
+}
+
+const Deterministic::transition_map_type& Deterministic::transitions() const
+{
+    return m_transitions;
+}
+
+const Deterministic::state_set_type& Deterministic::final_states() const
+{
+    return m_final_states;
+}
+
+const Deterministic::state_type& Deterministic::initial_state() const
+{
+    return m_initial_state;
+}
+
 Deterministic Deterministic::operator!() const
 {
     Deterministic complement = complete();
