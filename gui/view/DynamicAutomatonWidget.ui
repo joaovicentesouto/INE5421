@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>DynamicAutomatonWidget</class>
+ <widget class="QWidget" name="DynamicAutomatonWidget">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>444</width>
+    <height>780</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Form</string>
+  </property>
+  <layout class="QVBoxLayout" name="verticalLayout">
+   <item>
+    <widget class="QLabel" name="m_name_machine">
+     <property name="text">
+      <string>Machine 1</string>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <layout class="QHBoxLayout" name="m_news_box">
+     <item>
+      <widget class="QPushButton" name="m_new_exp_btn">
+       <property name="text">
+        <string>Inserir Exp</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="m_new_grammar_btn">
+       <property name="text">
+        <string>Inserir GR</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="m_grammar_btn">
+       <property name="text">
+        <string>Ver GR</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="m_new_machine_btn">
+       <property name="text">
+        <string>Inserir AF</string>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </item>
+   <item>
+    <widget class="QTableView" name="m_machine"/>
+   </item>
+   <item>
+    <widget class="QLabel" name="m_label_op">
+     <property name="text">
+      <string>Operações</string>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <layout class="QHBoxLayout" name="m_operations_box">
+     <item>
+      <widget class="QPushButton" name="m_negation_btn">
+       <property name="text">
+        <string>!</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="m_closure_btn">
+       <property name="text">
+        <string>*</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="m_reverse_btn">
+       <property name="text">
+        <string>R</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="m_determinization_btn">
+       <property name="text">
+        <string>Det</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="m_minimization_btn">
+       <property name="text">
+        <string>Min</string>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </item>
+   <item>
+    <widget class="QLabel" name="m_label_history">
+     <property name="text">
+      <string>Histórico</string>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QListView" name="m_history">
+     <property name="maximumSize">
+      <size>
+       <width>16777215</width>
+       <height>150</height>
+      </size>
+     </property>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>
