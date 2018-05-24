@@ -37,6 +37,7 @@ class RegularPointer : public std::shared_ptr<Regular>
     RegularPointer operator+(const RegularPointer &reg) const;
     RegularPointer operator^(const Operation &op) const;
     bool operator==(const RegularPointer &reg) const;
+    void to_string(std::ostream & os);
 };
 
 using string_type = std::string;
@@ -46,7 +47,7 @@ using simone_node_ptr = DeSimoneNode*;
 class Regular
 {
   public:
-    virtual ~Regular() {}
+    virtual ~Regular() = default;
 
     virtual regular_ptr operator|(const regular_ptr &reg) const = 0;  // Union
     virtual regular_ptr operator+(const regular_ptr &reg) const = 0;  // Concatenate
@@ -54,6 +55,7 @@ class Regular
     virtual bool operator==(const regular_ptr &reg) const = 0;
 
     virtual simone_node_ptr node_myself() = 0;
+    virtual void to_string(std::ostream & os) = 0;
 
   private:
     virtual regular_ptr clone() const = 0;
@@ -77,6 +79,7 @@ class Empty : public Regular
     bool operator==(const regular_ptr &reg) const;
 
     simone_node_ptr node_myself();
+    void to_string(std::ostream & os);
 
   private:
     regular_ptr clone() const;
@@ -100,6 +103,7 @@ class Epsilon : public Regular
     bool operator==(const regular_ptr &reg) const;
 
     simone_node_ptr node_myself();
+    void to_string(std::ostream & os);
 
   private:
     regular_ptr clone() const;
@@ -131,6 +135,7 @@ class Unit : public Regular
     bool operator==(const regular_ptr &reg) const;
 
     simone_node_ptr node_myself();
+    void to_string(std::ostream & os);
 
   private:
     regular_ptr clone() const;
@@ -163,6 +168,7 @@ class Union : public Regular
     bool operator==(const regular_ptr &reg) const;
 
     simone_node_ptr node_myself();
+    void to_string(std::ostream & os);
 
   private:
     regular_ptr clone() const;
@@ -196,6 +202,7 @@ class Concatenation : public Regular
     bool operator==(const regular_ptr &reg) const;
 
     simone_node_ptr node_myself();
+    void to_string(std::ostream & os);
 
   private:
     regular_ptr clone() const;
@@ -228,6 +235,7 @@ class ReflexiveClosure : public Regular
     bool operator==(const regular_ptr &reg) const;
 
     simone_node_ptr node_myself();
+    void to_string(std::ostream & os);
 
   private:
     regular_ptr clone() const;
@@ -259,6 +267,7 @@ class TransitiveClosure : public Regular
     bool operator==(const regular_ptr &reg) const;
 
     simone_node_ptr node_myself();
+    void to_string(std::ostream & os);
 
   private:
     regular_ptr clone() const;
@@ -290,6 +299,7 @@ class Optional : public Regular
     bool operator==(const regular_ptr &reg) const;
 
     simone_node_ptr node_myself();
+    void to_string(std::ostream & os);
 
   private:
     regular_ptr clone() const;

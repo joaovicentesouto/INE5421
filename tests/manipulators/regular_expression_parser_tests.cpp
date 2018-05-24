@@ -36,4 +36,6 @@ TEST_CASE("DeSimoneTree: Build (ab?|c)*", "[expression][parser]")
     auto simone = tree.execute();
 
     CHECK((simone == machine));
+
+    exp->to_string(std::cout);
 }
