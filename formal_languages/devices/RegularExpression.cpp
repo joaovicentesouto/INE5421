@@ -31,9 +31,9 @@ bool RegularPointer::operator==(const RegularPointer &reg) const
     return *get() == reg;
 }
 
-void RegularPointer::to_string(std::ostream & os)
+string_type RegularPointer::to_string()
 {
-    get()->to_string(os);
+    return get()->to_string();
 }
 
 /* --------------------- Empty --------------------- */
@@ -70,9 +70,9 @@ simone_node_ptr Empty::node_myself()
     return unit;
 }
 
-void Empty::to_string(std::ostream & os)
+string_type Empty::to_string()
 {
-    os << "";
+    return "";
 }
 
 /* --------------------- Epsilon --------------------- */
@@ -109,9 +109,9 @@ simone_node_ptr Epsilon::node_myself()
     return unit;
 }
 
-void Epsilon::to_string(std::ostream & os)
+string_type Epsilon::to_string()
 {
-    os << "&";
+    return "&";
 }
 
 /* --------------------- Unit --------------------- */
@@ -173,9 +173,9 @@ simone_node_ptr Unit::node_myself()
     return unit;
 }
 
-void Unit::to_string(std::ostream & os)
+string_type Unit::to_string()
 {
-    os << m_symbol;
+    return m_symbol;
 }
 
 /* --------------------- Union --------------------- */
@@ -241,11 +241,9 @@ simone_node_ptr Union::node_myself()
     return union_ptr;
 }
 
-void Union::to_string(std::ostream & os)
+string_type Union::to_string()
 {
-    m_left_expression->to_string(os);
-    os << " | ";
-    m_right_expression->to_string(os);
+    return m_left_expression->to_string() + " | " + m_right_expression->to_string();
 }
 
 /* --------------------- Concatenation --------------------- */
@@ -311,10 +309,9 @@ simone_node_ptr Concatenation::node_myself()
     return concatenation_ptr;
 }
 
-void Concatenation::to_string(std::ostream & os)
+string_type Concatenation::to_string()
 {
-    m_left_expression->to_string(os);
-    m_right_expression->to_string(os);
+    return m_left_expression->to_string() + m_right_expression->to_string();
 }
 
 /* --------------------- ReflexiveClosure --------------------- */
@@ -378,29 +375,24 @@ simone_node_ptr ReflexiveClosure::node_myself()
     return reflexive_ptr;
 }
 
-void ReflexiveClosure::to_string(std::ostream & os)
+string_type ReflexiveClosure::to_string()
 {
     auto empty = dynamic_cast<const Empty*>(m_expression.get());
 
     if (empty)
-        return ;
+        return "";
 
     auto epsilon = dynamic_cast<const Epsilon*>(m_expression.get());
 
     if (epsilon)
-        return m_expression->to_string(os);
+        return m_expression->to_string();
 
     auto unit = dynamic_cast<const Unit*>(m_expression.get());
 
-    if (unit) {
-        m_expression->to_string(os);
-        os <<"*";
-        return ;
-    }
+    if (unit)
+        return m_expression->to_string() + "*";
 
-    os << "(";
-    m_expression->to_string(os);
-    os << ")*";
+    return "(" + m_expression->to_string() + ")*";
 }
 
 
@@ -472,29 +464,24 @@ simone_node_ptr TransitiveClosure::node_myself()
     return transitive_ptr;
 }
 
-void TransitiveClosure::to_string(std::ostream & os)
+string_type TransitiveClosure::to_string()
 {
     auto empty = dynamic_cast<const Empty*>(m_expression.get());
 
     if (empty)
-        return ;
+        return "";
 
     auto epsilon = dynamic_cast<const Epsilon*>(m_expression.get());
 
     if (epsilon)
-        return m_expression->to_string(os);
+        return m_expression->to_string();
 
     auto unit = dynamic_cast<const Unit*>(m_expression.get());
 
-    if (unit) {
-        m_expression->to_string(os);
-        os << "+";
-        return ;
-    }
+    if (unit)
+        return m_expression->to_string() + "+";
 
-    os << "(";
-    m_expression->to_string(os);
-    os << ")+";
+    return "(" + m_expression->to_string() + ")+";
 }
 
 /* --------------------- Optional --------------------- */
@@ -557,29 +544,24 @@ simone_node_ptr Optional::node_myself()
     return optional_ptr;
 }
 
-void Optional::to_string(std::ostream & os)
+string_type Optional::to_string()
 {
     auto empty = dynamic_cast<const Empty*>(m_expression.get());
 
     if (empty)
-        return ;
+        return "";
 
     auto epsilon = dynamic_cast<const Epsilon*>(m_expression.get());
 
     if (epsilon)
-        return m_expression->to_string(os);
+        return m_expression->to_string();
 
     auto unit = dynamic_cast<const Unit*>(m_expression.get());
 
-    if (unit) {
-        m_expression->to_string(os);
-        os << "?";
-        return ;
-    }
+    if (unit)
+        return m_expression->to_string() + "?";
 
-    os << "(";
-    m_expression->to_string(os);
-    os << ")?";
+    return "(" + m_expression->to_string() + ")?";
 }
 
 } // namespace expression

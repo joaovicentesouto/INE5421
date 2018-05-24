@@ -182,6 +182,11 @@ Production::string_type TerminalProduction::terminal() const
     return m_terminal.value();
 }
 
+Production::string_type TerminalProduction::to_string()
+{
+    return m_terminal.value();
+}
+
 /* ----------------------------------------------------------------------- */
 
 bool NonTerminalProduction::is_terminal() const
@@ -226,6 +231,10 @@ NonTerminalProduction::string_type NonTerminalProduction::terminal() const
     return m_terminal.value();
 }
 
+Production::string_type NonTerminalProduction::to_string()
+{
+    return m_terminal.value() + m_non_terminal.value();
+}
 
 /* ----------------------------------------------------------------------- */
 

@@ -131,6 +131,7 @@ class Production
     virtual SentencialForm operator<<(const SentencialForm &form) const = 0;
     virtual bool operator==(const Production &form) const = 0;
     virtual bool operator<(const Production &prod) const = 0;
+    virtual string_type to_string() = 0;
 };
 
 class TerminalProduction : public Production
@@ -156,6 +157,7 @@ class TerminalProduction : public Production
     SentencialForm operator<<(const SentencialForm &form) const;
     bool operator==(const Production &prod) const;
     bool operator<(const Production &prod) const;
+    string_type to_string();
 
   private:
     symbol_type m_terminal;
@@ -188,6 +190,7 @@ class NonTerminalProduction : public Production
     SentencialForm operator<<(const SentencialForm &form) const;
     bool operator==(const Production &prod) const;
     bool operator<(const Production &prod) const;
+    string_type to_string();
 
   private:
     symbol_type m_terminal, m_non_terminal;

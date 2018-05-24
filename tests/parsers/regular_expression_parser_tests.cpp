@@ -89,25 +89,6 @@ TEST_CASE("Regular Expression Parser: Complex String", "[expression][parser]")
 
         CHECK((current_exp == exp));
     }
-
-    SECTION("Exp:asdf ", "[expression][parser]")
-    {
-        string_type str =  "(a*|c)";
-        IteratorWrapper f(str.begin()), l(str.end());
-
-        regular_ptr current_exp(new empty_type());
-
-        while (f.iterator() != l.iterator())
-            if (*f.iterator() == '|')
-            {
-                f.next();
-                current_exp = current_exp | union_parser(f, l);
-            }
-            else
-                current_exp = current_exp + parse(f, l);
-
-        current_exp->to_string(std::cout);
-    }
 }
 
 
