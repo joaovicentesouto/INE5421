@@ -19,9 +19,9 @@
    </property>
    <layout class="QHBoxLayout" name="horizontalLayout_3">
     <item>
-     <layout class="QVBoxLayout" name="verticalLayout_5">
+     <layout class="QVBoxLayout" name="m_machine_1_box">
       <item>
-       <widget class="DynamicAutomatonWidget" name="widget" native="true">
+       <widget class="DynamicAutomatonWidget" name="m_machine_1" native="true">
         <property name="minimumSize">
          <size>
           <width>300</width>
@@ -33,7 +33,7 @@
      </layout>
     </item>
     <item>
-     <layout class="QVBoxLayout" name="verticalLayout">
+     <layout class="QVBoxLayout" name="m_op_box">
       <item>
        <spacer name="verticalSpacer_2">
         <property name="orientation">
@@ -51,9 +51,9 @@
        </spacer>
       </item>
       <item>
-       <layout class="QVBoxLayout" name="verticalLayout_3">
+       <layout class="QVBoxLayout" name="m_inner_op_box">
         <item>
-         <widget class="QPushButton" name="pushButton_6">
+         <widget class="QPushButton" name="m_or_btn">
           <property name="sizePolicy">
            <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
             <horstretch>0</horstretch>
@@ -72,7 +72,7 @@
          </widget>
         </item>
         <item>
-         <widget class="QPushButton" name="pushButton_10">
+         <widget class="QPushButton" name="m_concat_btn">
           <property name="sizePolicy">
            <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
             <horstretch>0</horstretch>
@@ -91,7 +91,7 @@
          </widget>
         </item>
         <item>
-         <widget class="QPushButton" name="pushButton_8">
+         <widget class="QPushButton" name="m_and_btn">
           <property name="sizePolicy">
            <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
             <horstretch>0</horstretch>
@@ -110,7 +110,7 @@
          </widget>
         </item>
         <item>
-         <widget class="QPushButton" name="pushButton_7">
+         <widget class="QPushButton" name="m_diff_btn">
           <property name="sizePolicy">
            <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
             <horstretch>0</horstretch>
@@ -149,9 +149,9 @@
      </layout>
     </item>
     <item>
-     <layout class="QVBoxLayout" name="verticalLayout_2">
+     <layout class="QVBoxLayout" name="m_machine_2_box">
       <item>
-       <widget class="DynamicAutomatonWidget" name="widget_2" native="true">
+       <widget class="DynamicAutomatonWidget" name="m_machine_2" native="true">
         <property name="minimumSize">
          <size>
           <width>300</width>
@@ -163,9 +163,9 @@
      </layout>
     </item>
     <item>
-     <layout class="QVBoxLayout" name="verticalLayout_4">
+     <layout class="QVBoxLayout" name="m_equal_box">
       <item>
-       <widget class="QPushButton" name="pushButton_9">
+       <widget class="QPushButton" name="m_equal_btn">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
           <horstretch>0</horstretch>
@@ -186,9 +186,9 @@
      </layout>
     </item>
     <item>
-     <layout class="QVBoxLayout" name="verticalLayout_6">
+     <layout class="QVBoxLayout" name="m_result_machine_box">
       <item>
-       <widget class="StaticAutomatonWidget" name="widget_3" native="true">
+       <widget class="StaticAutomatonWidget" name="m_result_machine" native="true">
         <property name="minimumSize">
          <size>
           <width>300</width>
