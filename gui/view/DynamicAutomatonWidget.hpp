@@ -4,6 +4,7 @@
 #include <QWidget>
 #include <QColor>
 
+#include <control/Facade.hpp>
 #include <view/NewGrammarDialog.hpp>
 #include <view/NewAutomatonDialog.hpp>
 #include <view/NewExpressionDialog.hpp>
@@ -23,12 +24,14 @@ public:
     explicit DynamicAutomatonWidget(QWidget *parent = 0);
     ~DynamicAutomatonWidget();
 
+    void set_facade(Facade * facade);
+
     void name(QString name);
 
 public slots:
-    void new_grammar(grammar_type grammar);
-    void new_expression(expression_type_ptr expression);
-    void new_automaton(QString automaton);
+    void update_grammar(grammar_type grammar);
+    void update_expression(expression_type_ptr expression);
+    void update_automaton(QString automaton);
 
 private slots:
     void on_m_new_grammar_btn_clicked();
@@ -37,6 +40,7 @@ private slots:
 
 private:
     Ui::DynamicAutomatonWidget *ui;
+    Facade * m_facade;
 };
 
 #endif // DYNAMICAUTOMATONWIDGET_HPP
