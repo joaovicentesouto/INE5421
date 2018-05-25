@@ -89,6 +89,31 @@ TEST_CASE("Regular Expression Parser: Complex String", "[expression][parser]")
 
         CHECK((current_exp == exp));
     }
+
+    SECTION("Exp: ab?|c|d", "[expression][parser]")
+    {
+        string_type str =  "ab?|c|d";
+        regular_ptr current_exp = make_regular_expression(str);
+
+        auto exp = regular_ptr(
+                        new union_type(
+                            new concatenation_type(
+                                new unit_type("a"),
+                                new optional_type(new unit_type("b"))
+                            ),
+                            new union_type(
+                                new unit_type("c"),
+                                new unit_type("d")
+                            )
+                        )
+                    );
+
+
+
+        CHECK((current_exp == exp));
+        
+        //CHECK_NOTHROW(make_regular_expression("(ab?)*"));
+    }
 }
 
 

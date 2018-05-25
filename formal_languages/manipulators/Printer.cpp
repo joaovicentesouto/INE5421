@@ -53,7 +53,7 @@ std::ostream& operator<<(std::ostream& os, const grammar::Regular& reg_grammar)
 
 std::ostream& operator<<(std::ostream& os, const expression::regular_ptr& expression)
 {
-    os << expression->to_string();
+    return os << expression->to_string();
 }
 
 }   // namespace formal_devices
