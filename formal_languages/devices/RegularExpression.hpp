@@ -40,7 +40,7 @@ class RegularPointer : public std::shared_ptr<Regular>
     RegularPointer operator+(const RegularPointer &reg) const;
     RegularPointer operator^(const Operation &op) const;
     bool operator==(const RegularPointer &reg) const;
-    string_type to_string();
+    string_type to_string() const;
 };
 
 using regular_ptr = RegularPointer;
@@ -56,7 +56,7 @@ class Regular
     virtual bool operator==(const regular_ptr &reg) const = 0;
 
     virtual simone_node_ptr node_myself() = 0;
-    virtual string_type to_string() = 0;
+    virtual string_type to_string() const = 0;
 
   private:
     virtual regular_ptr clone() const = 0;
@@ -80,7 +80,7 @@ class Empty : public Regular
     bool operator==(const regular_ptr &reg) const;
 
     simone_node_ptr node_myself();
-    string_type to_string();
+    string_type to_string() const;
 
   private:
     regular_ptr clone() const;
@@ -104,7 +104,7 @@ class Epsilon : public Regular
     bool operator==(const regular_ptr &reg) const;
 
     simone_node_ptr node_myself();
-    string_type to_string();
+    string_type to_string() const;
 
   private:
     regular_ptr clone() const;
@@ -136,7 +136,7 @@ class Unit : public Regular
     bool operator==(const regular_ptr &reg) const;
 
     simone_node_ptr node_myself();
-    string_type to_string();
+    string_type to_string() const;
 
   private:
     regular_ptr clone() const;
@@ -169,7 +169,7 @@ class Union : public Regular
     bool operator==(const regular_ptr &reg) const;
 
     simone_node_ptr node_myself();
-    string_type to_string();
+    string_type to_string() const;
 
   private:
     regular_ptr clone() const;
@@ -203,7 +203,7 @@ class Concatenation : public Regular
     bool operator==(const regular_ptr &reg) const;
 
     simone_node_ptr node_myself();
-    string_type to_string();
+    string_type to_string() const;
 
   private:
     regular_ptr clone() const;
@@ -236,7 +236,7 @@ class ReflexiveClosure : public Regular
     bool operator==(const regular_ptr &reg) const;
 
     simone_node_ptr node_myself();
-    string_type to_string();
+    string_type to_string() const;
 
   private:
     regular_ptr clone() const;
@@ -268,7 +268,7 @@ class TransitiveClosure : public Regular
     bool operator==(const regular_ptr &reg) const;
 
     simone_node_ptr node_myself();
-    string_type to_string();
+    string_type to_string() const;
 
   private:
     regular_ptr clone() const;
@@ -300,7 +300,7 @@ class Optional : public Regular
     bool operator==(const regular_ptr &reg) const;
 
     simone_node_ptr node_myself();
-    string_type to_string();
+    string_type to_string() const;
 
   private:
     regular_ptr clone() const;

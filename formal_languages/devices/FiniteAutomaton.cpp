@@ -30,6 +30,52 @@ const Deterministic::state_type& Deterministic::initial_state() const
     return m_initial_state;
 }
 
+Deterministic::string_type Deterministic::to_string() const
+{
+    string_type string{"   +   "};
+
+    for (auto symbol : m_alphabet)
+        string += "|   " + symbol.value() + "   ";
+
+    string += "\n";
+
+    for (auto state : m_states)
+    {
+        if (m_final_states.find(state) != m_final_states.end())
+            string += "*";
+        else
+            string += " ";
+
+        if (state == m_initial_state)
+            string += "->" + state.value();
+        else
+            string += "  " + state.value();
+
+        for (int i = 4 - state.value().size(); i > 0; --i)
+            string += " ";
+
+        auto trans{m_transitions};
+        for (auto symbol : m_alphabet)
+        {
+            string += "|   ";
+            auto target = trans[state][symbol];
+
+            if (target == "Error")
+                string += "-   ";
+            else
+            {
+                string += target.value();
+                for (int i = 4 - state.value().size(); i > 0; --i)
+                    string += " ";
+            }
+        }
+
+        string += "\n";
+    }
+
+    return string;
+}
+
 Deterministic Deterministic::operator!() const
 {
     Deterministic complement = complete();
@@ -376,10 +422,6 @@ Deterministic Deterministic::remove_epsilon_transition() const
 
 Deterministic Deterministic::minimization() const
 {
-    using map_of_states_set_type = std::unordered_map<state_set_type, state_type, Hasher>;
-    using deque_of_states_set_type = std::deque<state_set_type>;
-    using vector_of_states_set_type = std::vector<state_set_type>;
-
     Deterministic assistant = remove_unreachable_states();
     assistant = assistant.remove_dead_states();
 
@@ -1248,6 +1290,59 @@ bool NonDeterministic::equivalence(const NonDeterministic & machine) const
 {
     return determination().containment(machine.determination())
             && determination().containment(machine.determination());
+}
+
+NonDeterministic::string_type NonDeterministic::to_string() const
+{
+    string_type string{"   +   "};
+
+    for (auto symbol : m_alphabet)
+        string += "|   " + symbol.value() + "   ";
+
+    string += "\n";
+
+    for (auto state : m_states)
+    {
+        if (m_final_states.find(state) != m_final_states.end())
+            string += "*";
+        else
+            string += " ";
+
+        if (state == m_initial_state)
+            string += "->" + state.value();
+        else
+            string += "  " + state.value();
+
+        for (int i = 4 - state.value().size(); i > 0; --i)
+            string += " ";
+
+        auto trans{m_transitions};
+        for (auto symbol : m_alphabet)
+        {
+            auto target_set = trans[state][symbol];
+
+            if (target_set.empty())
+                string += "|   -   ";
+            else
+            {
+                string += "|{" + target_set.begin()->value();
+
+                for (auto target_state : target_set)
+                {
+                    if (target_state == (*target_set.begin()))
+                        continue;
+
+                    string += ", " + target_state.value();
+                }
+
+                string += "}";
+            }
+        }
+
+        string += "\n";
+    }
+
+    return string;
 }
 
 }  // namespace finite_automaton

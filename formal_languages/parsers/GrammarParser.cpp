@@ -3,21 +3,10 @@
 
 namespace formal_device
 {
-namespace grammar
-{
 namespace parser
 {
 
-using symbol_type                  = Regular::symbol_type;
-using terminal_production_type     = Regular::terminal_production_type;
-using non_terminal_production_type = Regular::non_terminal_production_type;
-using production_type_ptr          = Regular::production_type_ptr;
-
-using vocabulary_set_type          = Regular::vocabulary_set_type;
-using production_map_type          = Regular::production_map_type;
-using pair_production_type         = Regular::pair_production_type;
-
-Regular make_regular_grammar(const string_type &file_path)
+grammar::Regular make_regular_grammar_from_file(const string_type &file_path)
 {
     std::ifstream grammar_file(file_path);
 
@@ -25,57 +14,200 @@ Regular make_regular_grammar(const string_type &file_path)
         throw std::out_of_range("Achar exceção correta -> erro ao abrir arquivo!");
 
     grammar_file >> std::noskipws;
-    boost::spirit::istream_iterator first(grammar_file), last;
+    //boost::spirit::istream_iterator first(grammar_file), last;
 
-    ast::Document doc;
-    bool parsed = phrase_parse(first, last, parser::document, parser::ascii::blank, doc);
+    return grammar::Regular();
+//    return make_regular_grammar();
+}
 
-    if (!parsed)
-        throw std::out_of_range("Arquivo mal formatado");
+grammar::Regular make_regular_grammar(string_type grammar)
+{
+    grammar = std::regex_replace( grammar, std::regex(" "), "" );
+    IteratorWrapper first(grammar.begin()), last(grammar.end());
+
+    // if (!parsed)
+    //     throw std::out_of_range("Gramática mal formatado");
 
     vocabulary_set_type vn;
     vocabulary_set_type vt;
     production_map_type productions;
     symbol_type initial_symbol;
-    bool initial = true;
 
-    for (auto line : doc.m_lines)
+    new_non_terminal(first, last, vn, vt, productions, initial_symbol);
+
+    return grammar::Regular(vn, vt, productions, initial_symbol);
+}
+
+void new_non_terminal(IteratorWrapper &begin, IteratorWrapper &end,
+                      vocabulary_set_type &vn, vocabulary_set_type &vt,
+                      production_map_type &productions, symbol_type &initial)
+{
+    string_type character(&(*begin.iterator()), &(*begin.iterator()) + 1);
+
+    symbol_type current;
+    if (std::regex_match(character, std::regex("[A-Z]")))
+        current = symbol_type(character);
+    else
+        throw std::out_of_range("Simbolo não terminal invalido");
+
+    vn.insert(current);
+    if (initial == symbol_type())
+        initial = current;
+
+    begin.next();
+    if (*begin.iterator() != '-')
+        throw std::out_of_range("Simbolo não terminal invalido");
+
+    begin.next();
+    if (*begin.iterator() != '>')
+        throw std::out_of_range("Simbolo não terminal invalido");
+
+    begin.next();
+    new_productions(current, begin, end, vn, vt, productions);
+
+    if (begin.iterator() != end.iterator())
     {
-        symbol_type non_terminal(line.m_symbol.substr(line.m_symbol.size()-1, 1));
-        vn.insert(non_terminal);
+        if (*begin.iterator())
+            new_non_terminal(begin, end, vn, vt, productions, initial);
+    }
+}
 
-        for (auto production : line.m_productions)
+void new_productions(symbol_type current, IteratorWrapper &begin, IteratorWrapper &end,
+                     vocabulary_set_type &vn, vocabulary_set_type &vt,
+                     production_map_type &productions)
+{
+    while (*begin.iterator() != '\n')
+    {
+        string_type character(&(*begin.iterator()), &(*begin.iterator()) + 1);
+
+        if (std::regex_match(character, std::regex("[a-z0-9]")))
         {
-            production_type_ptr prod;
+            symbol_type terminal(character);
+            vt.insert(terminal);
 
-            if (production.m_production.size() == 1)
+            begin.next();
+            character = string_type(&(*begin.iterator()), &(*begin.iterator()) + 1);
+
+            if (std::regex_match(character, std::regex("[A-Z]")))
             {
-                symbol_type symb(symbol_type(production.m_production));
-                vt.insert(symb);
-                prod = new terminal_production_type(symb);
+                symbol_type non_terminal(character);
+                vn.insert(non_terminal);
+                productions[current].insert(new grammar::NonTerminalProduction(terminal, non_terminal));
+
+                begin.next();
             }
             else
             {
-                symbol_type term(symbol_type(production.m_production.substr(0,1)));
-                symbol_type non_term(symbol_type(production.m_production.substr(1,1)));
-                vt.insert(term);
-                vn.insert(non_term);
-                prod = new non_terminal_production_type(term, non_term);
+                productions[current].insert(new grammar::TerminalProduction(terminal));
             }
-
-            productions[non_terminal].insert(prod);
         }
 
-        if (initial)
-        {
-            initial_symbol = non_terminal;
-            initial = false;
-        }
+
+        if (*begin.iterator() == '\n' || *begin.iterator() == *end.iterator())
+            break;
+
+        if (*begin.iterator() != '|')
+            throw std::out_of_range("Produção não regular");
+
+        begin.next();
     }
 
-    return Regular(std::move(vn), std::move(vt), std::move(productions), std::move(initial_symbol));
+    begin.next();
 }
 
-}
+/*regular_ptr parse(IteratorWrapper &begin, const IteratorWrapper &end)
+{
+
+    if (begin.iterator() == end.iterator())
+        return new empty_type();
+
+    string_type caracter(&(*begin.iterator()), &(*begin.iterator()) + 1);
+
+    if (*begin.iterator() == '(')
+    {
+        begin.next();
+        auto exp = parse(begin, end);
+
+        while (*begin.iterator() == '|')
+        {
+            begin.next();
+            exp = exp | parse(begin, end);
+        }
+
+        if (*begin.iterator() != ')')
+            throw std::out_of_range("Expressão mal formada");
+
+        begin.next();
+        switch (*begin.iterator()) {
+        case '*':
+            begin.next();
+            return exp ^ expression::Operation::Star;
+
+        case '+':
+            begin.next();
+            return exp ^ expression::Operation::Plus;
+
+        case '?':
+            begin.next();
+            return exp ^ expression::Operation::Optional;
+
+        default:
+            begin.next();
+            return exp;
+        }
+    }
+    else if (std::regex_match(caracter, std::regex("[a-z0-9]")))
+    {
+        regular_ptr exp(new unit_type(*begin.iterator()));
+
+        begin.next();
+
+        if (begin.iterator() == end.iterator() ||
+                *begin.iterator() == ')')
+            return exp;
+
+        caracter = string_type(&(*begin.iterator()), &(*begin.iterator()) + 1);
+
+        if (std::regex_match(caracter, std::regex("[a-z0-9]"))
+                || *begin.iterator() == '(')
+            return exp + parse(begin, end);
+
+        switch (*begin.iterator()) {
+        case '*':
+            exp = exp ^ expression::Operation::Star;
+            begin.next();
+            break;
+
+        case '+':
+            exp = exp ^ expression::Operation::Plus;
+            begin.next();
+            break;
+
+        case '?':
+            exp = exp ^ expression::Operation::Optional;
+            begin.next();
+            break;
+
+        default:
+            break;
+        }
+
+
+
+        if (*begin.iterator() == '|')
+            return exp;
+        else
+            return exp + parse(begin, end);
+    }
+
+    auto b_it = begin.iterator();
+
+    if (*b_it == '*' || *b_it == '+' || *b_it == ')')
+        throw std::out_of_range("Expressão mal formada");
+
+    begin.next();
+    return new empty_type();
+}*/
+
 } // namespace parser
 } // namespace formal_device
