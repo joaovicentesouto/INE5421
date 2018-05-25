@@ -25,8 +25,8 @@ class Regular
     using set_type                     = std::set<T>;
     template <class Key, class Value>
     using map_type                     = std::map<Key, Value>;
-    using string_type                  = std::string;
 
+    using string_type                  = std::string;
     using symbol_type                  = Symbol;
     using terminal_production_type     = TerminalProduction;
     using non_terminal_production_type = NonTerminalProduction;
@@ -58,6 +58,7 @@ class Regular
     const vocabulary_set_type& vt() const;
     const production_map_type& productions() const;
     const symbol_type& initial_symbol() const;
+    string_type to_string() const;
 
     set_type<string_type> sentences_generator(int n) const;
 

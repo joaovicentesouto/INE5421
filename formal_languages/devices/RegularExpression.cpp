@@ -31,7 +31,7 @@ bool RegularPointer::operator==(const RegularPointer &reg) const
     return *get() == reg;
 }
 
-string_type RegularPointer::to_string()
+string_type RegularPointer::to_string() const
 {
     return get()->to_string();
 }
@@ -70,7 +70,7 @@ simone_node_ptr Empty::node_myself()
     return unit;
 }
 
-string_type Empty::to_string()
+string_type Empty::to_string() const
 {
     return "";
 }
@@ -109,7 +109,7 @@ simone_node_ptr Epsilon::node_myself()
     return unit;
 }
 
-string_type Epsilon::to_string()
+string_type Epsilon::to_string() const
 {
     return "&";
 }
@@ -173,7 +173,7 @@ simone_node_ptr Unit::node_myself()
     return unit;
 }
 
-string_type Unit::to_string()
+string_type Unit::to_string() const
 {
     return m_symbol;
 }
@@ -241,7 +241,7 @@ simone_node_ptr Union::node_myself()
     return union_ptr;
 }
 
-string_type Union::to_string()
+string_type Union::to_string() const
 {
     return m_left_expression->to_string() + " | " + m_right_expression->to_string();
 }
@@ -309,7 +309,7 @@ simone_node_ptr Concatenation::node_myself()
     return concatenation_ptr;
 }
 
-string_type Concatenation::to_string()
+string_type Concatenation::to_string() const
 {
     return m_left_expression->to_string() + m_right_expression->to_string();
 }
@@ -375,7 +375,7 @@ simone_node_ptr ReflexiveClosure::node_myself()
     return reflexive_ptr;
 }
 
-string_type ReflexiveClosure::to_string()
+string_type ReflexiveClosure::to_string() const
 {
     auto empty = dynamic_cast<const Empty*>(m_expression.get());
 
@@ -464,7 +464,7 @@ simone_node_ptr TransitiveClosure::node_myself()
     return transitive_ptr;
 }
 
-string_type TransitiveClosure::to_string()
+string_type TransitiveClosure::to_string() const
 {
     auto empty = dynamic_cast<const Empty*>(m_expression.get());
 
@@ -544,7 +544,7 @@ simone_node_ptr Optional::node_myself()
     return optional_ptr;
 }
 
-string_type Optional::to_string()
+string_type Optional::to_string() const
 {
     auto empty = dynamic_cast<const Empty*>(m_expression.get());
 

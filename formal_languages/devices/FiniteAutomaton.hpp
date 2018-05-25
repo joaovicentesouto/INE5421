@@ -77,6 +77,7 @@ class Deterministic
     const transition_map_type& transitions() const;
     const state_set_type& final_states() const;
     const state_type& initial_state() const;
+    string_type to_string() const;
 
     // Basic properties
     Deterministic operator!() const; // not
@@ -201,6 +202,8 @@ public:
         m_initial_state{std::forward<Arg5>(initial_state)}
     {
     }
+
+    string_type to_string() const;
 
     Deterministic remove_epsilon() const;
     Deterministic determination() const;
