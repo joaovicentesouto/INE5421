@@ -118,6 +118,7 @@ TEST_CASE("Regular Expression Parser: Complex String", "[expression][parser]")
 
 TEST_CASE("Regular Expression Parser: Valid expressions", "[expression][parser]")
 {
+    CHECK_THROWS(make_regular_expression(")"));
     CHECK_NOTHROW(make_regular_expression(""));
     CHECK_NOTHROW(make_regular_expression("a"));
     CHECK_NOTHROW(make_regular_expression("&"));

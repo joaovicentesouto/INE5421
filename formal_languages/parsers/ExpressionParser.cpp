@@ -23,6 +23,10 @@ regular_ptr make_regular_expression(string_type exp)
     regular_ptr current_exp(new empty_type());
 
     while (begin.iterator() != end.iterator())
+    {
+        if (*begin.iterator() == ')')
+            throw std::out_of_range("Expressão mal formada");
+
         if (*begin.iterator() == '|')
         {
             begin.next();
@@ -30,6 +34,7 @@ regular_ptr make_regular_expression(string_type exp)
         }
         else
             current_exp = current_exp + parse(begin, end);
+    }
 
     return current_exp;
 }
@@ -49,7 +54,6 @@ regular_ptr union_parser(IteratorWrapper &begin, const IteratorWrapper &end)
 
 regular_ptr parse(IteratorWrapper &begin, const IteratorWrapper &end)
 {
-
     if (begin.iterator() == end.iterator())
         return new empty_type();
 
