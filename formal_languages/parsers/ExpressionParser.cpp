@@ -22,11 +22,11 @@ string_iterator_type IteratorWrapper::iterator() const
 
 regular_ptr make_regular_expression(const string_type & file_path)
 {
-    std::ifstream t(file_path);
-    string_type exp((std::istreambuf_iterator<char>(t)), std::istreambuf_iterator<char>());
+    //std::ifstream t(file_path);
+    //string_type exp((std::istreambuf_iterator<char>(t)), std::istreambuf_iterator<char>());
 
     //exp.erase( std::remove_if(exp.begin(), exp.end(), std::isspace), exp.end());
-
+    string_type exp = file_path;
     IteratorWrapper begin(exp.begin());
     IteratorWrapper end(exp.end());
 
