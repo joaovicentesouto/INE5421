@@ -70,23 +70,36 @@ regular_ptr parse(IteratorWrapper &begin, const IteratorWrapper &end)
             throw std::out_of_range("Expressão mal formada");
 
         begin.next();
+
         switch (*begin.iterator()) {
         case '*':
-            begin.next();
-            return exp ^ expression::Operation::Star;
+            exp = exp ^ expression::Operation::Star;
+            break;
 
         case '+':
-            begin.next();
-            return exp ^ expression::Operation::Plus;
+            exp = exp ^ expression::Operation::Plus;
+            break;
 
         case '?':
-            begin.next();
-            return exp ^ expression::Operation::Optional;
+            exp = exp ^ expression::Operation::Optional;
+            break;
 
         default:
-            begin.next();
-            return exp;
+            break;
         }
+
+        if (begin.iterator() != end.iterator())
+        {
+            caracter = string_type(&(*begin.iterator()), &(*begin.iterator()) + 1);
+
+            if (*begin.iterator() != '(')
+                if (!std::regex_match(caracter, std::regex("[a-z0-9]")))
+                    begin.next();
+
+            return exp + parse(begin, end);
+        }
+
+        return exp;
     }
     else if (std::regex_match(caracter, std::regex("[a-z0-9]")))
     {
@@ -132,12 +145,15 @@ regular_ptr parse(IteratorWrapper &begin, const IteratorWrapper &end)
             return exp + parse(begin, end);
     }
 
-    auto b_it = begin.iterator();
-
-    if (*b_it == '*' || *b_it == '+' || *b_it == ')')
+    if (*begin.iterator() == '*' || *begin.iterator() == '+')
         throw std::out_of_range("Expressão mal formada");
 
-    begin.next();
+    if (*begin.iterator() == '&')
+    {
+        begin.next();
+        return new epsilon_type();
+    }
+
     return new empty_type();
 }
 
