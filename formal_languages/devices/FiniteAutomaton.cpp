@@ -5,6 +5,31 @@ namespace formal_device
 namespace finite_automaton
 {
 
+const Deterministic::symbol_set_type& Deterministic::alphabet() const
+{
+    return m_alphabet;
+}
+
+const Deterministic::state_set_type& Deterministic::states() const
+{
+    return m_states;
+}
+
+const Deterministic::transition_map_type& Deterministic::transitions() const
+{
+    return m_transitions;
+}
+
+const Deterministic::state_set_type& Deterministic::final_states() const
+{
+    return m_final_states;
+}
+
+const Deterministic::state_type& Deterministic::initial_state() const
+{
+    return m_initial_state;
+}
+
 Deterministic Deterministic::operator!() const
 {
     Deterministic complement = complete();
@@ -179,7 +204,7 @@ NonDeterministic Deterministic::operator+(const Deterministic &machine) const
 
 NonDeterministic Deterministic::operator&(const Deterministic &machine) const
 {
-    return !(!(*this) | !machine);
+    return !( (!(*this) | !machine).determination() );
 }
 
 NonDeterministic Deterministic::operator-(const Deterministic &machine) const
@@ -572,15 +597,19 @@ Deterministic Deterministic::remove_unreachable_states() const
                          std::move(new_initial_state));
 }
 
-Deterministic Deterministic::remove_equivalent_states() const
-{
-
-    return Deterministic();
-}
-
 bool Deterministic::membership(const string_type &sentece) const
 {
-    return false;
+    auto machine = complete();
+
+    auto current = machine.m_initial_state;
+
+
+    for (auto symbol : sentece) {
+        string_type caracter(&symbol, (&symbol)+1);
+        current = machine.m_transitions[current][caracter];
+    }
+
+    return machine.m_final_states.find(current) != machine.m_final_states.end();
 }
 
 bool Deterministic::emptiness() const
@@ -609,22 +638,28 @@ bool Deterministic::finiteness() const
 
 bool Deterministic::containment(const Deterministic &machine) const
 {
-    return false;
+    return (machine - *this).emptiness();
 }
 
 bool Deterministic::equivalence(const Deterministic &machine) const
 {
-    return false;
+    return containment(machine) && machine.containment(*this);
 }
 
 bool Deterministic::is_complete() const
 {
-    return false;
+    int symbol_amount = m_alphabet.size();
+
+    for (auto state : m_states)
+        if (transition_map_type(m_transitions)[state].size() != symbol_amount)
+            return false;
+
+    return true;
 }
 
 bool Deterministic::contains_epsilon_transition() const
 {
-    return false;
+    return m_alphabet.find(symbol_type("&")) != m_alphabet.end();
 }
 
 bool Deterministic::operator==(const Deterministic & machine) const
@@ -1185,6 +1220,34 @@ NonDeterministic NonDeterministic::reverse() const
                             std::move(new_transitions),
                             std::move(new_final_states),
                             std::move(new_initial_state));
+}
+
+Deterministic NonDeterministic::minimization() const
+{
+    return determination().minimization();
+}
+
+bool NonDeterministic::membership(const string_type& sentence) const
+{
+    return determination().membership(sentence);
+}
+
+bool NonDeterministic::emptiness() const
+{
+    return determination().emptiness();
+}
+bool NonDeterministic::finiteness() const
+{
+    return determination().finiteness();
+}
+bool NonDeterministic::containment(const NonDeterministic & machine) const
+{
+    return determination().containment(machine.determination());
+}
+bool NonDeterministic::equivalence(const NonDeterministic & machine) const
+{
+    return determination().containment(machine.determination())
+            && determination().containment(machine.determination());
 }
 
 }  // namespace finite_automaton

@@ -82,15 +82,19 @@ regular_ptr parse(IteratorWrapper &begin, const IteratorWrapper &end)
         begin.next();
         switch (*begin.iterator()) {
         case '*':
+            begin.next();
             return exp ^ expression::Operation::Star;
 
         case '+':
+            begin.next();
             return exp ^ expression::Operation::Plus;
 
         case '?':
+            begin.next();
             return exp ^ expression::Operation::Optional;
 
         default:
+            begin.next();
             return exp;
         }
     }
@@ -140,9 +144,10 @@ regular_ptr parse(IteratorWrapper &begin, const IteratorWrapper &end)
 
     auto b_it = begin.iterator();
 
-    if (*b_it == '*' || *b_it == '+' || *b_it == '+' || *b_it == ')')
+    if (*b_it == '*' || *b_it == '+' || *b_it == ')')
         throw std::out_of_range("Expressão mal formada");
 
+    begin.next();
     return new empty_type();
 }
 

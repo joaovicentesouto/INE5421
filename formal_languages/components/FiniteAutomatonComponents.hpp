@@ -34,6 +34,8 @@ public:
 
     bool operator<(const Symbol &symbol) const;
 
+    string_type value() const;
+
 private:
     string_type m_symbol{"&"};
 };
@@ -63,6 +65,8 @@ public:
     State operator+(const string_type &sufix) const;
 
     bool operator<(const State &state) const;
+
+    string_type value() const;
 
 private:
     string_type m_state{"Error"}; // error

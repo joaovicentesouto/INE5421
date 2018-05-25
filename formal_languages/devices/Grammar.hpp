@@ -8,16 +8,24 @@
 
 namespace formal_device
 {
+namespace manipulator
+{
+    class DevicesConverter;
+}
 namespace grammar
 {
+
 
 class Regular
 {
   public:
+    friend class manipulator::DevicesConverter;
+
     template <class T>
     using set_type                     = std::set<T>;
     template <class Key, class Value>
     using map_type                     = std::map<Key, Value>;
+    using string_type                  = std::string;
 
     using symbol_type                  = Symbol;
     using terminal_production_type     = TerminalProduction;
@@ -46,7 +54,16 @@ class Regular
     {
     }
 
-  private:
+    const vocabulary_set_type& vn() const;
+    const vocabulary_set_type& vt() const;
+    const production_map_type& productions() const;
+    const symbol_type& initial_symbol() const;
+
+    set_type<string_type> sentences_generator(int n) const;
+
+    bool operator==(const Regular &regular);
+
+  public:
     vocabulary_set_type m_vn;
     vocabulary_set_type m_vt;
     production_map_type m_productions;

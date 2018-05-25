@@ -16,6 +16,7 @@ target_link_libraries(formal_languages_tests
     PRIVATE formal_languages_components
     PRIVATE formal_languages_devices
     PRIVATE formal_languages_parsers
+    PRIVATE formal_languages_manipulators
 )
 
 message("Creating symlink for test files")

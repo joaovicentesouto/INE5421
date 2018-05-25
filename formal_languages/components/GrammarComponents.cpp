@@ -35,6 +35,11 @@ bool Symbol::operator<(const Symbol &symbol) const
     return m_value < symbol.m_value;
 }
 
+Symbol::string_type Symbol::value() const
+{
+    return m_value;
+}
+
 /* ----------------------------------------------------------------------- */
 
 bool SentencialForm::is_sentence() const
@@ -47,17 +52,19 @@ SentencialForm::symbol_type SentencialForm::non_terminal()
     return m_non_terminal;
 }
 
-SentencialForm::string_type SentencialForm::setence()
+SentencialForm::string_type SentencialForm::sentence()
 {
     return m_sentence;
 }
 
 SentencialForm SentencialForm::operator+(const symbol_type& symbol) const
 {
+    auto sent = m_sentence == "&" ? "" : m_sentence;
+
     if (symbol.is_terminal())
-        return SentencialForm{"&", m_sentence + symbol.m_value};
+        return SentencialForm{"&", sent + symbol.m_value};
     else
-        return SentencialForm{symbol, m_sentence};
+        return SentencialForm{symbol, sent};
 }
 
 bool SentencialForm::operator==(const SentencialForm &form) const
@@ -82,9 +89,9 @@ bool Sentence::is_sentence() const
     return SentencialForm::is_sentence();
 }
 
-Sentence::string_type Sentence::setence()
+Sentence::string_type Sentence::sentence()
 {
-    return SentencialForm::setence();
+    return SentencialForm::sentence();
 }
 
 SentencialForm Sentence::operator+(const symbol_type& symbol) const
@@ -117,6 +124,11 @@ bool ProductionPointer::operator==(const ProductionPointer &prod) const
 bool ProductionPointer::operator<(const ProductionPointer &prod) const
 {
     return (*get()) < *prod;
+}
+
+SentencialForm ProductionPointer::operator<<(const SentencialForm &form) const
+{
+    return (*get()) << form;
 }
 
 /* ----------------------------------------------------------------------- */
@@ -160,6 +172,21 @@ bool TerminalProduction::operator<(const Production &prod) const
     return m_terminal.m_value < term->m_terminal.m_value;
 }
 
+Production::string_type TerminalProduction::non_terminal() const
+{
+    return "";
+}
+
+Production::string_type TerminalProduction::terminal() const
+{
+    return m_terminal.value();
+}
+
+Production::string_type TerminalProduction::to_string()
+{
+    return m_terminal.value();
+}
+
 /* ----------------------------------------------------------------------- */
 
 bool NonTerminalProduction::is_terminal() const
@@ -192,6 +219,21 @@ bool NonTerminalProduction::operator<(const Production &prod) const
     symbol_type::string_type other_value = term->m_terminal.m_value + term->m_non_terminal.m_value;
 
     return value < other_value;
+}
+
+NonTerminalProduction::string_type NonTerminalProduction::non_terminal() const
+{
+    return m_non_terminal.value();
+}
+
+NonTerminalProduction::string_type NonTerminalProduction::terminal() const
+{
+    return m_terminal.value();
+}
+
+Production::string_type NonTerminalProduction::to_string()
+{
+    return m_terminal.value() + m_non_terminal.value();
 }
 
 /* ----------------------------------------------------------------------- */

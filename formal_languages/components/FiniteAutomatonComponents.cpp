@@ -30,6 +30,11 @@ bool Symbol::operator<(const Symbol &symbol) const
     return m_symbol < symbol.m_symbol;
 }
 
+Symbol::string_type Symbol::value() const
+{
+    return m_symbol;
+}
+
 State::State(const string_type &state) :
     m_state(state)
 {
@@ -65,6 +70,11 @@ State State::operator+(const string_type &sufix) const
 bool State::operator<(const State &state) const
 {
     return m_state < state.m_state;
+}
+
+State::string_type State::value() const
+{
+    return m_state;
 }
 
 std::size_t Hasher::operator()(const symbol_type &symbol) const

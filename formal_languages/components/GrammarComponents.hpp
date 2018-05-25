@@ -32,6 +32,7 @@ class Symbol
     Symbol(const string_type &symbol);
     Symbol(string_type &&symbol);
 
+    string_type value() const;
     bool is_terminal() const;
     bool operator==(const Symbol &symbol) const;
     bool operator==(const string_type &symbol) const;
@@ -64,7 +65,7 @@ class SentencialForm
 
     bool is_sentence() const;
     symbol_type non_terminal();
-    string_type setence();
+    string_type sentence();
 
     SentencialForm operator+(const symbol_type &symbol) const;
     bool operator==(const SentencialForm &from) const;
@@ -91,7 +92,7 @@ class Sentence : public SentencialForm
     Sentence(string_type &&sentence);
 
     bool is_sentence() const;
-    string_type setence();
+    string_type sentence();
 
     SentencialForm operator+(const symbol_type &symbol) const;
     bool operator==(const SentencialForm &form) const;
@@ -110,6 +111,7 @@ public:
     ProductionPointer &operator=(const ProductionPointer &) = default;
     ProductionPointer(ProductionPointer &&) = default;
     ProductionPointer &operator=(ProductionPointer &&) = default;
+    SentencialForm operator<<(const SentencialForm &form) const;
 
     bool operator==(const ProductionPointer &prod) const;
     bool operator<(const ProductionPointer &prod) const;
@@ -119,13 +121,17 @@ class Production
 {
   public:
     friend class Hasher;
+    using string_type = std::string;
 
     virtual ~Production() = default;
 
+    virtual string_type non_terminal() const = 0;
+    virtual string_type terminal() const = 0;
     virtual bool is_terminal() const = 0;
     virtual SentencialForm operator<<(const SentencialForm &form) const = 0;
     virtual bool operator==(const Production &form) const = 0;
     virtual bool operator<(const Production &prod) const = 0;
+    virtual string_type to_string() = 0;
 };
 
 class TerminalProduction : public Production
@@ -145,10 +151,13 @@ class TerminalProduction : public Production
     TerminalProduction(const symbol_type &terminal);
     TerminalProduction(symbol_type &&terminal);
 
+    string_type non_terminal() const;
+    string_type terminal() const;
     bool is_terminal() const;
     SentencialForm operator<<(const SentencialForm &form) const;
     bool operator==(const Production &prod) const;
     bool operator<(const Production &prod) const;
+    string_type to_string();
 
   private:
     symbol_type m_terminal;
@@ -175,10 +184,13 @@ class NonTerminalProduction : public Production
     {
     }
 
+    string_type non_terminal() const;
+    string_type terminal() const;
     bool is_terminal() const;
     SentencialForm operator<<(const SentencialForm &form) const;
     bool operator==(const Production &prod) const;
     bool operator<(const Production &prod) const;
+    string_type to_string();
 
   private:
     symbol_type m_terminal, m_non_terminal;

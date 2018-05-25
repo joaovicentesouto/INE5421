@@ -15,6 +15,12 @@
 
 namespace formal_device
 {
+
+namespace manipulator
+{
+    class DevicesConverter;
+}
+
 namespace finite_automaton
 {
 
@@ -26,10 +32,13 @@ enum class Operation
     Transitive,
     Optional
 };
+
 class NonDeterministic;
+
 class Deterministic
 {
   public:
+    friend class manipulator::DevicesConverter;
     friend class NonDeterministic;
 
     template <class T>
@@ -63,6 +72,11 @@ class Deterministic
     }
 
     // Class member functions
+    const symbol_set_type& alphabet() const;
+    const state_set_type& states() const;
+    const transition_map_type& transitions() const;
+    const state_set_type& final_states() const;
+    const state_type& initial_state() const;
 
     // Basic properties
     Deterministic operator!() const; // not
@@ -78,7 +92,6 @@ class Deterministic
 
     Deterministic remove_dead_states() const;
     Deterministic remove_unreachable_states() const;
-    Deterministic remove_equivalent_states() const;
 
     // decision problems
     bool membership(const string_type& sentece) const;
@@ -162,6 +175,7 @@ public:
     template <class Key, class Value>
     using map_type            = Deterministic::map_type<Key, Value>;
 
+    using string_type         = Deterministic::string_type;
     using state_type          = Deterministic::state_type;
     using symbol_type         = Deterministic::symbol_type;
     using state_set_type      = Deterministic::state_set_type;
@@ -190,6 +204,13 @@ public:
 
     Deterministic remove_epsilon() const;
     Deterministic determination() const;
+    Deterministic minimization() const;
+
+    bool membership(const string_type& sentence) const;
+    bool emptiness() const;
+    bool finiteness() const;
+    bool containment(const NonDeterministic & machine) const;
+    bool equivalence(const NonDeterministic & machine) const;
 
     NonDeterministic operator!() const; // not
     NonDeterministic operator|(const NonDeterministic & machine) const; // or
