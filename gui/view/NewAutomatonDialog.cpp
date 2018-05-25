@@ -42,6 +42,8 @@ void NewAutomatonDialog::on_btnDeleteLine_clicked()
 void NewAutomatonDialog::on_btnAddColumn_clicked()
 {
     ui->automatonTable->insertColumn(ui->automatonTable->columnCount());
+    ui->automatonTable->setItem(0, ui->automatonTable->columnCount() - 1, new QTableWidgetItem(""));
+    ui->automatonTable->item(0, ui->automatonTable->columnCount() - 1)->setBackground(QColor("#ff6969"));
 }
 
 void NewAutomatonDialog::on_btnDeleteColumn_clicked()
@@ -84,11 +86,20 @@ void NewAutomatonDialog::on_automatonTable_itemChanged(QTableWidgetItem *item)
     if (item->row() == item->column() && item->column() == 0)
         return;
 
-    if (item->row() == 0)
-        if (item->text().size() > 1 || item->text().size() < 1)
-            ui->automatonTable->item(item->row(), item->column())->setBackground(QColor("#ff6969"));
-        else
-            for (int j = 1; j < ui->automatonTable->columnCount() - 1; j++)
-                if (ui->automatonTable->item(0, j)->text().toStdString() == item->text().toStdString())
+    if (item->row() == 0) {
+        if (item->text().size() == 1) {
+            for (int j = 1; j < ui->automatonTable->columnCount() - 1; j++) {
+                std::cout << ui->automatonTable->item(0, j)->text().compare(item->text()) << "\n" << std::flush;
+                if (ui->automatonTable->item(0, j)->text().compare(item->text()) == 0) {
                     ui->automatonTable->item(item->row(), item->column())->setBackground(QColor("#ff6969"));
+                    return;
+                }
+            }
+        } else {
+            ui->automatonTable->item(item->row(), item->column())->setBackground(QColor("#ff6969"));
+            return;
+        }
+    }
+
+    ui->automatonTable->item(item->row(), item->column())->setBackground(QColor("#ffffff"));
 }
