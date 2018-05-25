@@ -22,17 +22,27 @@ void DynamicAutomatonWidget::on_m_new_grammar_btn_clicked()
 {
     NewGrammarDialog dialog(this);
 
-    QObject::connect(&dialog, SIGNAL(new_grammar(formal_device::grammar::Regular*)),
-                        this, SLOT  (new_grammar(formal_device::grammar::Regular*)));
+    QObject::connect(&dialog, SIGNAL(new_grammar(grammar_type)),
+                        this, SLOT  (new_grammar(grammar_type)));
     dialog.exec();
 }
 
-void DynamicAutomatonWidget::new_grammar(formal_device::grammar::Regular new_grammar)
+void DynamicAutomatonWidget::new_grammar(grammar_type new_grammar)
 {
 
 }
 
-void DynamicAutomatonWidget::new_expression(QString new_expression)
+void DynamicAutomatonWidget::on_m_new_exp_btn_clicked()
+{
+    NewExpressionDialog dialog(this);
+
+    QObject::connect(&dialog, SIGNAL(new_expression(expression_type_ptr)),
+                        this, SLOT  (new_expression(expression_type_ptr)));
+    dialog.exec();
+}
+
+void DynamicAutomatonWidget::new_expression(expression_type_ptr new_expression)
 {
 
 }
+

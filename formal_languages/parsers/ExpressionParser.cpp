@@ -5,15 +5,20 @@ namespace formal_device
 namespace parser
 {
 
-regular_ptr make_regular_expression(const string_type & file_path)
+regular_ptr make_regular_expression_from_file(const string_type & file_path)
+{
+    return regular_ptr(new epsilon_type());
+}
+
+regular_ptr make_regular_expression(string_type exp)
 {
     //std::ifstream t(file_path);
     //string_type exp((std::istreambuf_iterator<char>(t)), std::istreambuf_iterator<char>());
 
     //exp.erase( std::remove_if(exp.begin(), exp.end(), std::isspace), exp.end());
-    string_type exp = file_path;
-    IteratorWrapper begin(exp.begin());
-    IteratorWrapper end(exp.end());
+
+    exp = std::regex_replace( exp, std::regex(" "), "" );
+    IteratorWrapper begin(exp.begin()), end(exp.end());
 
     regular_ptr current_exp(new empty_type());
 
