@@ -172,8 +172,8 @@ TEST_CASE("Finite Automaton: Document States", "[regular_expression][empty]")
     auto f = str.begin();
     auto l = str.end();
 
-    ast::Document doc;
-    CHECK(phrase_parse(f, l, parser::document, parser::ascii::blank, doc));
+    ast::FADocument doc;
+    CHECK(phrase_parse(f, l, parser::FADocument, parser::ascii::blank, doc));
     CHECK(doc.m_transition_symbols.m_transition_symbols.size() == 2);
     CHECK(doc.m_states.size() == 2);
 
@@ -219,8 +219,8 @@ TEST_CASE("Finite Automaton: Document States", "[regular_expression][empty]")
 
      boost::spirit::istream_iterator f(ifs), l;
 
-     ast::Document doc;
-     CHECK(phrase_parse(f, l, parser::document, parser::ascii::blank, doc));
+     ast::FADocument doc;
+     CHECK(phrase_parse(f, l, parser::FADocument, parser::ascii::blank, doc));
      CHECK(doc.m_transition_symbols.m_transition_symbols.size() == 2);
      CHECK(doc.m_states.size() == 2);
 
@@ -266,8 +266,8 @@ TEST_CASE("Finite Automaton: Document States", "[regular_expression][empty]")
 
      boost::spirit::istream_iterator f(ifs), l;
 
-     ast::Document doc;
-     CHECK(phrase_parse(f, l, parser::document, parser::ascii::blank, doc));
+     ast::FADocument doc;
+     CHECK(phrase_parse(f, l, parser::FADocument, parser::ascii::blank, doc));
      CHECK(doc.m_transition_symbols.m_transition_symbols.size() == 2);
      CHECK(doc.m_states.size() == 2);
 

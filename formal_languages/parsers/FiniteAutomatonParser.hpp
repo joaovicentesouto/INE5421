@@ -39,7 +39,7 @@ struct State
     std::vector<Transition> m_transitions;
 };
 
-struct Document
+struct FADocument
 {
     TransitionSymbols m_transition_symbols;
     std::vector<State> m_states;
@@ -53,7 +53,7 @@ BOOST_FUSION_ADAPT_STRUCT(formal_device::finite_automaton::ast::Symbol, m_value)
 BOOST_FUSION_ADAPT_STRUCT(formal_device::finite_automaton::ast::TransitionSymbols, m_transition_symbols)
 BOOST_FUSION_ADAPT_STRUCT(formal_device::finite_automaton::ast::Transition, m_transitions)
 BOOST_FUSION_ADAPT_STRUCT(formal_device::finite_automaton::ast::State, m_state, m_transitions)
-BOOST_FUSION_ADAPT_STRUCT(formal_device::finite_automaton::ast::Document, m_transition_symbols, m_states)
+BOOST_FUSION_ADAPT_STRUCT(formal_device::finite_automaton::ast::FADocument, m_transition_symbols, m_states)
 
 namespace formal_device
 {
@@ -67,16 +67,16 @@ namespace parser {
     x3::rule<class transition_symbols_, ast::TransitionSymbols> transition_symbols{"transition_symbols"};
     x3::rule<class transition_, ast::Transition> transition{"transition"};
     x3::rule<class state_, ast::State>           state{"state"};
-    x3::rule<class document_, ast::Document>     document{"document"};
+    x3::rule<class FADocument, ast::FADocument>     FADocument{"FADocument"};
 
     const auto identifier             = x3::lexeme[+x3::char_("->a-zA-Z0-9*") - '\n'];
     const auto symbol_def             = identifier;
     const auto transition_symbols_def = x3::lit("+ |") >> symbol % "|";
     const auto transition_def         = -x3::lit("{") >> (symbol % ",") >> -x3::lit("}");
     const auto state_def              = symbol >> "|" >> transition % "|";
-    const auto document_def           = transition_symbols >> x3::eol >> (state % x3::eol);
+    const auto FADocument_def         = transition_symbols >> x3::eol >> (state % x3::eol);
 
-    BOOST_SPIRIT_DEFINE(symbol, transition_symbols, transition, state, document);
+    BOOST_SPIRIT_DEFINE(symbol, transition_symbols, transition, state, FADocument);
 }
 }
 }

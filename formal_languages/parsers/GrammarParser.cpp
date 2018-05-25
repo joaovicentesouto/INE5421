@@ -17,7 +17,7 @@ using vocabulary_set_type          = Regular::vocabulary_set_type;
 using production_map_type          = Regular::production_map_type;
 using pair_production_type         = Regular::pair_production_type;
 
-Regular make_regular_grammar(const string_type &file_path)
+Regular make_regular_grammar_from_file(const string_type &file_path)
 {
     std::ifstream grammar_file(file_path);
 
@@ -27,11 +27,19 @@ Regular make_regular_grammar(const string_type &file_path)
     grammar_file >> std::noskipws;
     boost::spirit::istream_iterator first(grammar_file), last;
 
+    return Regular();
+//    return make_regular_grammar();
+}
+
+Regular make_regular_grammar(string_type grammar)
+{
+    auto first(grammar.begin()), last(grammar.end());
+
     ast::Document doc;
     bool parsed = phrase_parse(first, last, parser::document, parser::ascii::blank, doc);
 
     if (!parsed)
-        throw std::out_of_range("Arquivo mal formatado");
+        throw std::out_of_range("Gramática mal formatado");
 
     vocabulary_set_type vn;
     vocabulary_set_type vt;

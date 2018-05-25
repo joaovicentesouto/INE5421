@@ -51,14 +51,15 @@ namespace grammar
 {
 namespace parser
 {
-    Regular make_regular_grammar(const string_type & file);
+    Regular make_regular_grammar_from_file(const string_type & file_path);
+    Regular make_regular_grammar(string_type str_grammar);
 
     namespace x3    = boost::spirit::x3;
     namespace ascii = x3::ascii;
 
     x3::rule<class production_, ast::Production> production{"production"};
-    x3::rule<class line_, ast::Line>             line{"line"};
-    x3::rule<class document_, ast::Document>     document{"document"};
+    x3::rule<class line_, ast::Line>             line{"Line"};
+    x3::rule<class Document_, ast::Document>     document{"Document"};
 
     const auto identifier     = x3::lexeme[+x3::char_("a-zA-Z")];
     const auto production_def = identifier;
