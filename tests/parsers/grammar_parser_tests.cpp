@@ -30,6 +30,25 @@ TEST_CASE("Grammar Parser: Document Productions", "[regular_expression][empty]")
     CHECK((regular == grammar_r));
 }
 
+TEST_CASE("Grammar Parser: Invalid Grammar", "[grammar][parser]")
+{
+    CHECK_NOTHROW(make_regular_grammar("S -> a"));
+    CHECK_NOTHROW(make_regular_grammar("S -> A"));
+    CHECK_NOTHROW(make_regular_grammar("S -> a\nS -> b"));
+    CHECK_NOTHROW(make_regular_grammar("S -> a\nA-> a | B"));
+}
+
+TEST_CASE("Grammar Parser: Invalid Grammar", "[grammar][parser]")
+{
+    CHECK_THROWS(make_regular_grammar("a -> a"));
+    CHECK_THROWS(make_regular_grammar("S - A"));
+    CHECK_THROWS(make_regular_grammar("S > A"));
+    CHECK_THROWS(make_regular_grammar("-> a"));
+    CHECK_THROWS(make_regular_grammar("S -> aA\nA"));
+    CHECK_THROWS(make_regular_grammar("a -> aA | b"));
+    CHECK_THROWS(make_regular_grammar("S -> aA | A | b"));
+}
+
 //TEST_CASE("Grammar Parser: File", "[regular_expression][empty]")
 //{
 //    std::ifstream ifs("./files/grammar.txt");
