@@ -27,7 +27,7 @@ void DynamicAutomatonWidget::on_m_new_grammar_btn_clicked()
     dialog.exec();
 }
 
-void DynamicAutomatonWidget::new_grammar(grammar_type new_grammar)
+void DynamicAutomatonWidget::new_grammar(grammar_type grammar)
 {
 
 }
@@ -41,8 +41,21 @@ void DynamicAutomatonWidget::on_m_new_exp_btn_clicked()
     dialog.exec();
 }
 
-void DynamicAutomatonWidget::new_expression(expression_type_ptr new_expression)
+void DynamicAutomatonWidget::new_expression(expression_type_ptr expression)
 {
 
 }
 
+void DynamicAutomatonWidget::on_m_new_machine_btn_clicked()
+{
+    NewAutomatonDialog dialog(this);
+
+    QObject::connect(&dialog, SIGNAL(new_automaton(QString)),
+                        this, SLOT  (new_automaton(QString)));
+    dialog.exec();
+}
+
+void DynamicAutomatonWidget::new_automaton(QString automaton)
+{
+
+}

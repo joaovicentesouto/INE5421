@@ -2,12 +2,10 @@
 #define DYNAMICAUTOMATONWIDGET_HPP
 
 #include <QWidget>
-
-//#include <formal_languages/devices/RegularExpression.hpp>
-//#include <formal_languages/devices/Grammar.hpp>
-//#include <formal_languages/devices/RegularExpression.hpp>
+#include <QColor>
 
 #include <view/NewGrammarDialog.hpp>
+#include <view/NewAutomatonDialog.hpp>
 #include <view/NewExpressionDialog.hpp>
 
 namespace Ui {
@@ -30,10 +28,11 @@ public:
 public slots:
     void new_grammar(grammar_type grammar);
     void new_expression(expression_type_ptr expression);
+    void new_automaton(QString automaton);
 
 private slots:
     void on_m_new_grammar_btn_clicked();
-
+    void on_m_new_machine_btn_clicked();
     void on_m_new_exp_btn_clicked();
 
 private:
