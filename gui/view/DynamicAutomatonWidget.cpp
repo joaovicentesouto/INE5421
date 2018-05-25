@@ -32,7 +32,21 @@ void DynamicAutomatonWidget::new_grammar(QString new_grammar)
 
 }
 
+void DynamicAutomatonWidget::new_automaton(QString new_automaton)
+{
+
+}
+
 void DynamicAutomatonWidget::new_expression(QString new_expression)
 {
 
+}
+
+void DynamicAutomatonWidget::on_m_new_machine_btn_clicked()
+{
+    NewAutomatonDialog dialog(this);
+
+    QObject::connect(&dialog, SIGNAL(new_automaton(QString)),
+                        this, SLOT  (new_automaton(QString)));
+    dialog.exec();
 }
