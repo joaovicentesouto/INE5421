@@ -422,10 +422,6 @@ Deterministic Deterministic::remove_epsilon_transition() const
 
 Deterministic Deterministic::minimization() const
 {
-    using map_of_states_set_type = std::unordered_map<state_set_type, state_type, Hasher>;
-    using deque_of_states_set_type = std::deque<state_set_type>;
-    using vector_of_states_set_type = std::vector<state_set_type>;
-
     Deterministic assistant = remove_unreachable_states();
     assistant = assistant.remove_dead_states();
 

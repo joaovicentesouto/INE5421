@@ -2,7 +2,8 @@
 #define NEWGRAMMARDIALOG_HPP
 
 #include <QDialog>
-#include <formal_languages/parsers/GrammarParser.hpp>
+#include <formal_languages/devices/Grammar.hpp>
+#include <formal_languages/parsers/ExpressionParser.hpp>
 
 namespace Ui {
 class NewGrammarDialog;

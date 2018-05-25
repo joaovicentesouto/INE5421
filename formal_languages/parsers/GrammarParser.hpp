@@ -2,73 +2,36 @@
 #define PARSER_REGULAR_GRAMMAR_HPP
 
 #include <iostream>
-#include <boost/spirit/home/x3.hpp>
-#include <boost/fusion/include/adapt_struct.hpp>
-#include <boost/fusion/include/io.hpp>
-
-#include <boost/spirit/include/support_istream_iterator.hpp>
-#include <iostream>
 #include <sstream>
 #include <fstream>
-
+#include <algorithm>
+#include "IteratorWrapper.hpp"
 #include <formal_languages/devices/Grammar.hpp>
 
 namespace formal_device
 {
-namespace grammar
-{
-
-using string_type = Regular::symbol_type::string_type;
-
-namespace ast
-{
-struct Production
-{
-    string_type m_production;
-};
-
-struct Line
-{
-    string_type m_symbol;
-    std::vector<Production> m_productions;
-};
-
-struct Document
-{
-    std::vector<Line> m_lines;
-};
-}   // namespace ast
-}   // namespace grammar
-}   // namespace formal_device
-
-BOOST_FUSION_ADAPT_STRUCT(formal_device::grammar::ast::Production, m_production)
-BOOST_FUSION_ADAPT_STRUCT(formal_device::grammar::ast::Line, m_symbol, m_productions)
-BOOST_FUSION_ADAPT_STRUCT(formal_device::grammar::ast::Document, m_lines)
-
-namespace formal_device
-{
-namespace grammar
-{
 namespace parser
 {
-    Regular make_regular_grammar_from_file(const string_type & file_path);
-    Regular make_regular_grammar(string_type str_grammar);
+using string_type = std::string;
+using symbol_type                  = grammar::Regular::symbol_type;
+using terminal_production_type     = grammar::Regular::terminal_production_type;
+using non_terminal_production_type = grammar::Regular::non_terminal_production_type;
+using production_type_ptr          = grammar::Regular::production_type_ptr;
+using vocabulary_set_type          = grammar::Regular::vocabulary_set_type;
+using production_map_type          = grammar::Regular::production_map_type;
+using pair_production_type         = grammar::Regular::pair_production_type;
 
-    namespace x3    = boost::spirit::x3;
-    namespace ascii = x3::ascii;
+void new_non_terminal(IteratorWrapper &begin, IteratorWrapper &end,
+                      vocabulary_set_type &vn, vocabulary_set_type &vt,
+                      production_map_type &productions, symbol_type &initial);
+void new_productions(symbol_type current, IteratorWrapper &begin, IteratorWrapper &end,
+                     vocabulary_set_type &vn, vocabulary_set_type &vt,
+                     production_map_type &productions);
 
-    x3::rule<class production_, ast::Production> production{"production"};
-    x3::rule<class line_, ast::Line>             line{"Line"};
-    x3::rule<class Document_, ast::Document>     document{"Document"};
+grammar::Regular make_regular_grammar_from_file(const string_type & file_path);
+grammar::Regular make_regular_grammar(string_type str_grammar);
 
-    const auto identifier     = x3::lexeme[+x3::char_("a-zA-Z")];
-    const auto production_def = identifier;
-    const auto line_def       = identifier >> x3::lit("->") >> production % "|";
-    const auto document_def   = line % x3::eol;
-
-    BOOST_SPIRIT_DEFINE(production, line, document);
-}   // namespace ast
-}   // namespace grammar
+}   // namespace parser
 }   // namespace formal_devices
 
 #endif
