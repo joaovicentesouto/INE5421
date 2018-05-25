@@ -15,9 +15,7 @@ NewGrammarDialog::~NewGrammarDialog()
 
 void NewGrammarDialog::on_m_ok_btn_clicked()
 {
-    std::string grammar_str = ui->m_text->toPlainText().toStdString();
-    auto grammar = formal_device::grammar::parser::make_regular_grammar(grammar_str);
-    emit new_grammar(grammar);
+    emit new_grammar("FOI");
     this->close();
 }
 
