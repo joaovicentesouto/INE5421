@@ -23,12 +23,22 @@ class Facade : public QObject
     Q_OBJECT
 
 public:
+    template <class T> using container = std::vector<T>;
+
     using automaton_type_ptr = std::shared_ptr<formal_device::finite_automaton::GenericAutomaton>;
+    using result_pair_type = std::pair<automaton_type_ptr, QString>;
+    using automaton_ptr_container_type = container<result_pair_type>;
 
     Facade();
     ~Facade();
 
     automaton_type_ptr request_automaton(unsigned machine, QString automaton);
+
+    void complement(automaton_type_ptr automaton);
+    void reflexive_closure(automaton_type_ptr automaton);
+    void reverse(automaton_type_ptr automaton);
+    void determination(automaton_type_ptr automaton);
+    void minimization(automaton_type_ptr automaton);
 
 public slots:
     void new_grammar(unsigned machine, grammar_type grammar);
@@ -41,6 +51,7 @@ signals:
     void update_automaton_to_m1(const ndfa_type& automaton, QString automaton_name);
     void update_automaton_to_m2(const dfa_type& automaton, QString automaton_name);
     void update_automaton_to_m2(const ndfa_type& automaton, QString automaton_name);
+    void update_result(Facade::automaton_ptr_container_type& result);
 
 private:
     automaton_type_ptr m_m1;

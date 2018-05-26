@@ -71,13 +71,13 @@ void DynamicAutomatonWidget::on_m_new_machine_btn_clicked()
 
 void DynamicAutomatonWidget::on_m_history_itemClicked(QListWidgetItem *item)
 {
-    Facade::automaton_type_ptr p = m_facade->request_automaton(m_number, item->text());
+    m_current = m_facade->request_automaton(m_number, item->text());
 
-    const dfa_type * automaton = dynamic_cast<const dfa_type*>(p.get());
+    const dfa_type * automaton = dynamic_cast<const dfa_type*>(m_current.get());
     if (automaton)
         ui->m_machine << *automaton;
     else
-        ui->m_machine << *dynamic_cast<const ndfa_type*>(p.get());
+        ui->m_machine << *dynamic_cast<const ndfa_type*>(m_current.get());
 }
 
 void DynamicAutomatonWidget::on_m_grammar_btn_clicked()
@@ -97,4 +97,44 @@ void DynamicAutomatonWidget::on_m_grammar_btn_clicked()
 
     GrammarViewer dialog(converter.convert(*to_grammar), this);
     dialog.exec();
+}
+
+void DynamicAutomatonWidget::on_m_negation_btn_clicked()
+{
+    if (!m_current.get())
+        return ;
+
+    m_facade->complement(m_current);
+}
+
+void DynamicAutomatonWidget::on_m_closure_btn_clicked()
+{
+    if (!m_current.get())
+        return ;
+
+    m_facade->reflexive_closure(m_current);
+}
+
+void DynamicAutomatonWidget::on_m_reverse_btn_clicked()
+{
+    if (!m_current.get())
+        return ;
+
+    m_facade->reverse(m_current);
+}
+
+void DynamicAutomatonWidget::on_m_determinization_btn_clicked()
+{
+    if (!m_current.get())
+        return ;
+
+    m_facade->determination(m_current);
+}
+
+void DynamicAutomatonWidget::on_m_minimization_btn_clicked()
+{
+    if (!m_current.get())
+        return ;
+
+    m_facade->minimization(m_current);
 }

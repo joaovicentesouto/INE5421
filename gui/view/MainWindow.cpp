@@ -12,6 +12,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
     ui->m_machine_1->set_facade(m_facade);
     ui->m_machine_2->set_facade(m_facade);
+    ui->m_result_machine->set_facade(m_facade);
 
     QObject::connect(m_facade, SIGNAL(update_automaton_to_m1(const dfa_type&, QString)),
                      ui->m_machine_1, SLOT (update_automaton(const dfa_type&, QString)));
@@ -22,6 +23,9 @@ MainWindow::MainWindow(QWidget *parent) :
                      ui->m_machine_2, SLOT (update_automaton(const dfa_type&, QString)));
     QObject::connect(m_facade, SIGNAL(update_automaton_to_m2(const ndfa_type&, QString)),
                      ui->m_machine_2, SLOT (update_automaton(const ndfa_type&, QString)));
+
+    QObject::connect(m_facade, SIGNAL(update_result(Facade::automaton_ptr_container_type&)),
+                     ui->m_result_machine, SLOT (update_result(Facade::automaton_ptr_container_type&)));
 }
 
 MainWindow::~MainWindow()
