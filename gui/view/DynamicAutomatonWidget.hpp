@@ -10,6 +10,9 @@
 #include <view/NewGrammarDialog.hpp>
 #include <view/NewAutomatonDialog.hpp>
 #include <view/NewExpressionDialog.hpp>
+#include <view/GrammarViewer.hpp>
+
+#include <formal_languages/manipulators/DevicesConverter.hpp>
 
 namespace Ui {
 class DynamicAutomatonWidget;
@@ -43,10 +46,13 @@ private slots:
 
     void on_m_history_itemClicked(QListWidgetItem *item);
 
+    void on_m_grammar_btn_clicked();
+
 private:
     Ui::DynamicAutomatonWidget *ui;
     Facade * m_facade;
     unsigned m_number;
+    Facade::automaton_type_ptr m_current;
 };
 
 #endif // DYNAMICAUTOMATONWIDGET_HPP
