@@ -24,32 +24,62 @@ void Facade::new_grammar(unsigned machine, grammar_type grammar)
 
     ndfa_type automaton = converter.convert(grammar);
 
+    std::map<QString, automaton_type_ptr> * map;
+    automaton_type_ptr * machine_ptr;
+
     if (machine == 1)
     {
-        m_m1 = automaton_type_ptr(new ndfa_type(automaton));
-
-        QString automaton_name = "Máquina " + QString::number(m_m1_history.size());
-        m_m1_history[automaton_name] = m_m1;
-
-        emit update_automaton_to_m1(automaton, automaton_name);
+        machine_ptr = &m_m1;
+        map = &m_m1_history;
     }
     else
     {
-        m_m2 = automaton_type_ptr(new ndfa_type(automaton));
-
-        QString automaton_name = "Máquina " + QString::number(m_m2_history.size());
-        m_m2_history[automaton_name] = m_m2;
-
-        emit update_automaton_to_m2(automaton, automaton_name);
+        machine_ptr = &m_m2;
+        map = &m_m2_history;
     }
+
+    *machine_ptr = automaton_type_ptr(new ndfa_type(automaton));
+
+    QString automaton_name = "Máquina " + QString::number(map->size());
+
+    (*map)[automaton_name] = *machine_ptr;
+
+    if (machine == 1)
+        emit update_automaton_to_m1(automaton, automaton_name);
+    else
+        emit update_automaton_to_m2(automaton, automaton_name);
 }
 
 void Facade::new_expression(unsigned machine, expression_type_ptr expression)
 {
+    formal_device::manipulator::DeSimoneTree tree(expression);
+
+    dfa_type automaton = tree.execute();
+
+    std::map<QString, automaton_type_ptr> * map;
+    automaton_type_ptr * machine_ptr;
+
     if (machine == 1)
-        emit update_automaton_to_m1(dfa_type(), "");
+    {
+        machine_ptr = &m_m1;
+        map = &m_m1_history;
+    }
     else
-        emit update_automaton_to_m2(dfa_type(), "");
+    {
+        machine_ptr = &m_m2;
+        map = &m_m2_history;
+    }
+
+    *machine_ptr = automaton_type_ptr(new dfa_type(automaton));
+
+    QString automaton_name = "Máquina " + QString::number(map->size());
+
+    (*map)[automaton_name] = *machine_ptr;
+
+    if (machine == 1)
+        emit update_automaton_to_m1(automaton, automaton_name);
+    else
+        emit update_automaton_to_m2(automaton, automaton_name);
 }
 
 void Facade::new_automaton(unsigned machine, dfa_type automaton)

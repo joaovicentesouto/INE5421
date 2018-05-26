@@ -18,6 +18,9 @@ public:
     explicit GrammarViewer(grammar_type grammar, QWidget *parent = 0);
     ~GrammarViewer();
 
+private slots:
+    void on_pushButton_clicked();
+
 private:
     Ui::GrammarViewer *ui;
     grammar_type m_grammar;

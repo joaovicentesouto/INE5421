@@ -2,8 +2,10 @@
 
 namespace formal_device
 {
-namespace expression
+namespace manipulator
 {
+
+using namespace expression;
 
 DeSimoneTree::DeSimoneTree(RegularPointer exp)
 {

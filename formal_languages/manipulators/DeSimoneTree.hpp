@@ -7,7 +7,7 @@
 
 namespace formal_device
 {
-namespace expression
+namespace manipulator
 {
 
 class DeSimoneTree
@@ -15,16 +15,16 @@ class DeSimoneTree
 public:
     using dfa_type = finite_automaton::Deterministic;
 
-    DeSimoneTree(RegularPointer exp);
+    DeSimoneTree(expression::RegularPointer exp);
     ~DeSimoneTree();
 
 	dfa_type execute();
 
 private:
-	DeSimoneNode * m_root;
+    expression::DeSimoneNode * m_root;
 };
 
-}   // namespace expression
+}   // namespace manipulator
 }   // namespace formal_device
 
 #endif // DESIMONETREE_H

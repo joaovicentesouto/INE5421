@@ -11,6 +11,7 @@
 #include <formal_languages/devices/RegularExpression.hpp>
 
 #include <formal_languages/manipulators/DevicesConverter.hpp>
+#include <formal_languages/manipulators/DeSimoneTree.hpp>
 
 using dfa_type            = formal_device::finite_automaton::Deterministic;
 using ndfa_type           = formal_device::finite_automaton::NonDeterministic;
