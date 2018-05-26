@@ -2,9 +2,10 @@
 #include "ui_NewAutomatonDialog.h"
 #include <iostream>
 
-NewAutomatonDialog::NewAutomatonDialog(QWidget *parent) :
+NewAutomatonDialog::NewAutomatonDialog(unsigned number, QWidget *parent) :
     QDialog(parent),
-    ui(new Ui::NewAutomatonDialog)
+    ui(new Ui::NewAutomatonDialog),
+    m_number(number)
 {
     ui->setupUi(this);
     ui->automatonTable->setColumnCount(1);

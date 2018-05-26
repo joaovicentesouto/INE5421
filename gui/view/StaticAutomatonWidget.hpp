@@ -3,8 +3,12 @@
 
 #include <QWidget>
 #include <QListWidget>
+
 #include <control/Facade.hpp>
 #include <control/Filler.hpp>
+#include <view/GrammarViewer.hpp>
+
+#include <formal_languages/manipulators/DevicesConverter.hpp>
 
 namespace Ui {
 class StaticAutomatonWidget;
@@ -25,6 +29,16 @@ public slots:
 
 private slots:
     void on_m_history_itemClicked(QListWidgetItem *item);
+
+    void on_m_grammar_clicked();
+
+    void on_m_to_m1_clicked();
+
+    void on_m_to_m2_clicked();
+
+signals:
+    void new_automaton(unsigned machine, dfa_type automaton);
+    void new_automaton(unsigned machine, ndfa_type automaton);
 
 private:
     Ui::StaticAutomatonWidget *ui;

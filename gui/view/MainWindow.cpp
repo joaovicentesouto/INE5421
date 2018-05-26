@@ -26,6 +26,12 @@ MainWindow::MainWindow(QWidget *parent) :
 
     QObject::connect(m_facade, SIGNAL(update_result(Facade::automaton_ptr_container_type&)),
                      ui->m_result_machine, SLOT (update_result(Facade::automaton_ptr_container_type&)));
+
+    QObject::connect(ui->m_result_machine, SIGNAL(new_automaton(unsigned, dfa_type)),
+                                  m_facade, SLOT (new_automaton(unsigned, dfa_type)));
+
+    QObject::connect(ui->m_result_machine, SIGNAL(new_automaton(unsigned, ndfa_type)),
+                                  m_facade, SLOT (new_automaton(unsigned, ndfa_type)));
 }
 
 MainWindow::~MainWindow()

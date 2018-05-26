@@ -44,3 +44,46 @@ void StaticAutomatonWidget::on_m_history_itemClicked(QListWidgetItem *item)
     else
         ui->m_machine << *dynamic_cast<const ndfa_type*>(m_current.get());
 }
+
+void StaticAutomatonWidget::on_m_grammar_clicked()
+{
+    if (!m_current.get())
+        return;
+
+    formal_device::manipulator::DevicesConverter converter;
+
+    ndfa_type * to_grammar;
+
+    const dfa_type * automaton = dynamic_cast<const dfa_type*>(m_current.get());
+    if (automaton)
+        to_grammar = new ndfa_type(*automaton);
+    else
+        to_grammar = new ndfa_type(*dynamic_cast<const ndfa_type*>(m_current.get()));
+
+    GrammarViewer dialog(converter.convert(*to_grammar), this);
+    dialog.exec();
+}
+
+void StaticAutomatonWidget::on_m_to_m1_clicked()
+{
+    const dfa_type  * dfa  = dynamic_cast<const dfa_type*>(m_current.get());
+    const ndfa_type * ndfa = dynamic_cast<const ndfa_type*>(m_current.get());
+
+    if (dfa)
+        emit new_automaton(11, *dfa);
+
+    if (ndfa)
+        emit new_automaton(11, *ndfa);
+}
+
+void StaticAutomatonWidget::on_m_to_m2_clicked()
+{
+    const dfa_type  * dfa  = dynamic_cast<const dfa_type*>(m_current.get());
+    const ndfa_type * ndfa = dynamic_cast<const ndfa_type*>(m_current.get());
+
+    if (dfa)
+        emit new_automaton(12, *dfa);
+
+    if (ndfa)
+        emit new_automaton(12, *ndfa);
+}

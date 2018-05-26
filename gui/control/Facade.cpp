@@ -88,16 +88,122 @@ void Facade::new_automaton(unsigned machine, dfa_type automaton)
 {
     if (machine == 1)
         emit update_automaton_to_m1(automaton, "");
-    else
+    else if (machine == 2)
         emit update_automaton_to_m2(automaton, "");
+    else
+    {
+        std::map<QString, automaton_type_ptr> * map;
+        automaton_type_ptr * machine_ptr;
+        QString automaton_name;
+
+        if (machine == 11)
+            map = &m_m1_history;
+        else
+            map = &m_m2_history;
+
+        automaton_type_ptr equal;
+
+        for (auto p : *map)
+        {
+            const dfa_type* dfa = dynamic_cast<const dfa_type*>(p.second.get());
+
+            if (!dfa)
+                continue;
+
+            if (automaton == *dfa)
+            {
+                equal = p.second;
+                break;
+            }
+        }
+
+        if (equal.get())
+        {
+            machine_ptr = new automaton_type_ptr(equal);
+
+            for (auto pair : *map)
+                if (pair.second == equal)
+                {
+                    automaton_name = pair.first;
+                    break;
+                }
+        }
+        else
+        {
+            machine_ptr = new automaton_type_ptr(new dfa_type(automaton));
+
+            automaton_name = "Máquina " + QString::number(map->size());
+            (*map)[automaton_name] = *machine_ptr;
+        }
+
+        if (machine == 11)
+            emit update_automaton_to_m1(automaton, automaton_name);
+        else
+            emit update_automaton_to_m2(automaton, automaton_name);
+
+        delete machine_ptr;
+    }
 }
 
 void Facade::new_automaton(unsigned machine, ndfa_type automaton)
 {
     if (machine == 1)
         emit update_automaton_to_m1(automaton, "");
-    else
+    else if (machine == 2)
         emit update_automaton_to_m2(automaton, "");
+    else
+    {
+        std::map<QString, automaton_type_ptr> * map;
+        automaton_type_ptr * machine_ptr;
+        QString automaton_name;
+
+        if (machine == 11)
+            map = &m_m1_history;
+        else
+            map = &m_m2_history;
+
+        automaton_type_ptr equal;
+
+        for (auto p : *map)
+        {
+            const ndfa_type* ndfa = dynamic_cast<const ndfa_type*>(p.second.get());
+
+            if (!ndfa)
+                continue;
+
+            if (automaton == *ndfa)
+            {
+                equal = p.second;
+                break;
+            }
+        }
+
+        if (equal.get())
+        {
+            machine_ptr = new automaton_type_ptr(equal);
+
+            for (auto pair : *map)
+                if (pair.second == equal)
+                {
+                    automaton_name = pair.first;
+                    break;
+                }
+        }
+        else
+        {
+            machine_ptr = new automaton_type_ptr(new ndfa_type(automaton));
+
+            automaton_name = "Máquina " + QString::number(map->size());
+            (*map)[automaton_name] = *machine_ptr;
+        }
+
+        if (machine == 11)
+            emit update_automaton_to_m1(automaton, automaton_name);
+        else
+            emit update_automaton_to_m2(automaton, automaton_name);
+
+        delete machine_ptr;
+    }
 }
 
 void Facade::complement(automaton_type_ptr automaton)

@@ -41,14 +41,34 @@ void DynamicAutomatonWidget::on_m_new_grammar_btn_clicked()
 void DynamicAutomatonWidget::update_automaton(const dfa_type& automaton, QString automaton_name)
 {
     ui->m_machine << automaton;
-    ui->m_history->addItem(automaton_name);
+
+    bool exists = false;
+
+    for (auto i = 0; i < ui->m_history->count(); ++i)
+        exists |= (ui->m_history->item(i)->text() == automaton_name);
+
+    if (!exists)
+    {
+        ui->m_history->addItem(automaton_name);
+    }
+
     m_current = Facade::automaton_type_ptr(new dfa_type(automaton));
 }
 
 void DynamicAutomatonWidget::update_automaton(const ndfa_type& automaton, QString automaton_name)
 {
     ui->m_machine << automaton;
-    ui->m_history->addItem(automaton_name);
+
+    bool exists = false;
+
+    for (auto i = 0; i < ui->m_history->count(); ++i)
+        exists |= (ui->m_history->item(i)->text() == automaton_name);
+
+    if (!exists)
+    {
+        ui->m_history->addItem(automaton_name);
+    }
+
     m_current = Facade::automaton_type_ptr(new ndfa_type(automaton));
 }
 
@@ -63,7 +83,7 @@ void DynamicAutomatonWidget::on_m_new_exp_btn_clicked()
 
 void DynamicAutomatonWidget::on_m_new_machine_btn_clicked()
 {
-    NewAutomatonDialog dialog(this);
+    NewAutomatonDialog dialog(m_number, this);
 
     QObject::connect(&dialog, SIGNAL(new_automaton(unsigned, dfa_type)),
                     m_facade, SLOT  (new_automaton(unsigned, dfa_type)));

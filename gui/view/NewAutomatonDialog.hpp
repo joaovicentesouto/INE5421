@@ -3,6 +3,7 @@
 
 #include <QDialog>
 #include <QTableWidgetItem>
+#include <formal_languages/devices/FiniteAutomaton.hpp>
 
 namespace Ui {
 class NewAutomatonDialog;
@@ -13,7 +14,10 @@ class NewAutomatonDialog : public QDialog
     Q_OBJECT
 
 public:
-    explicit NewAutomatonDialog(QWidget *parent = 0);
+    using dfa_type = formal_device::finite_automaton::Deterministic;
+    using ndfa_type = formal_device::finite_automaton::NonDeterministic;
+
+    explicit NewAutomatonDialog(unsigned number, QWidget *parent = 0);
     ~NewAutomatonDialog();
 
 private slots:
@@ -29,9 +33,12 @@ private slots:
 
 signals:
     void new_automaton(unsigned machine, QString automaton);
+    void new_automaton(unsigned machine, dfa_type automaton);
+    void new_automaton(unsigned machine, ndfa_type automaton);
 
 private:
     Ui::NewAutomatonDialog *ui;
+    unsigned m_number;
 };
 
 #endif // NEWAUTOMATONDIALOG_H
