@@ -33,3 +33,39 @@ MainWindow::~MainWindow()
     delete ui;
     delete m_facade;
 }
+
+void MainWindow::on_m_or_btn_clicked()
+{
+    Facade::automaton_type_ptr m1 = ui->m_machine_1->current_machine();
+    Facade::automaton_type_ptr m2 = ui->m_machine_2->current_machine();
+
+    if (m1.get() && m2.get())
+        m_facade->union_(m1, m2);
+}
+
+void MainWindow::on_m_concat_btn_clicked()
+{
+    Facade::automaton_type_ptr m1 = ui->m_machine_1->current_machine();
+    Facade::automaton_type_ptr m2 = ui->m_machine_2->current_machine();
+
+    if (m1.get() && m2.get())
+        m_facade->concatenation(m1, m2);
+}
+
+void MainWindow::on_m_and_btn_clicked()
+{
+    Facade::automaton_type_ptr m1 = ui->m_machine_1->current_machine();
+    Facade::automaton_type_ptr m2 = ui->m_machine_2->current_machine();
+
+    if (m1.get() && m2.get())
+        m_facade->intersection(m1, m2);
+}
+
+void MainWindow::on_m_diff_btn_clicked()
+{
+    Facade::automaton_type_ptr m1 = ui->m_machine_1->current_machine();
+    Facade::automaton_type_ptr m2 = ui->m_machine_2->current_machine();
+
+    if (m1.get() && m2.get())
+        m_facade->difference(m1, m2);
+}

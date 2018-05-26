@@ -949,37 +949,39 @@ Deterministic NonDeterministic::determination() const
 
 NonDeterministic NonDeterministic::operator!() const
 {
-    symbol_set_type     new_alphabet      = m_alphabet;
-    state_set_type      new_states        = m_states;
-    transition_map_type new_transitions   = m_transitions;
-    state_set_type      new_final_states;
-    state_type          new_initial_state = m_initial_state;
+    return !determination();
 
-    state_type error;
+//    symbol_set_type     new_alphabet      = m_alphabet;
+//    state_set_type      new_states        = m_states;
+//    transition_map_type new_transitions   = m_transitions;
+//    state_set_type      new_final_states;
+//    state_type          new_initial_state = m_initial_state;
 
-    new_states.insert(error);
+//    state_type error;
 
-    for (auto symbol : m_alphabet)
-        new_transitions[error][symbol].insert(error);
+//    new_states.insert(error);
 
-    for (auto state : m_states)
-        for (auto symbol : m_alphabet)
-            if (new_transitions[state][symbol].empty())
-                new_transitions[state][symbol].insert(error);
+//    for (auto symbol : m_alphabet)
+//        new_transitions[error][symbol].insert(error);
 
-    auto not_final = m_final_states.end();
+//    for (auto state : m_states)
+//        for (auto symbol : m_alphabet)
+//            if (new_transitions[state][symbol].empty())
+//                new_transitions[state][symbol].insert(error);
 
-    for(auto state : m_states)
-        if (m_final_states.find(state) == not_final)
-            new_final_states.insert(state);
+//    auto not_final = m_final_states.end();
 
-    new_final_states.insert(error);
+//    for(auto state : m_states)
+//        if (m_final_states.find(state) == not_final)
+//            new_final_states.insert(state);
 
-    return NonDeterministic(std::move(new_alphabet),
-                            std::move(new_states),
-                            std::move(new_transitions),
-                            std::move(new_final_states),
-                            std::move(new_initial_state));
+//    new_final_states.insert(error);
+
+//    return NonDeterministic(std::move(new_alphabet),
+//                            std::move(new_states),
+//                            std::move(new_transitions),
+//                            std::move(new_final_states),
+//                            std::move(new_initial_state));
 }
 
 NonDeterministic NonDeterministic::operator|(const NonDeterministic & machine) const
@@ -1146,7 +1148,7 @@ NonDeterministic NonDeterministic::operator+(const NonDeterministic & machine) c
 
 NonDeterministic NonDeterministic::operator&(const NonDeterministic & machine) const
 {
-    return !(!(*this) | !machine);
+    return !((!(*this) | !machine).determination());
 }
 
 NonDeterministic NonDeterministic::operator-(const NonDeterministic & machine) const

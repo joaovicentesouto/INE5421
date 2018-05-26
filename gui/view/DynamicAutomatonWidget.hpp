@@ -34,6 +34,7 @@ public:
     void set_facade(Facade * facade);
 
     void name(unsigned number);
+    Facade::automaton_type_ptr current_machine();
 
 public slots:
     void update_automaton(const dfa_type& automaton, QString automaton_name);

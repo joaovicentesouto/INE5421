@@ -16,7 +16,7 @@ class NewGrammarDialog : public QDialog
 public:
     using grammar_type = formal_device::grammar::Regular;
 
-    explicit NewGrammarDialog(QWidget *parent = 0);
+    explicit NewGrammarDialog(unsigned number, QWidget *parent = 0);
     ~NewGrammarDialog();
 
 private slots:
@@ -29,6 +29,7 @@ signals:
 
 private:
     Ui::NewGrammarDialog *ui;
+    unsigned m_number;
 };
 
 #endif // NEWGRAMMARDIALOG_HPP

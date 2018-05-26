@@ -1,9 +1,10 @@
 #include "NewExpressionDialog.hpp"
 #include "ui_NewExpressionDialog.h"
 
-NewExpressionDialog::NewExpressionDialog(QWidget *parent) :
+NewExpressionDialog::NewExpressionDialog(unsigned number, QWidget *parent) :
     QDialog(parent),
-    ui(new Ui::NewExpressionDialog)
+    ui(new Ui::NewExpressionDialog),
+    m_number(number)
 {
     ui->setupUi(this);
 }
@@ -18,7 +19,7 @@ void NewExpressionDialog::on_m_ok_btn_clicked()
     try
     {
         expression_type_ptr exp = formal_device::parser::make_regular_expression(ui->m_text->text().toStdString());
-        emit new_expression(1, exp);
+        emit new_expression(m_number, exp);
         this->close();
     }
     catch (std::out_of_range)

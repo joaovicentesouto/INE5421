@@ -24,9 +24,14 @@ void DynamicAutomatonWidget::name(unsigned number)
     ui->m_name_machine->setText("Máquina " + QString::number(number));
 }
 
+Facade::automaton_type_ptr DynamicAutomatonWidget::current_machine()
+{
+    return m_current;
+}
+
 void DynamicAutomatonWidget::on_m_new_grammar_btn_clicked()
 {
-    NewGrammarDialog dialog(this);
+    NewGrammarDialog dialog(m_number, this);
 
     QObject::connect(&dialog, SIGNAL(new_grammar(unsigned, grammar_type)),
                     m_facade, SLOT  (new_grammar(unsigned, grammar_type)));
@@ -49,7 +54,7 @@ void DynamicAutomatonWidget::update_automaton(const ndfa_type& automaton, QStrin
 
 void DynamicAutomatonWidget::on_m_new_exp_btn_clicked()
 {
-    NewExpressionDialog dialog(this);
+    NewExpressionDialog dialog(m_number, this);
 
     QObject::connect(&dialog, SIGNAL(new_expression(unsigned, expression_type_ptr)),
                     m_facade, SLOT  (new_expression(unsigned, expression_type_ptr)));

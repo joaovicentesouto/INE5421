@@ -28,6 +28,8 @@ void StaticAutomatonWidget::update_result(Facade::automaton_ptr_container_type& 
     else
         ui->m_machine << *dynamic_cast<const ndfa_type*>(m_current.get());
 
+    ui->m_history->clear();
+
     for (auto pair : result)
         ui->m_history->addItem(pair.second);
 }

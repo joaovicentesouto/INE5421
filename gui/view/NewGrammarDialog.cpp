@@ -1,9 +1,10 @@
 #include "NewGrammarDialog.hpp"
 #include "ui_NewGrammarDialog.h"
 
-NewGrammarDialog::NewGrammarDialog(QWidget *parent) :
+NewGrammarDialog::NewGrammarDialog(unsigned number, QWidget *parent) :
     QDialog(parent),
-    ui(new Ui::NewGrammarDialog)
+    ui(new Ui::NewGrammarDialog),
+    m_number(number)
 {
     ui->setupUi(this);
 }
@@ -18,7 +19,7 @@ void NewGrammarDialog::on_m_ok_btn_clicked()
     try
     {
         grammar_type regular = formal_device::parser::make_regular_grammar(ui->m_text->toPlainText().toStdString());
-        emit new_grammar(1, regular);
+        emit new_grammar(m_number, regular);
         this->close();
     }
     catch (std::out_of_range)

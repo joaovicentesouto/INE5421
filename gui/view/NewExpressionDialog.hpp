@@ -16,7 +16,7 @@ class NewExpressionDialog : public QDialog
 public:
     using expression_type_ptr = formal_device::expression::regular_ptr;
 
-    explicit NewExpressionDialog(QWidget *parent = 0);
+    explicit NewExpressionDialog(unsigned number, QWidget *parent = 0);
     ~NewExpressionDialog();
 
 signals:
@@ -29,6 +29,7 @@ private slots:
 
 private:
     Ui::NewExpressionDialog *ui;
+    unsigned m_number;
 };
 
 #endif // NEWEXPRESSIONDIALOG_HPP

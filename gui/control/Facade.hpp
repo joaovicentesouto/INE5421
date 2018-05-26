@@ -40,6 +40,11 @@ public:
     void determination(automaton_type_ptr automaton);
     void minimization(automaton_type_ptr automaton);
 
+    void union_(automaton_type_ptr m1, automaton_type_ptr m2);
+    void concatenation(automaton_type_ptr m1, automaton_type_ptr m2);
+    void intersection(automaton_type_ptr m1, automaton_type_ptr m2);
+    void difference(automaton_type_ptr m1, automaton_type_ptr m2);
+
 public slots:
     void new_grammar(unsigned machine, grammar_type grammar);
     void new_expression(unsigned machine, expression_type_ptr expression);
