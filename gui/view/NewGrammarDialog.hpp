@@ -25,7 +25,7 @@ private slots:
     void on_m_cancel_btn_clicked();
 
 signals:
-    void new_grammar(grammar_type grammar);
+    void new_grammar(unsigned machine, grammar_type grammar);
 
 private:
     Ui::NewGrammarDialog *ui;

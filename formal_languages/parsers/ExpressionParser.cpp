@@ -59,6 +59,9 @@ regular_ptr parse(IteratorWrapper &begin, const IteratorWrapper &end)
 
     string_type caracter(&(*begin.iterator()), &(*begin.iterator()) + 1);
 
+    if (std::regex_match(caracter, std::regex("[A-Z]")))
+        throw std::out_of_range("Expressão mal formada: A-Z");
+
     if (*begin.iterator() == '(')
     {
         begin.next();
@@ -71,7 +74,7 @@ regular_ptr parse(IteratorWrapper &begin, const IteratorWrapper &end)
         }
 
         if (*begin.iterator() != ')')
-            throw std::out_of_range("Expressão mal formada");
+            throw std::out_of_range("Expressão mal formada: begin != )");
 
         begin.next();
 
@@ -150,7 +153,7 @@ regular_ptr parse(IteratorWrapper &begin, const IteratorWrapper &end)
     }
 
     if (*begin.iterator() == '*' || *begin.iterator() == '+')
-        throw std::out_of_range("Expressão mal formada");
+        throw std::out_of_range("Expressão mal formada: Operandos alinhados");
 
     if (*begin.iterator() == '&')
     {

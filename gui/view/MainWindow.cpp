@@ -13,10 +13,15 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->m_machine_1->set_facade(m_facade);
     ui->m_machine_2->set_facade(m_facade);
 
-    QObject::connect(m_facade, SIGNAL(update_grammar(grammar_type)),
-                     ui->m_machine_1, SLOT (update_grammar(grammar_type)));
-    QObject::connect(m_facade, SIGNAL(update_grammar(grammar_type)),
-                     ui->m_machine_2, SLOT (update_grammar(grammar_type)));
+    QObject::connect(m_facade, SIGNAL(update_automaton_to_m1(dfa_type)),
+                     ui->m_machine_1, SLOT (update_automaton(dfa_type)));
+    QObject::connect(m_facade, SIGNAL(update_automaton_to_m1(ndfa_type)),
+                     ui->m_machine_1, SLOT (update_automaton(ndfa_type)));
+
+    QObject::connect(m_facade, SIGNAL(update_automaton_to_m2(dfa_type)),
+                     ui->m_machine_2, SLOT (update_automaton(dfa_type)));
+    QObject::connect(m_facade, SIGNAL(update_automaton_to_m2(ndfa_type)),
+                     ui->m_machine_2, SLOT (update_automaton(ndfa_type)));
 }
 
 MainWindow::~MainWindow()

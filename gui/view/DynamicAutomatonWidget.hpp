@@ -5,6 +5,7 @@
 #include <QColor>
 
 #include <control/Facade.hpp>
+#include <control/Filler.hpp>
 #include <view/NewGrammarDialog.hpp>
 #include <view/NewAutomatonDialog.hpp>
 #include <view/NewExpressionDialog.hpp>
@@ -18,6 +19,8 @@ class DynamicAutomatonWidget : public QWidget
     Q_OBJECT
 
 public:
+    using dfa_type            = formal_device::finite_automaton::Deterministic;
+    using ndfa_type           = formal_device::finite_automaton::NonDeterministic;
     using grammar_type        = formal_device::grammar::Regular;
     using expression_type_ptr = formal_device::expression::regular_ptr;
 
@@ -29,9 +32,8 @@ public:
     void name(QString name);
 
 public slots:
-    void update_grammar(grammar_type grammar);
-    void update_expression(expression_type_ptr expression);
-    void update_automaton(QString automaton);
+    void update_automaton(dfa_type automaton);
+    void update_automaton(ndfa_type automaton);
 
 private slots:
     void on_m_new_grammar_btn_clicked();

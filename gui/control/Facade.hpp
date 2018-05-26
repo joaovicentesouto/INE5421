@@ -10,6 +10,8 @@
 #include <formal_languages/devices/Grammar.hpp>
 #include <formal_languages/devices/RegularExpression.hpp>
 
+using automaton_type_ptr = std::shared_ptr<formal_device::finite_automaton::GenericAutomaton>;
+
 using dfa_type            = formal_device::finite_automaton::Deterministic;
 using ndfa_type           = formal_device::finite_automaton::NonDeterministic;
 using grammar_type        = formal_device::grammar::Regular;
@@ -24,23 +26,25 @@ public:
     ~Facade();
 
 public slots:
-    void new_grammar(grammar_type grammar);
-    void new_expression(expression_type_ptr expression);
-    void new_automaton(QString automaton);
+    void new_grammar(unsigned machine, grammar_type grammar);
+    void new_expression(unsigned machine, expression_type_ptr expression);
+    void new_automaton(unsigned machine, dfa_type automaton);
+    void new_automaton(unsigned machine, ndfa_type automaton);
 
 signals:
-    void update_automaton(QString automaton);
-    void update_expression(expression_type_ptr expression);
-    void update_grammar(grammar_type grammar);
+    void update_automaton_to_m1(dfa_type automaton);
+    void update_automaton_to_m1(ndfa_type automaton);
+    void update_automaton_to_m2(dfa_type automaton);
+    void update_automaton_to_m2(ndfa_type automaton);
 
 private:
-    ndfa_type m_m1;
-    ndfa_type m_m2;
-    ndfa_type m_result;
+    automaton_type_ptr m_m1;
+    automaton_type_ptr m_m2;
+    automaton_type_ptr m_result;
 
-    std::map<QString, ndfa_type> m_m1_history;
-    std::map<QString, ndfa_type> m_m2_history;
-    std::map<QString, ndfa_type> m_result_history;
+    std::map<QString, automaton_type_ptr> m_m1_history;
+    std::map<QString, automaton_type_ptr> m_m2_history;
+    std::map<QString, automaton_type_ptr> m_result_history;
 };
 
 #endif // FACADE_H

@@ -18,7 +18,7 @@ void NewGrammarDialog::on_m_ok_btn_clicked()
     try
     {
         grammar_type regular = formal_device::parser::make_regular_grammar(ui->m_text->toPlainText().toStdString());
-        emit new_grammar(formal_device::grammar::Regular());
+        emit new_grammar(1, regular);
         this->close();
     }
     catch (std::out_of_range)

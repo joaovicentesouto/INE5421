@@ -726,6 +726,31 @@ NonDeterministic::NonDeterministic(const Deterministic &machine) :
             m_transitions[trans.first][target.first].insert(target.second);
 }
 
+const NonDeterministic::symbol_set_type& NonDeterministic::alphabet() const
+{
+    return m_alphabet;
+}
+
+const NonDeterministic::state_set_type& NonDeterministic::states() const
+{
+    return m_states;
+}
+
+const NonDeterministic::transition_map_type& NonDeterministic::transitions() const
+{
+    return m_transitions;
+}
+
+const NonDeterministic::state_set_type& NonDeterministic::final_states() const
+{
+    return m_final_states;
+}
+
+const NonDeterministic::state_type& NonDeterministic::initial_state() const
+{
+    return m_initial_state;
+}
+
 
 Deterministic NonDeterministic::remove_epsilon() const
 {

@@ -27,40 +27,39 @@ void DynamicAutomatonWidget::on_m_new_grammar_btn_clicked()
 {
     NewGrammarDialog dialog(this);
 
-    QObject::connect(&dialog, SIGNAL(new_grammar(grammar_type)),
-                    m_facade, SLOT  (new_grammar(grammar_type)));
+    QObject::connect(&dialog, SIGNAL(new_grammar(unsigned, grammar_type)),
+                    m_facade, SLOT  (new_grammar(unsigned, grammar_type)));
     dialog.exec();
 }
 
-void DynamicAutomatonWidget::update_grammar(grammar_type grammar)
+void DynamicAutomatonWidget::update_automaton(dfa_type automaton)
 {
+    ui->m_machine << automaton;
+}
 
+void DynamicAutomatonWidget::update_automaton(ndfa_type automaton)
+{
+    ui->m_machine << automaton;
 }
 
 void DynamicAutomatonWidget::on_m_new_exp_btn_clicked()
 {
     NewExpressionDialog dialog(this);
 
-    QObject::connect(&dialog, SIGNAL(new_expression(expression_type_ptr)),
-                    m_facade, SLOT  (new_expression(expression_type_ptr)));
+    QObject::connect(&dialog, SIGNAL(new_expression(unsigned, expression_type_ptr)),
+                    m_facade, SLOT  (new_expression(unsigned, expression_type_ptr)));
     dialog.exec();
-}
-
-void DynamicAutomatonWidget::update_expression(expression_type_ptr expression)
-{
-
 }
 
 void DynamicAutomatonWidget::on_m_new_machine_btn_clicked()
 {
     NewAutomatonDialog dialog(this);
 
-    QObject::connect(&dialog, SIGNAL(new_automaton(QString)),
-                    m_facade, SLOT  (new_automaton(QString)));
+    QObject::connect(&dialog, SIGNAL(new_automaton(unsigned, dfa_type)),
+                    m_facade, SLOT  (new_automaton(unsigned, dfa_type)));
+
+    QObject::connect(&dialog, SIGNAL(new_automaton(unsigned, ndfa_type)),
+                    m_facade, SLOT  (new_automaton(unsigned, ndfa_type)));
+
     dialog.exec();
-}
-
-void DynamicAutomatonWidget::update_automaton(QString automaton)
-{
-
 }

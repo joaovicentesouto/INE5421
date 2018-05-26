@@ -28,7 +28,7 @@ private slots:
     void on_automatonTable_itemChanged(QTableWidgetItem *item);
 
 signals:
-    void new_automaton(QString automaton);
+    void new_automaton(unsigned machine, QString automaton);
 
 private:
     Ui::NewAutomatonDialog *ui;

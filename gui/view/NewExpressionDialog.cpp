@@ -18,7 +18,7 @@ void NewExpressionDialog::on_m_ok_btn_clicked()
     try
     {
         expression_type_ptr exp = formal_device::parser::make_regular_expression(ui->m_text->text().toStdString());
-        emit new_expression(exp);
+        emit new_expression(1, exp);
         this->close();
     }
     catch (std::out_of_range)

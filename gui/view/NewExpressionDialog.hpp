@@ -20,7 +20,7 @@ public:
     ~NewExpressionDialog();
 
 signals:
-    void new_expression(expression_type_ptr expression);
+    void new_expression(unsigned machine, expression_type_ptr expression);
 
 private slots:
     void on_m_ok_btn_clicked();
