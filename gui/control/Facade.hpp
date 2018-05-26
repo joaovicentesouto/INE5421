@@ -10,7 +10,7 @@
 #include <formal_languages/devices/Grammar.hpp>
 #include <formal_languages/devices/RegularExpression.hpp>
 
-using automaton_type_ptr = std::shared_ptr<formal_device::finite_automaton::GenericAutomaton>;
+#include <formal_languages/manipulators/DevicesConverter.hpp>
 
 using dfa_type            = formal_device::finite_automaton::Deterministic;
 using ndfa_type           = formal_device::finite_automaton::NonDeterministic;
@@ -22,8 +22,12 @@ class Facade : public QObject
     Q_OBJECT
 
 public:
+    using automaton_type_ptr = std::shared_ptr<formal_device::finite_automaton::GenericAutomaton>;
+
     Facade();
     ~Facade();
+
+    automaton_type_ptr request_automaton(unsigned machine, QString automaton);
 
 public slots:
     void new_grammar(unsigned machine, grammar_type grammar);
@@ -32,10 +36,10 @@ public slots:
     void new_automaton(unsigned machine, ndfa_type automaton);
 
 signals:
-    void update_automaton_to_m1(dfa_type automaton);
-    void update_automaton_to_m1(ndfa_type automaton);
-    void update_automaton_to_m2(dfa_type automaton);
-    void update_automaton_to_m2(ndfa_type automaton);
+    void update_automaton_to_m1(const dfa_type& automaton, QString automaton_name);
+    void update_automaton_to_m1(const ndfa_type& automaton, QString automaton_name);
+    void update_automaton_to_m2(const dfa_type& automaton, QString automaton_name);
+    void update_automaton_to_m2(const ndfa_type& automaton, QString automaton_name);
 
 private:
     automaton_type_ptr m_m1;

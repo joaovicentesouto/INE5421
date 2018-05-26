@@ -18,9 +18,10 @@ void DynamicAutomatonWidget::set_facade(Facade * facade)
     m_facade = facade;
 }
 
-void DynamicAutomatonWidget::name(QString name)
+void DynamicAutomatonWidget::name(unsigned number)
 {
-    ui->m_name_machine->setText(name);
+    m_number = number;
+    ui->m_name_machine->setText("Máquina " + QString::number(number));
 }
 
 void DynamicAutomatonWidget::on_m_new_grammar_btn_clicked()
@@ -32,14 +33,16 @@ void DynamicAutomatonWidget::on_m_new_grammar_btn_clicked()
     dialog.exec();
 }
 
-void DynamicAutomatonWidget::update_automaton(dfa_type automaton)
+void DynamicAutomatonWidget::update_automaton(const dfa_type& automaton, QString automaton_name)
 {
     ui->m_machine << automaton;
+    ui->m_history->addItem(automaton_name);
 }
 
-void DynamicAutomatonWidget::update_automaton(ndfa_type automaton)
+void DynamicAutomatonWidget::update_automaton(const ndfa_type& automaton, QString automaton_name)
 {
     ui->m_machine << automaton;
+    ui->m_history->addItem(automaton_name);
 }
 
 void DynamicAutomatonWidget::on_m_new_exp_btn_clicked()
@@ -62,4 +65,15 @@ void DynamicAutomatonWidget::on_m_new_machine_btn_clicked()
                     m_facade, SLOT  (new_automaton(unsigned, ndfa_type)));
 
     dialog.exec();
+}
+
+void DynamicAutomatonWidget::on_m_history_itemClicked(QListWidgetItem *item)
+{
+    Facade::automaton_type_ptr p = m_facade->request_automaton(m_number, item->text());
+
+    const dfa_type * automaton = dynamic_cast<const dfa_type*>(p.get());
+    if (automaton)
+        ui->m_machine << *automaton;
+    else
+        ui->m_machine << *dynamic_cast<const ndfa_type*>(p.get());
 }

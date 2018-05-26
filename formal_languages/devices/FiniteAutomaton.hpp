@@ -26,6 +26,8 @@ namespace finite_automaton
 
 class GenericAutomaton
 {
+public:
+    virtual ~GenericAutomaton() = default;
 };
 
 enum class Operation
@@ -74,8 +76,6 @@ class Deterministic : public GenericAutomaton
         m_initial_state{std::forward<Arg5>(initial_state)}
     {
     }
-
-    ~Deterministic() = default;
 
     // Class member functions
     const symbol_set_type& alphabet() const;
@@ -208,8 +208,6 @@ public:
         m_initial_state{std::forward<Arg5>(initial_state)}
     {
     }
-
-    ~NonDeterministic() = default;
 
     // Class member functions
     const symbol_set_type& alphabet() const;

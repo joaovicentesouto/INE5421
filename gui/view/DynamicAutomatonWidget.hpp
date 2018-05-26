@@ -3,6 +3,7 @@
 
 #include <QWidget>
 #include <QColor>
+#include <QListWidget>
 
 #include <control/Facade.hpp>
 #include <control/Filler.hpp>
@@ -29,20 +30,23 @@ public:
 
     void set_facade(Facade * facade);
 
-    void name(QString name);
+    void name(unsigned number);
 
 public slots:
-    void update_automaton(dfa_type automaton);
-    void update_automaton(ndfa_type automaton);
+    void update_automaton(const dfa_type& automaton, QString automaton_name);
+    void update_automaton(const ndfa_type& automaton, QString automaton_name);
 
 private slots:
     void on_m_new_grammar_btn_clicked();
     void on_m_new_machine_btn_clicked();
     void on_m_new_exp_btn_clicked();
 
+    void on_m_history_itemClicked(QListWidgetItem *item);
+
 private:
     Ui::DynamicAutomatonWidget *ui;
     Facade * m_facade;
+    unsigned m_number;
 };
 
 #endif // DYNAMICAUTOMATONWIDGET_HPP
