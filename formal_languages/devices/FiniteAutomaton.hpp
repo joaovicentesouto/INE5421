@@ -24,6 +24,12 @@ namespace manipulator
 namespace finite_automaton
 {
 
+class GenericAutomaton
+{
+public:
+    virtual ~GenericAutomaton() = default;
+};
+
 enum class Operation
 {
     Reverse,
@@ -35,7 +41,7 @@ enum class Operation
 
 class NonDeterministic;
 
-class Deterministic
+class Deterministic : public GenericAutomaton
 {
   public:
     friend class manipulator::DevicesConverter;
@@ -168,7 +174,7 @@ private:
     state_type          m_initial_state;
 };
 
-class NonDeterministic
+class NonDeterministic : public GenericAutomaton
 {
 public:
     template <class T>
@@ -203,6 +209,12 @@ public:
     {
     }
 
+    // Class member functions
+    const symbol_set_type& alphabet() const;
+    const state_set_type& states() const;
+    const transition_map_type& transitions() const;
+    const state_set_type& final_states() const;
+    const state_type& initial_state() const;
     string_type to_string() const;
 
     Deterministic remove_epsilon() const;

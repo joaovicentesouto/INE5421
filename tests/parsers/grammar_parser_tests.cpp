@@ -10,7 +10,6 @@ TEST_CASE("Grammar Parser: Document Productions", "[regular_expression][empty]")
 {
     std::string string("S -> aA | a | b\nA -> bS | b | c");
 
-
     regular_type::symbol_type S("S"), A("A"), a("a"), b("b"), c("c");
     regular_type::vocabulary_set_type vn{S, A}, vt{a, b, c};
     regular_type::production_type_ptr p1(new regular_type::non_terminal_production_type(a, A)),
@@ -30,12 +29,14 @@ TEST_CASE("Grammar Parser: Document Productions", "[regular_expression][empty]")
     CHECK((regular == grammar_r));
 }
 
-TEST_CASE("Grammar Parser: Invalid Grammar", "[grammar][parser]")
+TEST_CASE("Grammar Parser: valid Grammar", "[grammar][parser]")
 {
+    CHECK_NOTHROW(make_regular_grammar("S ->"));
     CHECK_NOTHROW(make_regular_grammar("S -> a"));
-    CHECK_NOTHROW(make_regular_grammar("S -> A"));
+    CHECK_NOTHROW(make_regular_grammar("S -> aA"));
     CHECK_NOTHROW(make_regular_grammar("S -> a\nS -> b"));
-    CHECK_NOTHROW(make_regular_grammar("S -> a\nA-> a | B"));
+    CHECK_NOTHROW(make_regular_grammar("S -> a\nA-> a | bB"));
+    CHECK_NOTHROW(make_regular_grammar("S -> aA | aB | c\nA-> a | b"));
 }
 
 TEST_CASE("Grammar Parser: Invalid Grammar", "[grammar][parser]")
@@ -44,6 +45,7 @@ TEST_CASE("Grammar Parser: Invalid Grammar", "[grammar][parser]")
     CHECK_THROWS(make_regular_grammar("S - A"));
     CHECK_THROWS(make_regular_grammar("S > A"));
     CHECK_THROWS(make_regular_grammar("-> a"));
+    CHECK_THROWS(make_regular_grammar("S -> aA | B"));
     CHECK_THROWS(make_regular_grammar("S -> aA\nA"));
     CHECK_THROWS(make_regular_grammar("a -> aA | b"));
     CHECK_THROWS(make_regular_grammar("S -> aA | A | b"));

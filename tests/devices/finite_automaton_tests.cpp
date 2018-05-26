@@ -256,57 +256,57 @@ TEST_CASE("Finite Automaton: Operations", "[finite_automaton][symbol]")
     }
 }
 
-TEST_CASE("Finite Automaton: Complement NonDeterministic", "[finite_automaton][symbol]")
-{
-    symbol_type a("a");
-    symbol_type b("b");
-    state_type q0("q0"), q1("q1"), q2("q2"), q3("q3");
+//TEST_CASE("Finite Automaton: Complement NonDeterministic", "[finite_automaton][symbol]")
+//{
+//    symbol_type a("a");
+//    symbol_type b("b");
+//    state_type q0("q0"), q1("q1"), q2("q2"), q3("q3");
 
-    symbol_set_type alphabet{a, b};
-    state_set_type  states{q0, q1, q2, q3};
-    state_set_type  final_states{q1, q2};
+//    symbol_set_type alphabet{a, b};
+//    state_set_type  states{q0, q1, q2, q3};
+//    state_set_type  final_states{q1, q2};
 
-    non_det_transition_map_type transitions;
-    transitions[q0][a].insert(q2);
-    transitions[q0][b].insert(q1);
-    transitions[q1][a].insert(q2);
-    transitions[q2][a].insert(q0);
-    transitions[q2][b].insert(q3);
-    transitions[q3][a].insert(q0);
+//    non_det_transition_map_type transitions;
+//    transitions[q0][a].insert(q2);
+//    transitions[q0][b].insert(q1);
+//    transitions[q1][a].insert(q2);
+//    transitions[q2][a].insert(q0);
+//    transitions[q2][b].insert(q3);
+//    transitions[q3][a].insert(q0);
 
-    state_type initial = q0;
+//    state_type initial = q0;
 
-    NonDeterministic machine(alphabet, states, transitions, final_states, initial);
+//    NonDeterministic machine(alphabet, states, transitions, final_states, initial);
 
-    SECTION("Complement", "[finite_automaton][fa]")
-    {
-        symbol_type a("a");
-        symbol_type b("b");
-        state_type q0("q0"), q1("q1"), q2("q2"), q3("q3"), error("Error");
+//    SECTION("Complement", "[finite_automaton][fa]")
+//    {
+//        symbol_type a("a");
+//        symbol_type b("b");
+//        state_type q0("q0"), q1("q1"), q2("q2"), q3("q3"), error("Error");
 
-        symbol_set_type alphabet{a, b};
-        state_set_type  states{q0, q1, q2, q3, error};
-        state_set_type  final_states{q0, q3, error};
+//        symbol_set_type alphabet{a, b};
+//        state_set_type  states{q0, q1, q2, q3, error};
+//        state_set_type  final_states{q0, q3, error};
 
-        non_det_transition_map_type transitions;
-        transitions[q0][a].insert(q2);
-        transitions[q0][b].insert(q1);
-        transitions[q1][a].insert(q2);
-        transitions[q1][b].insert(error);
-        transitions[q2][a].insert(q0);
-        transitions[q2][b].insert(q3);
-        transitions[q3][a].insert(q0);
-        transitions[q3][b].insert(error);
-        transitions[error][a].insert(error);
-        transitions[error][b].insert(error);
+//        non_det_transition_map_type transitions;
+//        transitions[q0][a].insert(q2);
+//        transitions[q0][b].insert(q1);
+//        transitions[q1][a].insert(q2);
+//        transitions[q1][b].insert(error);
+//        transitions[q2][a].insert(q0);
+//        transitions[q2][b].insert(q3);
+//        transitions[q3][a].insert(q0);
+//        transitions[q3][b].insert(error);
+//        transitions[error][a].insert(error);
+//        transitions[error][b].insert(error);
 
-        state_type initial = q0;
+//        state_type initial = q0;
 
-        NonDeterministic complement(alphabet, states, transitions, final_states, initial);
+//        NonDeterministic complement(alphabet, states, transitions, final_states, initial);
 
-        CHECK((!machine == complement));
-    }
-}
+//        CHECK((!machine == complement));
+//    }
+//}
 
 TEST_CASE("NonDeterministic: Determination", "[finite_automaton][symbol]")
 {

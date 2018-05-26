@@ -16,7 +16,7 @@ TEST_CASE("DeSimoneTree: Build (ab?|c)*", "[expression][parser]")
                         new parser::unit_type("b"))),
                 new parser::unit_type("c")))); // (ab?|c)*
 
-    expression::DeSimoneTree tree(exp);
+    manipulator::DeSimoneTree tree(exp);
 
     using dfa_type = finite_automaton::Deterministic;
 

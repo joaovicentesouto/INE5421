@@ -5,19 +5,28 @@ namespace formal_device
 namespace parser
 {
 
-regular_ptr make_regular_expression(const string_type & file_path)
+regular_ptr make_regular_expression_from_file(const string_type & file_path)
+{
+    return regular_ptr(new epsilon_type());
+}
+
+regular_ptr make_regular_expression(string_type exp)
 {
     //std::ifstream t(file_path);
     //string_type exp((std::istreambuf_iterator<char>(t)), std::istreambuf_iterator<char>());
 
     //exp.erase( std::remove_if(exp.begin(), exp.end(), std::isspace), exp.end());
-    string_type exp = file_path;
-    IteratorWrapper begin(exp.begin());
-    IteratorWrapper end(exp.end());
+
+    exp = std::regex_replace( exp, std::regex(" "), "" );
+    IteratorWrapper begin(exp.begin()), end(exp.end());
 
     regular_ptr current_exp(new empty_type());
 
     while (begin.iterator() != end.iterator())
+    {
+        if (*begin.iterator() == ')')
+            throw std::out_of_range("Expressão mal formada");
+
         if (*begin.iterator() == '|')
         {
             begin.next();
@@ -25,6 +34,7 @@ regular_ptr make_regular_expression(const string_type & file_path)
         }
         else
             current_exp = current_exp + parse(begin, end);
+    }
 
     return current_exp;
 }
@@ -44,11 +54,13 @@ regular_ptr union_parser(IteratorWrapper &begin, const IteratorWrapper &end)
 
 regular_ptr parse(IteratorWrapper &begin, const IteratorWrapper &end)
 {
-
     if (begin.iterator() == end.iterator())
         return new empty_type();
 
     string_type caracter(&(*begin.iterator()), &(*begin.iterator()) + 1);
+
+    if (std::regex_match(caracter, std::regex("[A-Z]")))
+        throw std::out_of_range("Expressão mal formada: A-Z");
 
     if (*begin.iterator() == '(')
     {
@@ -62,26 +74,39 @@ regular_ptr parse(IteratorWrapper &begin, const IteratorWrapper &end)
         }
 
         if (*begin.iterator() != ')')
-            throw std::out_of_range("Expressão mal formada");
+            throw std::out_of_range("Expressão mal formada: begin != )");
 
         begin.next();
+
         switch (*begin.iterator()) {
         case '*':
-            begin.next();
-            return exp ^ expression::Operation::Star;
+            exp = exp ^ expression::Operation::Star;
+            break;
 
         case '+':
-            begin.next();
-            return exp ^ expression::Operation::Plus;
+            exp = exp ^ expression::Operation::Plus;
+            break;
 
         case '?':
-            begin.next();
-            return exp ^ expression::Operation::Optional;
+            exp = exp ^ expression::Operation::Optional;
+            break;
 
         default:
-            begin.next();
-            return exp;
+            break;
         }
+
+        if (begin.iterator() != end.iterator())
+        {
+            caracter = string_type(&(*begin.iterator()), &(*begin.iterator()) + 1);
+
+            if (*begin.iterator() != '(')
+                if (!std::regex_match(caracter, std::regex("[a-z0-9]")))
+                    begin.next();
+
+            return exp + parse(begin, end);
+        }
+
+        return exp;
     }
     else if (std::regex_match(caracter, std::regex("[a-z0-9]")))
     {
@@ -127,12 +152,15 @@ regular_ptr parse(IteratorWrapper &begin, const IteratorWrapper &end)
             return exp + parse(begin, end);
     }
 
-    auto b_it = begin.iterator();
+    if (*begin.iterator() == '*' || *begin.iterator() == '+')
+        throw std::out_of_range("Expressão mal formada: Operandos alinhados");
 
-    if (*b_it == '*' || *b_it == '+' || *b_it == ')')
-        throw std::out_of_range("Expressão mal formada");
+    if (*begin.iterator() == '&')
+    {
+        begin.next();
+        return new epsilon_type();
+    }
 
-    begin.next();
     return new empty_type();
 }
 

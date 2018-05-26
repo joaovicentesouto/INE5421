@@ -116,5 +116,64 @@ TEST_CASE("Regular Expression Parser: Complex String", "[expression][parser]")
     }
 }
 
+TEST_CASE("Regular Expression Parser: Valid expressions", "[expression][parser]")
+{
+    CHECK_THROWS(make_regular_expression(")"));
+    CHECK_NOTHROW(make_regular_expression(""));
+    CHECK_NOTHROW(make_regular_expression("a"));
+    CHECK_NOTHROW(make_regular_expression("&"));
+    CHECK_NOTHROW(make_regular_expression("a*"));
+    CHECK_NOTHROW(make_regular_expression("a+"));
+    CHECK_NOTHROW(make_regular_expression("a?"));
+
+    CHECK_NOTHROW(make_regular_expression("(a)"));
+    CHECK_NOTHROW(make_regular_expression("(&)"));
+    CHECK_NOTHROW(make_regular_expression("(a)*"));
+    CHECK_NOTHROW(make_regular_expression("(a)+"));
+    CHECK_NOTHROW(make_regular_expression("(a)?"));
+    CHECK_NOTHROW(make_regular_expression("(a*)"));
+    CHECK_NOTHROW(make_regular_expression("(a+)"));
+    CHECK_NOTHROW(make_regular_expression("(a?)"));
+
+    CHECK_NOTHROW(make_regular_expression("ab*"));
+    CHECK_NOTHROW(make_regular_expression("a*b"));
+    CHECK_NOTHROW(make_regular_expression("a*b*"));
+    CHECK_NOTHROW(make_regular_expression("ab+"));
+    CHECK_NOTHROW(make_regular_expression("a+b"));
+    CHECK_NOTHROW(make_regular_expression("a?b?"));
+    CHECK_NOTHROW(make_regular_expression("ab?"));
+    CHECK_NOTHROW(make_regular_expression("a?b"));
+    CHECK_NOTHROW(make_regular_expression("a*b+"));
+    CHECK_NOTHROW(make_regular_expression("a*b?"));
+    CHECK_NOTHROW(make_regular_expression("a+b*"));
+    CHECK_NOTHROW(make_regular_expression("a+b?"));
+    CHECK_NOTHROW(make_regular_expression("a?b*"));
+    CHECK_NOTHROW(make_regular_expression("a?b+"));
+
+    CHECK_NOTHROW(make_regular_expression("a | b"));
+    CHECK_NOTHROW(make_regular_expression("a* | b"));
+    CHECK_NOTHROW(make_regular_expression("a | b*"));
+    CHECK_NOTHROW(make_regular_expression("a* | b*"));
+
+    CHECK_NOTHROW(make_regular_expression("(ab)*"));
+    CHECK_NOTHROW(make_regular_expression("(ab)+"));
+    CHECK_NOTHROW(make_regular_expression("(ab)?"));
+
+    CHECK_NOTHROW(make_regular_expression("(a | b)*"));
+    CHECK_NOTHROW(make_regular_expression("(a | b)+"));
+    CHECK_NOTHROW(make_regular_expression("(a | b)?"));
+
+    CHECK_NOTHROW(make_regular_expression("(ab*)?"));
+    CHECK_NOTHROW(make_regular_expression("(ab?)*"));
+    CHECK_NOTHROW(make_regular_expression("(ab? | c)*"));
+
+    CHECK_NOTHROW(make_regular_expression("b?(ac)?c+"));
+    CHECK_NOTHROW(make_regular_expression("(abc)(abc)"));
+    CHECK_NOTHROW(make_regular_expression("a+(b*)b?"));
+    CHECK_NOTHROW(make_regular_expression("(b?(ac)?c+ | b?(ac)?c+)+ab*c((a)(b*)?)"));
+    CHECK_NOTHROW(make_regular_expression("(ab? | c | b?(ac)?c+ | d)*"));
+    CHECK_NOTHROW(make_regular_expression("(ab? | c | b?(ac)?c+ | d)* | (a+(b*)b? | c | b?(ac)?c+ | d)?"));
+}
+
 
 
