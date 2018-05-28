@@ -1,6 +1,9 @@
 #ifndef DEVICESCONVERTER_H
 #define DEVICESCONVERTER_H
 
+#include <algorithm>
+#include <cctype>
+#include <functional>
 #include <formal_languages/devices/FiniteAutomaton.hpp>
 #include <formal_languages/devices/Grammar.hpp>
 

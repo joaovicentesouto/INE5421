@@ -14,5 +14,4 @@ using ndfa_type = formal_device::finite_automaton::NonDeterministic;
 QTableWidget* operator<<(QTableWidget* table, const dfa_type& machine);
 QTableWidget* operator<<(QTableWidget* table, const ndfa_type& machine);
 
-
 #endif // FILLER_HPP

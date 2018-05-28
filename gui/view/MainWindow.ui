@@ -53,6 +53,35 @@
       <item>
        <layout class="QVBoxLayout" name="m_inner_op_box">
         <item>
+         <widget class="QPushButton" name="m_swap">
+          <property name="maximumSize">
+           <size>
+            <width>45</width>
+            <height>45</height>
+           </size>
+          </property>
+          <property name="text">
+           <string>Swap</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <spacer name="verticalSpacer">
+          <property name="orientation">
+           <enum>Qt::Vertical</enum>
+          </property>
+          <property name="sizeType">
+           <enum>QSizePolicy::Maximum</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>20</width>
+            <height>20</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+        <item>
          <widget class="QPushButton" name="m_or_btn">
           <property name="sizePolicy">
            <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
@@ -128,6 +157,38 @@
           </property>
          </widget>
         </item>
+        <item>
+         <widget class="QPushButton" name="m_contains_btn">
+          <property name="maximumSize">
+           <size>
+            <width>45</width>
+            <height>45</height>
+           </size>
+          </property>
+          <property name="text">
+           <string>⊆</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QPushButton" name="m_equality_btn">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="maximumSize">
+           <size>
+            <width>45</width>
+            <height>45</height>
+           </size>
+          </property>
+          <property name="text">
+           <string>=</string>
+          </property>
+         </widget>
+        </item>
        </layout>
       </item>
       <item>
@@ -179,7 +240,7 @@
          </size>
         </property>
         <property name="text">
-         <string>=</string>
+         <string>:=</string>
         </property>
        </widget>
       </item>
@@ -212,12 +273,23 @@
    </property>
    <widget class="QMenu" name="menuFile">
     <property name="title">
-     <string>File</string>
+     <string>Arquivo</string>
     </property>
    </widget>
+   <widget class="QMenu" name="menuEditar">
+    <property name="title">
+     <string>Editar</string>
+    </property>
+    <addaction name="actionLimpar_tudo"/>
+   </widget>
    <addaction name="menuFile"/>
+   <addaction name="menuEditar"/>
   </widget>
-  <widget class="QStatusBar" name="statusBar"/>
+  <action name="actionLimpar_tudo">
+   <property name="text">
+    <string>Limpar tudo</string>
+   </property>
+  </action>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
  <customwidgets>

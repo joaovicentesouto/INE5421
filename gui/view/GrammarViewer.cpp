@@ -7,11 +7,26 @@ GrammarViewer::GrammarViewer(grammar_type grammar, QWidget *parent) :
     m_grammar(grammar)
 {
     ui->setupUi(this);
-    ui->plainTextEdit->clear();
-    QString text = QString::fromStdString(m_grammar.to_string());
-    ui->plainTextEdit->insertPlainText(text);
 
-    //ui->plainTextEdit->setEnabled(false);
+    QString text = QString::fromStdString(m_grammar.to_string());
+
+    ui->plainTextEdit->clear();
+    ui->plainTextEdit->insertPlainText(text);
+    ui->plainTextEdit->setReadOnly(true);
+}
+
+GrammarViewer::GrammarViewer(sentences_set sentences, QWidget *parent) :
+    QDialog(parent),
+    ui(new Ui::GrammarViewer)
+{
+    ui->setupUi(this);
+
+    QString text;
+    for (auto string : sentences)
+        text += QString::fromStdString(string) + "\n";
+
+    ui->plainTextEdit->clear();
+    ui->plainTextEdit->insertPlainText(text);
     ui->plainTextEdit->setReadOnly(true);
 }
 

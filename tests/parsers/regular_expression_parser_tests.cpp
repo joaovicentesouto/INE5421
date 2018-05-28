@@ -166,6 +166,10 @@ TEST_CASE("Regular Expression Parser: Valid expressions", "[expression][parser]"
     CHECK_NOTHROW(make_regular_expression("(ab*)?"));
     CHECK_NOTHROW(make_regular_expression("(ab?)*"));
     CHECK_NOTHROW(make_regular_expression("(ab? | c)*"));
+    CHECK_NOTHROW(make_regular_expression("(a|(b|c))"));
+    CHECK_NOTHROW(make_regular_expression("a|(b|c)"));
+    CHECK_NOTHROW(make_regular_expression("a|b(b|c)|c"));
+    CHECK_NOTHROW(make_regular_expression("(a)|(b)((b?)?|(c*)*)|c|(a+)?a"));
 
     CHECK_NOTHROW(make_regular_expression("b?(ac)?c+"));
     CHECK_NOTHROW(make_regular_expression("(abc)(abc)"));

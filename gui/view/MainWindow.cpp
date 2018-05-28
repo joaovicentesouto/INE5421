@@ -32,6 +32,21 @@ MainWindow::MainWindow(QWidget *parent) :
 
     QObject::connect(ui->m_result_machine, SIGNAL(new_automaton(unsigned, ndfa_type)),
                                   m_facade, SLOT (new_automaton(unsigned, ndfa_type)));
+
+    QObject::connect(this, SIGNAL(new_automaton(unsigned, dfa_type)),
+                  m_facade, SLOT (new_automaton(unsigned, dfa_type)));
+
+    QObject::connect(this, SIGNAL(new_automaton(unsigned, ndfa_type)),
+                  m_facade, SLOT (new_automaton(unsigned, ndfa_type)));
+
+    QObject::connect(this, SIGNAL(clean_up()),
+                  m_facade, SLOT (clean_up()));
+    QObject::connect(this, SIGNAL(clean_up()),
+                  ui->m_machine_1, SLOT (clean_up()));
+    QObject::connect(this, SIGNAL(clean_up()),
+                  ui->m_machine_2, SLOT (clean_up()));
+    QObject::connect(this, SIGNAL(clean_up()),
+                  ui->m_result_machine, SLOT (clean_up()));
 }
 
 MainWindow::~MainWindow()
@@ -74,4 +89,68 @@ void MainWindow::on_m_diff_btn_clicked()
 
     if (m1.get() && m2.get())
         m_facade->difference(m1, m2);
+}
+
+void MainWindow::on_m_contains_btn_clicked()
+{
+    Facade::automaton_type_ptr m1 = ui->m_machine_1->current_machine();
+    Facade::automaton_type_ptr m2 = ui->m_machine_2->current_machine();
+
+    QString answer("T(M1) não está contida em T(M2)");
+
+    if (m1.get() && m2.get())
+    {
+        if (m_facade->contains(m2, m1))
+        {
+            answer = "T(M1) está contida em T(M2)";
+        }
+
+        BooleanDialog dialog(answer, this);
+        dialog.exec();
+    }
+}
+
+void MainWindow::on_m_equality_btn_clicked()
+{
+    Facade::automaton_type_ptr m1 = ui->m_machine_1->current_machine();
+    Facade::automaton_type_ptr m2 = ui->m_machine_2->current_machine();
+
+    QString answer("T(M1) != T(M2)");
+
+    if (m1.get() && m2.get())
+    {
+        if (m_facade->equivalence(m1, m2))
+        {
+            answer = "T(M1) = T(M2)";
+        }
+
+        BooleanDialog dialog(answer, this);
+        dialog.exec();
+    }
+}
+
+void MainWindow::on_m_swap_clicked()
+{
+    Facade::automaton_type_ptr m1 = ui->m_machine_1->current_machine();
+    Facade::automaton_type_ptr m2 = ui->m_machine_2->current_machine();
+
+    const dfa_type*   dfa_m1 = dynamic_cast<const dfa_type*>(m1.get());
+    const ndfa_type* ndfa_m1 = dynamic_cast<const ndfa_type*>(m1.get());
+    const dfa_type*   dfa_m2 = dynamic_cast<const dfa_type*>(m2.get());
+    const ndfa_type* ndfa_m2 = dynamic_cast<const ndfa_type*>(m2.get());
+
+    if (dfa_m2)
+        emit new_automaton(11, *dfa_m2);
+    else if (ndfa_m2)
+        emit new_automaton(11, *ndfa_m2);
+
+    if (dfa_m1)
+        emit new_automaton(12, *dfa_m1);
+    else if (ndfa_m1)
+        emit new_automaton(12, *ndfa_m1);
+}
+
+void MainWindow::on_actionLimpar_tudo_triggered()
+{
+    emit clean_up();
 }

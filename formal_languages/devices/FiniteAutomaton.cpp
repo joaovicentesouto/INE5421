@@ -5,6 +5,20 @@ namespace formal_device
 namespace finite_automaton
 {
 
+Deterministic::Deterministic(const symbol_set_type& alphabet) :
+    m_alphabet(alphabet)
+{
+    for (auto symbol : m_alphabet)
+        m_transitions[m_initial_state][symbol] = m_initial_state;
+}
+
+Deterministic::Deterministic(symbol_set_type&& alphabet) :
+    m_alphabet(std::move(alphabet))
+{
+    for (auto symbol : m_alphabet)
+        m_transitions[m_initial_state][symbol] = m_initial_state;
+}
+
 const Deterministic::symbol_set_type& Deterministic::alphabet() const
 {
     return m_alphabet;
@@ -89,308 +103,51 @@ Deterministic Deterministic::operator!() const
 
     complement.m_final_states = new_final_states;
 
+    state_type error;
+
+    if (complement.m_final_states.find(error) == complement.m_final_states.end())
+    {
+        complement.m_states.erase(error);
+        for (auto state : complement.m_states)
+            for (auto symbol : complement.m_alphabet)
+                if (complement.m_transitions[state][symbol] == error)
+                    complement.m_transitions[state].erase(symbol);
+        complement.m_transitions.erase(error);
+    }
+
     return Deterministic(std::move(complement));
 }
 
 NonDeterministic Deterministic::operator|(const Deterministic &machine) const
 {
-    NonDeterministic::symbol_set_type     new_alphabet;
-    NonDeterministic::state_set_type      new_states;
-    NonDeterministic::transition_map_type new_transitions;
-    NonDeterministic::state_set_type      new_final_states;
-    Deterministic::map_type<state_type, state_type> state_map_m1, state_map_m2;
-
-    /* ------ New initial state ------ */
-
-    NonDeterministic::state_type new_initial_state("q0");
-    new_states.insert(new_initial_state);
-
-    /* ------ New alphabet ------ */
-
-    new_alphabet = m_alphabet;
-
-    for (auto symbol : machine.m_alphabet)
-        new_alphabet.insert(symbol);
-
-
-    /* ------ New states ------ */
-
-    int i = 1;
-    for (auto state : m_states) {
-        state_type q{ "q" + std::to_string(i++) };
-        state_map_m1[state] = q;
-        new_states.insert(q);
-    }
-
-    for (auto state : machine.m_states) {
-        state_type q{ "q" + std::to_string(i++) };
-        state_map_m2[state] = q;
-        new_states.insert(q);
-    }
-
-    /* ------ New transitions ------ */
-
-    for (auto trans : Deterministic::transition_map_type(m_transitions))
-        for (auto target : trans.second)
-            new_transitions[state_map_m1[trans.first]][target.first].insert(state_map_m1[target.second]);
-
-    for (auto trans : Deterministic::transition_map_type(machine.m_transitions))
-        for (auto target : trans.second)
-            new_transitions[state_map_m2[trans.first]][target.first].insert(state_map_m2[target.second]);
-
-    /* ------ New final states ------ */
-
-    for (auto state : m_final_states)
-        new_final_states.insert(state_map_m1[state]);
-    
-    for (auto state : machine.m_final_states)
-        new_final_states.insert(state_map_m2[state]);
-
-    /* ------ Transitions of new initial state ------ */
-
-    Deterministic::transition_map_type copy = m_transitions;
-    for (auto target : copy[m_initial_state])
-        new_transitions[new_initial_state][target.first].insert(state_map_m1[target.second]);
-
-    copy = machine.m_transitions;
-    for (auto target : copy[machine.m_initial_state])
-        new_transitions[new_initial_state][target.first].insert(state_map_m2[target.second]);
-
-    /* ------ Checks if new initial state is a final state ------ */
-
-    if (m_final_states.find(m_initial_state) != m_final_states.end() ||
-            machine.m_final_states.find(machine.m_initial_state) != machine.m_final_states.end())
-        new_final_states.insert(new_initial_state);
-
-    return NonDeterministic(std::move(new_alphabet),
-                            std::move(new_states),
-                            std::move(new_transitions),
-                            std::move(new_final_states),
-                            std::move(new_initial_state));
+    return NonDeterministic(*this) | NonDeterministic(machine);
 }
 
 NonDeterministic Deterministic::operator+(const Deterministic &machine) const
 {
-    NonDeterministic::symbol_set_type     new_alphabet;
-    NonDeterministic::state_set_type      new_states;
-    NonDeterministic::transition_map_type new_transitions;
-    NonDeterministic::state_set_type      new_final_states;
-
-    Deterministic::map_type<state_type, state_type> state_map_m1, state_map_m2;
-
-    /* ------ New initial state ------ */
-
-    NonDeterministic::state_type new_initial_state("q0");
-    state_map_m1[m_initial_state] = new_initial_state;
-
-    new_states.insert(new_initial_state);
-
-    /* ------ New alphabet ------ */
-
-    new_alphabet = m_alphabet;
-
-    for (auto symbol : machine.m_alphabet)
-        new_alphabet.insert(symbol);
-
-    /* ------ New states ------ */
-
-    int i = 1;
-    for (auto state : m_states) {
-        if (state == m_initial_state)
-            continue;
-
-        state_type q{ "q" + std::to_string(i++) };
-        state_map_m1[state] = q;
-        new_states.insert(q);
-    }
-
-    for (auto state : machine.m_states) {
-        state_type q{ "q" + std::to_string(i++) };
-        state_map_m2[state] = q;
-        new_states.insert(q);
-    }
-
-    /* ------ New transitions ------ */
-
-    for (auto trans : Deterministic::transition_map_type(m_transitions))
-        for (auto target : trans.second)
-            new_transitions[state_map_m1[trans.first]][target.first].insert(state_map_m1[target.second]);
-
-    for (auto trans : Deterministic::transition_map_type(machine.m_transitions))
-        for (auto target : trans.second)
-            new_transitions[state_map_m2[trans.first]][target.first].insert(state_map_m2[target.second]);
-
-    /* ------ Transitions of final states of M1 to initial state of M2 ------ */
-
-    for (auto f : m_final_states)
-    {
-        auto final_state = state_map_m1[f];
-        NonDeterministic::transition_map_type copy = new_transitions;
-
-        for (auto target : copy[state_map_m2[machine.m_initial_state]])
-            for (auto target_state : target.second)
-                new_transitions[final_state][target.first].insert(target_state);
-    }
-
-    /* ------ New final states ------ */
-
-    if (machine.m_final_states.find(machine.m_initial_state) != machine.m_final_states.end())
-        for (auto state : m_final_states)
-            new_final_states.insert(state_map_m1[state]);
-
-    for (auto state : machine.m_final_states)
-        new_final_states.insert(state_map_m2[state]);
-
-    return NonDeterministic(std::move(new_alphabet),
-                            std::move(new_states),
-                            std::move(new_transitions),
-                            std::move(new_final_states),
-                            std::move(new_initial_state));
+    return NonDeterministic(*this) + NonDeterministic(machine);
 }
 
-NonDeterministic Deterministic::operator&(const Deterministic &machine) const
+Deterministic Deterministic::operator&(const Deterministic &machine) const
 {
-    return !( (!(*this) | !machine).determination() );
+    return !( ( !(*this) | !machine) .determination() );
 }
 
-NonDeterministic Deterministic::operator-(const Deterministic &machine) const
+Deterministic Deterministic::operator-(const Deterministic &machine) const
 {
     return *this & !machine;
 }
 
 NonDeterministic Deterministic::operator^(const Operation &op) const
 {
-    switch (op)
-    {
-    case Operation::Reflexive:
-        return reflexive();
-
-    case Operation::Transitive:
-        return transitive();
-
-    case Operation::Optional:
-        return optional();
-
-    case Operation::Reverse:
-        return reverse();
-
-    default:
-        return NonDeterministic();
-    }
-}
-
-NonDeterministic Deterministic::reflexive() const
-{
-    NonDeterministic::symbol_set_type     new_alphabet = m_alphabet;
-    NonDeterministic::state_set_type      new_states = m_states;
-    NonDeterministic::state_set_type      new_final_states = m_final_states;
-    NonDeterministic::state_type          new_initial_state = m_initial_state;
-
-    /* ------ New transitions ------ */
-
-    NonDeterministic::transition_map_type new_transitions;
-    for (auto trans : Deterministic::transition_map_type(m_transitions))
-        for (auto target : trans.second)
-            new_transitions[trans.first][target.first].insert(target.second);
-
-    /* ------ Transitions of final states of M1 to initial state of M2 ------ */
-
-    for (auto final_state : m_final_states)
-    {
-        NonDeterministic::transition_map_type copy = new_transitions;
-
-        for (auto target : copy[m_initial_state])
-            for (auto target_state : target.second)
-                new_transitions[final_state][target.first].insert(target_state);
-    }
-
-    /* ------ New final states ------ */
-
-    new_final_states.insert(new_initial_state);
-
-    return NonDeterministic(std::move(new_alphabet),
-                            std::move(new_states),
-                            std::move(new_transitions),
-                            std::move(new_final_states),
-                            std::move(new_initial_state));
-}
-
-NonDeterministic Deterministic::transitive() const
-{
-    return NonDeterministic(*this) + (*this)^Operation::Reflexive;
-}
-
-NonDeterministic Deterministic::optional() const
-{
-    state_type                            q0{"q0"};
-    NonDeterministic::symbol_set_type     new_alphabet;
-    NonDeterministic::state_set_type      new_states{q0};
-    NonDeterministic::transition_map_type new_transitions;
-    NonDeterministic::state_set_type      new_final_states{q0};
-    NonDeterministic::state_type          new_initial_state{q0};
-
-    return NonDeterministic(*this) | NonDeterministic(std::move(new_alphabet),
-                                                      std::move(new_states),
-                                                      std::move(new_transitions),
-                                                      std::move(new_final_states),
-                                                      std::move(new_initial_state));
-}
-
-NonDeterministic Deterministic::reverse() const
-{
-    NonDeterministic::symbol_set_type     new_alphabet = m_alphabet;
-    NonDeterministic::state_set_type      new_final_states;
-    NonDeterministic::transition_map_type new_transitions;
-    NonDeterministic::state_set_type      new_states;
-
-    Deterministic::map_type<state_type, state_type> state_map;
-
-    /* ------ New initial state ------ */
-
-    NonDeterministic::state_type new_initial_state("q0");
-
-    new_states.insert(new_initial_state);
-
-    /* ------ New states ------ */
-
-    int i = 1;
-    for (auto state : m_states) {
-        state_type q{ "q" + std::to_string(i++) };
-        state_map[state] = q;
-        new_states.insert(q);
-    }
-
-    /* ------ New transitions ------ */
-
-    for (auto trans : Deterministic::transition_map_type(m_transitions))
-        for (auto target : trans.second)
-            new_transitions[state_map[target.second]][target.first].insert(state_map[trans.first]);
-
-    /* ------ Copy of transitions from old final states to new initial states ------ */
-
-    for (auto f : m_final_states)
-    {
-        auto final_state = state_map[f];
-        NonDeterministic::transition_map_type copy = new_transitions;
-
-        for (auto target : copy[final_state])
-            for (auto target_state : target.second)
-                new_transitions[new_initial_state][target.first].insert(target_state);
-    }
-
-    /* ------ New final states ------ */
-
-    new_final_states.insert(state_map[m_initial_state]);
-
-    return NonDeterministic(std::move(new_alphabet),
-                            std::move(new_states),
-                            std::move(new_transitions),
-                            std::move(new_final_states),
-                            std::move(new_initial_state));
+    return NonDeterministic(*this)^op;
 }
 
 Deterministic Deterministic::complete() const
 {
+    if (is_complete())
+        return *this;
+
     symbol_set_type     new_alphabet = m_alphabet;
     state_set_type      new_states = m_states;
     transition_map_type new_transitions = m_transitions;
@@ -401,11 +158,11 @@ Deterministic Deterministic::complete() const
 
     new_states.insert(error);
 
-    for (auto symbol : m_alphabet)
+    for (auto symbol : new_alphabet)
         new_transitions[error][symbol] = error;
 
-    for (auto state : m_states)
-        for (auto symbol : m_alphabet)
+    for (auto state : new_states)
+        for (auto symbol : new_alphabet)
             new_transitions[state][symbol];
 
     return Deterministic(std::move(new_alphabet),
@@ -492,6 +249,15 @@ Deterministic Deterministic::minimization() const
                         = class_to_new_state[old_state_to_class[trans.second]];
     }
 
+    if (new_states.empty())
+    {
+        new_initial_state = state_type("q0");
+        new_states.insert(new_initial_state);
+
+        for (auto symbol : new_alphabet)
+            new_transitions[new_initial_state][symbol] = new_initial_state;
+    }
+
     return Deterministic(std::move(new_alphabet),
                          std::move(new_states),
                          std::move(new_transitions),
@@ -556,12 +322,10 @@ Deterministic Deterministic::remove_dead_states() const
     state_set_type      new_states;
     transition_map_type new_transitions;
     state_set_type      new_final_states = m_final_states;
-    state_type          new_initial_state;
 
     NonDeterministic::transition_map_type inverted_transitions;
 
-    state_set_type states(m_states);
-    for (auto state : states)
+    for (auto state : m_states)
     {
         transition_map_type transitions(m_transitions);
         for (auto trans : transitions[state])
@@ -587,14 +351,14 @@ Deterministic Deterministic::remove_dead_states() const
             }
     }
 
-    if (new_states.find(m_initial_state) != new_states.end())
-        new_initial_state = m_initial_state;
-
-    return Deterministic(std::move(new_alphabet),
-                         std::move(new_states),
-                         std::move(new_transitions),
-                         std::move(new_final_states),
-                         std::move(new_initial_state));
+    if (new_states.find(m_initial_state) == new_states.end())
+        return Deterministic(std::move(new_alphabet));
+    else
+        return Deterministic(std::move(new_alphabet),
+                             std::move(new_states),
+                             std::move(new_transitions),
+                             std::move(new_final_states),
+                             m_initial_state);
 }
 
 Deterministic Deterministic::remove_unreachable_states() const
@@ -639,28 +403,26 @@ Deterministic Deterministic::remove_unreachable_states() const
                          std::move(new_initial_state));
 }
 
-bool Deterministic::membership(const string_type &sentece) const
+bool Deterministic::membership(const string_type &sentence) const
 {
-    auto machine = complete();
+    auto machine = contains_epsilon_transition()?
+                remove_epsilon_transition().complete() : complete();
 
     auto current = machine.m_initial_state;
 
-
-    for (auto symbol : sentece) {
-        string_type caracter(&symbol, (&symbol)+1);
-        current = machine.m_transitions[current][caracter];
-    }
+    if (sentence != "&")
+        for (auto symbol : sentence)
+        {
+            string_type caracter(&symbol, (&symbol)+1);
+            current = machine.m_transitions[current][caracter];
+        }
 
     return machine.m_final_states.find(current) != machine.m_final_states.end();
 }
 
 bool Deterministic::emptiness() const
 {
-    state_type error;
-    state_set_type states_empty;
-    transition_map_type empty_transitions;
-
-    Deterministic empty(m_alphabet, states_empty, empty_transitions, states_empty, error);
+    Deterministic empty(m_alphabet);
 
     return minimization() == empty;
 }
@@ -669,13 +431,34 @@ bool Deterministic::finiteness() const
 {
     auto minimum = minimization();
 
-    try
-    {
-        return minimum.topologicalOrdering();
-    } catch (std::exception& e)
-    {
+    state_set_type temporary;
+    state_set_type permanent;
+    
+    if (minimum.m_final_states.empty())
+        return true;
+
+    return !minimum.contains_cycle(minimum.m_initial_state, temporary, permanent);
+}
+
+bool Deterministic::contains_cycle(state_type state, state_set_type & temporary, state_set_type & permanent)
+{
+    if (permanent.find(state) != permanent.end())
         return false;
-    }
+
+    if (temporary.find(state) != temporary.end())
+        return true;
+
+    temporary.insert(state);
+
+    transition_map_type copy(m_transitions);
+    for (auto trans : copy[state])
+        if (contains_cycle(trans.second, temporary, permanent))
+            return true;
+
+    temporary.erase(state);
+    permanent.insert(state);
+
+    return false;
 }
 
 bool Deterministic::containment(const Deterministic &machine) const
@@ -692,8 +475,9 @@ bool Deterministic::is_complete() const
 {
     int symbol_amount = m_alphabet.size();
 
+    transition_map_type copy(m_transitions);
     for (auto state : m_states)
-        if (transition_map_type(m_transitions)[state].size() != symbol_amount)
+        if (copy[state].size() != symbol_amount)
             return false;
 
     return true;
@@ -751,6 +535,10 @@ const NonDeterministic::state_type& NonDeterministic::initial_state() const
     return m_initial_state;
 }
 
+bool NonDeterministic::contains_epsilon_transition() const
+{
+    return m_alphabet.find(symbol_type("&")) != m_alphabet.end();
+}
 
 Deterministic NonDeterministic::remove_epsilon() const
 {
@@ -877,7 +665,10 @@ Deterministic NonDeterministic::determination() const
 
     // Se contém '&' transição => elimina '&' transição;
 
-    Deterministic::symbol_set_type     new_alphabet = m_alphabet;
+    NonDeterministic current_machine = contains_epsilon_transition()?
+                remove_epsilon() : *this;
+
+    Deterministic::symbol_set_type     new_alphabet = current_machine.m_alphabet;
     Deterministic::state_set_type      new_final_states;
     Deterministic::transition_map_type new_transitions;
     Deterministic::state_set_type      new_states;
@@ -889,7 +680,7 @@ Deterministic NonDeterministic::determination() const
     /* ------ New initial state ------ */
 
     Deterministic::state_type new_initial_state("q0");
-    NonDeterministic::state_set_type initial_set{m_initial_state};
+    NonDeterministic::state_set_type initial_set{current_machine.m_initial_state};
 
     new_states_map[initial_set] = new_initial_state;
     new_states.insert(new_initial_state);
@@ -905,13 +696,13 @@ Deterministic NonDeterministic::determination() const
         auto current_set = queue.front();
         queue.pop_front();
 
-        for (auto symbol : m_alphabet)
+        for (auto symbol : current_machine.m_alphabet)
         {
             state_set_type target_set;
 
             for (auto state : current_set)
             {
-                transition_map_type copy(m_transitions);
+                transition_map_type copy(current_machine.m_transitions);
                 for (auto target_state : copy[state][symbol])
                     target_set.insert(target_state);
             }
@@ -937,7 +728,7 @@ Deterministic NonDeterministic::determination() const
 
     for (auto set : created_sets)
         for (auto state : set)
-            if (m_final_states.find(state) != m_final_states.end())
+            if (current_machine.m_final_states.find(state) != current_machine.m_final_states.end())
                 new_final_states.insert(new_states_map[set]);
 
     return Deterministic(std::move(new_alphabet),
@@ -947,41 +738,9 @@ Deterministic NonDeterministic::determination() const
                          std::move(new_initial_state));
 }
 
-NonDeterministic NonDeterministic::operator!() const
+Deterministic NonDeterministic::operator!() const
 {
     return !determination();
-
-//    symbol_set_type     new_alphabet      = m_alphabet;
-//    state_set_type      new_states        = m_states;
-//    transition_map_type new_transitions   = m_transitions;
-//    state_set_type      new_final_states;
-//    state_type          new_initial_state = m_initial_state;
-
-//    state_type error;
-
-//    new_states.insert(error);
-
-//    for (auto symbol : m_alphabet)
-//        new_transitions[error][symbol].insert(error);
-
-//    for (auto state : m_states)
-//        for (auto symbol : m_alphabet)
-//            if (new_transitions[state][symbol].empty())
-//                new_transitions[state][symbol].insert(error);
-
-//    auto not_final = m_final_states.end();
-
-//    for(auto state : m_states)
-//        if (m_final_states.find(state) == not_final)
-//            new_final_states.insert(state);
-
-//    new_final_states.insert(error);
-
-//    return NonDeterministic(std::move(new_alphabet),
-//                            std::move(new_states),
-//                            std::move(new_transitions),
-//                            std::move(new_final_states),
-//                            std::move(new_initial_state));
 }
 
 NonDeterministic NonDeterministic::operator|(const NonDeterministic & machine) const
@@ -1022,15 +781,33 @@ NonDeterministic NonDeterministic::operator|(const NonDeterministic & machine) c
 
     /* ------ New transitions ------ */
 
-    for (auto trans : transition_map_type(m_transitions))
-        for (auto target : trans.second)
-            for (auto state_target : target.second)
-                new_transitions[state_map_m1[trans.first]][target.first].insert(state_map_m1[state_target]);
+    bool contains_error = m_states.find(state_type()) != m_states.end();
 
-    for (auto trans : transition_map_type(machine.m_transitions))
-        for (auto target : trans.second)
-            for (auto state_target : target.second)
-                new_transitions[state_map_m2[trans.first]][target.first].insert(state_map_m2[state_target]);
+    for (auto state : m_states)
+        for (auto symbol : new_alphabet)
+            if (m_alphabet.find(symbol) != m_alphabet.end())
+            {
+                transition_map_type copy(m_transitions);
+                for (auto target_state : copy[state][symbol])
+                    new_transitions[state_map_m1[state]][symbol].insert(state_map_m1[target_state]);
+            } else {
+                if (contains_error)
+                    new_transitions[state_map_m1[state]][symbol].insert(state_map_m1[state_type()]);
+            }
+
+    contains_error = machine.m_states.find(state_type()) != machine.m_states.end();
+
+    for (auto state : machine.m_states)
+        for (auto symbol : new_alphabet)
+            if (machine.m_alphabet.find(symbol) != machine.m_alphabet.end())
+            {
+                transition_map_type copy(machine.m_transitions);
+                for (auto target_state : copy[state][symbol])
+                    new_transitions[state_map_m2[state]][symbol].insert(state_map_m2[target_state]);
+            } else {
+                if (contains_error)
+                    new_transitions[state_map_m2[state]][symbol].insert(state_map_m2[state_type()]);
+            }
 
     /* ------ New final states ------ */
 
@@ -1042,15 +819,11 @@ NonDeterministic NonDeterministic::operator|(const NonDeterministic & machine) c
 
     /* ------ Transitions of new initial state ------ */
 
-    NonDeterministic::transition_map_type copy = m_transitions;
-    for (auto target : copy[m_initial_state])
-        for (auto state_target : target.second)
-            new_transitions[new_initial_state][target.first].insert(state_map_m1[state_target]);
-
-    copy = machine.m_transitions;
-    for (auto target : copy[machine.m_initial_state])
-        for (auto state_target : target.second)
-            new_transitions[new_initial_state][target.first].insert(state_map_m2[state_target]);
+    new_transitions[new_initial_state] = new_transitions[state_map_m1[m_initial_state]];
+    NonDeterministic::transition_map_type copy = new_transitions;
+    for (auto target : copy[state_map_m2[machine.m_initial_state]])
+        for (auto target_state : target.second)
+            new_transitions[new_initial_state][target.first].insert(target_state);
 
     /* ------ Checks if new initial state is a final state ------ */
 
@@ -1110,13 +883,13 @@ NonDeterministic NonDeterministic::operator+(const NonDeterministic & machine) c
 
     for (auto trans : NonDeterministic::transition_map_type(m_transitions))
         for (auto target : trans.second)
-            for (auto state_target : target.second)
-                new_transitions[state_map_m1[trans.first]][target.first].insert(state_map_m1[state_target]);
+            for (auto target_state : target.second)
+                new_transitions[state_map_m1[trans.first]][target.first].insert(state_map_m1[target_state]);
 
     for (auto trans : NonDeterministic::transition_map_type(machine.m_transitions))
         for (auto target : trans.second)
-            for (auto state_target : target.second)
-                new_transitions[state_map_m2[trans.first]][target.first].insert(state_map_m2[state_target]);
+            for (auto target_state : target.second)
+                new_transitions[state_map_m2[trans.first]][target.first].insert(state_map_m2[target_state]);
 
     /* ------ Transitions of final states of M1 to initial state of M2 ------ */
 
@@ -1146,12 +919,12 @@ NonDeterministic NonDeterministic::operator+(const NonDeterministic & machine) c
                             std::move(new_initial_state));
 }
 
-NonDeterministic NonDeterministic::operator&(const NonDeterministic & machine) const
+Deterministic NonDeterministic::operator&(const NonDeterministic & machine) const
 {
-    return !((!(*this) | !machine).determination());
+    return determination() & machine.determination();
 }
 
-NonDeterministic NonDeterministic::operator-(const NonDeterministic & machine) const
+Deterministic NonDeterministic::operator-(const NonDeterministic & machine) const
 {
     return *this & !machine;
 }
@@ -1265,8 +1038,8 @@ NonDeterministic NonDeterministic::reverse() const
 
     for (auto trans : NonDeterministic::transition_map_type(m_transitions))
         for (auto target : trans.second)
-            for (auto state_target : target.second)
-                new_transitions[state_map[state_target]][target.first].insert(state_map[trans.first]);
+            for (auto target_state : target.second)
+                new_transitions[state_map[target_state]][target.first].insert(state_map[trans.first]);
 
     /* ------ Copy of transitions from old final states to new initial state ------ */
 
@@ -1315,8 +1088,7 @@ bool NonDeterministic::containment(const NonDeterministic & machine) const
 }
 bool NonDeterministic::equivalence(const NonDeterministic & machine) const
 {
-    return determination().containment(machine.determination())
-            && determination().containment(machine.determination());
+    return determination().equivalence(machine.determination());
 }
 
 NonDeterministic::string_type NonDeterministic::to_string() const

@@ -14,8 +14,12 @@ class GrammarViewer : public QDialog
 
 public:
     using grammar_type = formal_device::grammar::Regular;
+    using string_type = grammar_type::string_type;
+    using sentences_set = grammar_type::set_type<string_type>;
 
     explicit GrammarViewer(grammar_type grammar, QWidget *parent = 0);
+    explicit GrammarViewer(sentences_set sentences, QWidget *parent = 0);
+
     ~GrammarViewer();
 
 private slots:
