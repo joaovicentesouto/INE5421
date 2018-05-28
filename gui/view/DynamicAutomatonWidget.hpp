@@ -68,6 +68,10 @@ private slots:
 
     void on_m_finitude_clicked();
 
+    void on_m_emptiness_clicked();
+
+    void on_m_membership_clicked();
+
 private:
     Ui::DynamicAutomatonWidget *ui;
     Facade * m_facade{nullptr};

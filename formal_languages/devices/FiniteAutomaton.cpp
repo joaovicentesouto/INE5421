@@ -390,17 +390,19 @@ Deterministic Deterministic::remove_unreachable_states() const
                          std::move(new_initial_state));
 }
 
-bool Deterministic::membership(const string_type &sentece) const
+bool Deterministic::membership(const string_type &sentence) const
 {
-    auto machine = complete();
+    auto machine = contains_epsilon_transition()?
+                remove_epsilon_transition().complete() : complete();
 
     auto current = machine.m_initial_state;
 
-
-    for (auto symbol : sentece) {
-        string_type caracter(&symbol, (&symbol)+1);
-        current = machine.m_transitions[current][caracter];
-    }
+    if (sentence != "&")
+        for (auto symbol : sentence)
+        {
+            string_type caracter(&symbol, (&symbol)+1);
+            current = machine.m_transitions[current][caracter];
+        }
 
     return machine.m_final_states.find(current) != machine.m_final_states.end();
 }

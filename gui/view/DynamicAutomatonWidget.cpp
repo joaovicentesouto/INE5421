@@ -255,3 +255,47 @@ void DynamicAutomatonWidget::on_m_finitude_clicked()
     BooleanDialog dialog(answer, this);
     dialog.exec();
 }
+
+void DynamicAutomatonWidget::on_m_emptiness_clicked()
+{
+    if (!m_current.get())
+        return;
+
+    QString answer("T(M) não é vazia");
+
+    const dfa_type * automaton = dynamic_cast<const dfa_type*>(m_current.get());
+    if (automaton) {
+        if (automaton->emptiness())
+            answer = "T(M) é vazia";
+    } else {
+        if (dynamic_cast<const ndfa_type*>(m_current.get())->emptiness())
+            answer = "T(M) é vazia";
+    }
+
+    BooleanDialog dialog(answer, this);
+    dialog.exec();
+}
+
+void DynamicAutomatonWidget::on_m_membership_clicked()
+{
+    if (!m_current.get() || ui->m_sentence->text() == "")
+        return;
+
+    QString answer = "\"" + ui->m_sentence->text() + "\"";
+
+    const dfa_type * automaton = dynamic_cast<const dfa_type*>(m_current.get());
+    if (automaton) {
+        if (automaton->membership(ui->m_sentence->text().toStdString()))
+            answer += " pertence a T(M)";
+        else
+            answer += " não pertence a T(M)";
+    } else {
+        if (dynamic_cast<const ndfa_type*>(m_current.get())->membership(ui->m_sentence->text().toStdString()))
+            answer += " pertence a T(M)";
+        else
+            answer += " não pertence a T(M)";
+    }
+
+    BooleanDialog dialog(answer, this);
+    dialog.exec();
+}

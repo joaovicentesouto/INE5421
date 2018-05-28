@@ -127,6 +127,18 @@
      </item>
      <item>
       <widget class="QSpinBox" name="m_n_of_sentences">
+       <property name="minimumSize">
+        <size>
+         <width>40</width>
+         <height>0</height>
+        </size>
+       </property>
+       <property name="maximumSize">
+        <size>
+         <width>90</width>
+         <height>16777215</height>
+        </size>
+       </property>
        <property name="maximum">
         <number>999999999</number>
        </property>
@@ -154,6 +166,22 @@
       <widget class="QPushButton" name="m_membership">
        <property name="text">
         <string>Membro</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QLineEdit" name="m_sentence">
+       <property name="minimumSize">
+        <size>
+         <width>50</width>
+         <height>0</height>
+        </size>
+       </property>
+       <property name="maximumSize">
+        <size>
+         <width>100</width>
+         <height>16777215</height>
+        </size>
        </property>
       </widget>
      </item>
