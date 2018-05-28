@@ -30,12 +30,20 @@ void StaticAutomatonWidget::update_result(Facade::automaton_ptr_container_type& 
 
     ui->m_history->clear();
 
+    m_current_item = result.size()-1;
+
     for (auto pair : result)
         ui->m_history->addItem(pair.second);
+
+    ui->m_history->item(m_current_item)->setBackgroundColor(Qt::gray);
 }
 
 void StaticAutomatonWidget::on_m_history_itemClicked(QListWidgetItem *item)
 {
+    ui->m_history->item(m_current_item)->setBackgroundColor(Qt::white);
+    m_current_item = ui->m_history->currentRow();
+    ui->m_history->item(m_current_item)->setBackgroundColor(Qt::gray);
+
     m_current = m_facade->request_automaton(3, item->text());
 
     const dfa_type * automaton = dynamic_cast<const dfa_type*>(m_current.get());

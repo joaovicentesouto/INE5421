@@ -61,9 +61,10 @@ private slots:
 
 private:
     Ui::DynamicAutomatonWidget *ui;
-    Facade * m_facade;
+    Facade * m_facade{nullptr};
     unsigned m_number;
     Facade::automaton_type_ptr m_current;
+    unsigned                   m_current_item;
 };
 
 #endif // DYNAMICAUTOMATONWIDGET_HPP

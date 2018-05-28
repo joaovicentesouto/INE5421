@@ -45,6 +45,7 @@ private:
 
     Facade * m_facade;
     Facade::automaton_type_ptr m_current;
+    unsigned                   m_current_item;
 };
 
 #endif // STATICAUTOMATONWIDGET_HPP

@@ -42,15 +42,30 @@ void DynamicAutomatonWidget::update_automaton(const dfa_type& automaton, QString
 {
     ui->m_machine << automaton;
 
+    unsigned count_machines = ui->m_history->count();
+
+    if (count_machines > 0)
+        ui->m_history->item(m_current_item)->setBackgroundColor(Qt::white);
+
     bool exists = false;
 
-    for (auto i = 0; i < ui->m_history->count(); ++i)
-        exists |= (ui->m_history->item(i)->text() == automaton_name);
+    for (auto i = 0; i < count_machines; ++i)
+    {
+        if (ui->m_history->item(i)->text() == automaton_name)
+        {
+            exists = true;
+            m_current_item = i;
+            break;
+        }
+    }
 
     if (!exists)
     {
+        m_current_item = count_machines;
         ui->m_history->addItem(automaton_name);
     }
+
+    ui->m_history->item(m_current_item)->setBackgroundColor(Qt::gray);
 
     m_current = Facade::automaton_type_ptr(new dfa_type(automaton));
 }
@@ -59,15 +74,30 @@ void DynamicAutomatonWidget::update_automaton(const ndfa_type& automaton, QStrin
 {
     ui->m_machine << automaton;
 
+    unsigned count_machines = ui->m_history->count();
+
+    if (count_machines)
+        ui->m_history->item(m_current_item)->setBackgroundColor(Qt::white);
+
     bool exists = false;
 
-    for (auto i = 0; i < ui->m_history->count(); ++i)
-        exists |= (ui->m_history->item(i)->text() == automaton_name);
+    for (auto i = 0; i < count_machines; ++i)
+    {
+        if (ui->m_history->item(i)->text() == automaton_name)
+        {
+            exists = true;
+            m_current_item = i;
+            break;
+        }
+    }
 
     if (!exists)
     {
+        m_current_item = count_machines;
         ui->m_history->addItem(automaton_name);
     }
+
+    ui->m_history->item(m_current_item)->setBackgroundColor(Qt::gray);
 
     m_current = Facade::automaton_type_ptr(new ndfa_type(automaton));
 }
@@ -96,6 +126,10 @@ void DynamicAutomatonWidget::on_m_new_machine_btn_clicked()
 
 void DynamicAutomatonWidget::on_m_history_itemClicked(QListWidgetItem *item)
 {
+    ui->m_history->item(m_current_item)->setBackgroundColor(Qt::white);
+    m_current_item = ui->m_history->currentRow();
+    ui->m_history->item(m_current_item)->setBackgroundColor(Qt::gray);
+
     m_current = m_facade->request_automaton(m_number, item->text());
 
     const dfa_type * automaton = dynamic_cast<const dfa_type*>(m_current.get());

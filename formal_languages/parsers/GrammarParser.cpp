@@ -17,16 +17,13 @@ grammar::Regular make_regular_grammar_from_file(const string_type &file_path)
     //boost::spirit::istream_iterator first(grammar_file), last;
 
     return grammar::Regular();
-//    return make_regular_grammar();
+    //    return make_regular_grammar();
 }
 
 grammar::Regular make_regular_grammar(string_type grammar)
 {
     grammar = std::regex_replace( grammar, std::regex(" "), "" );
     IteratorWrapper first(grammar.begin()), last(grammar.end());
-
-    // if (!parsed)
-    //     throw std::out_of_range("Gramática mal formatado");
 
     vocabulary_set_type vn;
     vocabulary_set_type vt;
@@ -42,6 +39,8 @@ void new_non_terminal(IteratorWrapper &begin, IteratorWrapper &end,
                       vocabulary_set_type &vn, vocabulary_set_type &vt,
                       production_map_type &productions, symbol_type &initial)
 {
+    bool is_initial = initial == symbol_type();
+
     string_type character(&(*begin.iterator()), &(*begin.iterator()) + 1);
 
     symbol_type current;
@@ -51,22 +50,24 @@ void new_non_terminal(IteratorWrapper &begin, IteratorWrapper &end,
         throw std::out_of_range("Simbolo não terminal invalido");
 
     vn.insert(current);
-    if (initial == symbol_type())
+    if (is_initial)
         initial = current;
 
     begin.next();
-    if (*begin.iterator() != '-')
-        throw std::out_of_range("Simbolo não terminal invalido");
-
-    begin.next();
-    if (*begin.iterator() != '>')
-        throw std::out_of_range("Simbolo não terminal invalido");
-
-    begin.next();
-    new_productions(current, begin, end, vn, vt, productions);
 
     if (begin.iterator() != end.iterator())
     {
+        if (*begin.iterator() != '-')
+            throw std::out_of_range("Simbolo não terminal invalido");
+
+        begin.next();
+        if (*begin.iterator() != '>')
+            throw std::out_of_range("Simbolo não terminal invalido");
+
+        begin.next();
+
+        new_productions(current, begin, end, vn, vt, productions, is_initial);
+
         if (*begin.iterator())
             new_non_terminal(begin, end, vn, vt, productions, initial);
     }
@@ -74,13 +75,15 @@ void new_non_terminal(IteratorWrapper &begin, IteratorWrapper &end,
 
 void new_productions(symbol_type current, IteratorWrapper &begin, IteratorWrapper &end,
                      vocabulary_set_type &vn, vocabulary_set_type &vt,
-                     production_map_type &productions)
+                     production_map_type &productions, bool is_initial)
 {
     while (*begin.iterator() != '\n')
     {
         string_type character(&(*begin.iterator()), &(*begin.iterator()) + 1);
 
-        if (std::regex_match(character, std::regex("[a-z0-9]")))
+        string_type match = is_initial? "[&a-z0-9]" : "[a-z0-9]";
+
+        if (std::regex_match(character, std::regex(match)))
         {
             symbol_type terminal(character);
             vt.insert(terminal);
