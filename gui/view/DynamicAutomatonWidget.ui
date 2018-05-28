@@ -96,7 +96,7 @@
      <item>
       <widget class="QPushButton" name="m_reverse_btn">
        <property name="text">
-        <string>R</string>
+        <string>Reverso</string>
        </property>
       </widget>
      </item>
@@ -107,21 +107,21 @@
      <item>
       <widget class="QPushButton" name="m_determinization_btn">
        <property name="text">
-        <string>Det</string>
+        <string>Determ.</string>
        </property>
       </widget>
      </item>
      <item>
       <widget class="QPushButton" name="m_minimization_btn">
        <property name="text">
-        <string>Min</string>
+        <string>Mínimo</string>
        </property>
       </widget>
      </item>
      <item>
       <widget class="QPushButton" name="m_n_sentences">
        <property name="text">
-        <string>Senteças tam. N</string>
+        <string>|Sentenças| = n :</string>
        </property>
       </widget>
      </item>
@@ -129,7 +129,7 @@
       <widget class="QSpinBox" name="m_n_of_sentences">
        <property name="minimumSize">
         <size>
-         <width>40</width>
+         <width>60</width>
          <height>0</height>
         </size>
        </property>
@@ -165,7 +165,7 @@
      <item>
       <widget class="QPushButton" name="m_membership">
        <property name="text">
-        <string>Membro</string>
+        <string>Membro :</string>
        </property>
       </widget>
      </item>

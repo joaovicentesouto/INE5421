@@ -98,8 +98,8 @@ class Deterministic : public GenericAutomaton
     Deterministic operator!() const; // not
     NonDeterministic operator|(const Deterministic & machine) const; // or
     NonDeterministic operator+(const Deterministic & machine) const; // concat
-    NonDeterministic operator&(const Deterministic & machine) const; // and
-    NonDeterministic operator-(const Deterministic & machine) const; // difference
+    Deterministic operator&(const Deterministic & machine) const; // and
+    Deterministic operator-(const Deterministic & machine) const; // difference
     NonDeterministic operator^(const Operation & op) const; // operation
 
     Deterministic complete() const;
@@ -186,11 +186,11 @@ public:
     bool containment(const NonDeterministic & machine) const;
     bool equivalence(const NonDeterministic & machine) const;
 
-    NonDeterministic operator!() const; // not
+    Deterministic operator!() const; // not
     NonDeterministic operator|(const NonDeterministic & machine) const; // or
     NonDeterministic operator+(const NonDeterministic & machine) const; // concat
-    NonDeterministic operator&(const NonDeterministic & machine) const; // and
-    NonDeterministic operator-(const NonDeterministic & machine) const; // difference
+    Deterministic operator&(const NonDeterministic & machine) const; // and
+    Deterministic operator-(const NonDeterministic & machine) const; // difference
     NonDeterministic operator^(const Operation & op) const; // operation
 
     bool operator==(const NonDeterministic & machine) const;

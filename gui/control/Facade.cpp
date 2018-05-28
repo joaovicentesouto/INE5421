@@ -611,7 +611,7 @@ void Facade::difference(automaton_type_ptr m1, automaton_type_ptr m2)
         ndfa_type _m1 = dfa_m1? *dfa_m1 : *ndfa_m1;
         ndfa_type _m2 = dfa_m2? *dfa_m2 : *ndfa_m2;
 
-        non_deterministic = _m1 - _m2;
+        non_deterministic = (_m1 - _m2).minimization();
     }
 
     intermediates.push_back(
@@ -629,10 +629,43 @@ void Facade::difference(automaton_type_ptr m1, automaton_type_ptr m2)
 
 bool Facade::contains(automaton_type_ptr m1, automaton_type_ptr m2)
 {
+    automaton_ptr_container_type intermediates{
+        std::make_pair(m2, "Original: M1"),
+        std::make_pair(m1, "Original: M2")
+    };
+
     const dfa_type*   dfa_m1 = dynamic_cast<const dfa_type*>(m1.get());
     const ndfa_type* ndfa_m1 = dynamic_cast<const ndfa_type*>(m1.get());
     const dfa_type*   dfa_m2 = dynamic_cast<const dfa_type*>(m2.get());
     const ndfa_type* ndfa_m2 = dynamic_cast<const ndfa_type*>(m2.get());
+
+    /* ------ M1 - M2 (Direto) ------ */
+
+    ndfa_type non_deterministic;
+
+    if (dfa_m1 && dfa_m2)
+        non_deterministic = *dfa_m1 - *dfa_m2;
+    else
+    {
+        ndfa_type _m1 = dfa_m1? *dfa_m1 : *ndfa_m1;
+        ndfa_type _m2 = dfa_m2? *dfa_m2 : *ndfa_m2;
+
+        non_deterministic = _m1 - _m2;
+    }
+
+    intermediates.push_back(
+        std::make_pair(automaton_type_ptr(new ndfa_type(non_deterministic)), "M1 ⊆ M2: M2 - M1 = φ?"));
+
+    /* ------ Result ------ */
+
+    m_result_history.clear();
+
+    for (auto pair : intermediates)
+        m_result_history[pair.second] = pair.first;
+
+    emit update_result(intermediates);
+
+    /* ------ Contains ------ */
 
     if (dfa_m1)
     {
@@ -652,10 +685,50 @@ bool Facade::contains(automaton_type_ptr m1, automaton_type_ptr m2)
 
 bool Facade::equivalence(automaton_type_ptr m1, automaton_type_ptr m2)
 {
+    automaton_ptr_container_type intermediates{
+        std::make_pair(m2, "Original: M1"),
+        std::make_pair(m1, "Original: M2")
+    };
+
     const dfa_type*   dfa_m1 = dynamic_cast<const dfa_type*>(m1.get());
     const ndfa_type* ndfa_m1 = dynamic_cast<const ndfa_type*>(m1.get());
     const dfa_type*   dfa_m2 = dynamic_cast<const dfa_type*>(m2.get());
     const ndfa_type* ndfa_m2 = dynamic_cast<const ndfa_type*>(m2.get());
+
+    /* ------ M2 - M1 ------ */
+
+    ndfa_type non1diff2, non2diff1;
+
+    if (dfa_m1 && dfa_m2)
+    {
+        non2diff1 = *dfa_m1 - *dfa_m2;
+        non1diff2 = *dfa_m2 - *dfa_m1;
+    }
+    else
+    {
+        ndfa_type _m1 = dfa_m1? *dfa_m1 : *ndfa_m1;
+        ndfa_type _m2 = dfa_m2? *dfa_m2 : *ndfa_m2;
+
+        non2diff1 = _m1 - _m2;
+        non1diff2 = _m2 - _m1;
+    }
+
+    intermediates.push_back(
+        std::make_pair(automaton_type_ptr(new ndfa_type(non2diff1)), "M1 ⊆ M2: M2 - M1 = φ?"));
+
+    intermediates.push_back(
+        std::make_pair(automaton_type_ptr(new ndfa_type(non1diff2)), "M2 ⊆ M1: M1 - M2 = φ?"));
+
+    /* ------ Result ------ */
+
+    m_result_history.clear();
+
+    for (auto pair : intermediates)
+        m_result_history[pair.second] = pair.first;
+
+    emit update_result(intermediates);
+
+    /* ------ Contains ------ */
 
     if (dfa_m1)
     {
