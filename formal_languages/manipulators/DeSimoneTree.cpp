@@ -20,8 +20,6 @@ DeSimoneTree::~DeSimoneTree()
 
 DeSimoneTree::dfa_type DeSimoneTree::execute()
 {
-    using state_type       = dfa_type::state_type;
-    using symbol_type      = dfa_type::symbol_type;
     using symbol_name_type = DeSimoneNode::symbol_name_type;
     using state_name_type  = DeSimoneNode::state_name_type;
     using node_set_type    = DeSimoneNode::node_set_type;

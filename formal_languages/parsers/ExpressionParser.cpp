@@ -95,6 +95,9 @@ regular_ptr parse(IteratorWrapper &begin, const IteratorWrapper &end)
             break;
         }
 
+        if (*begin.iterator() == ')')
+            return exp;
+
         if (begin.iterator() != end.iterator())
         {
             caracter = string_type(&(*begin.iterator()), &(*begin.iterator()) + 1);
