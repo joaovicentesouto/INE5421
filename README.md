@@ -41,16 +41,7 @@ Prepare an application to handle Finite Automaton (FA), Regular Grammar (RG) and
 * [Cmake](https://cmake.org/) (>= 3.5.2)
 * [Boost](http://www.boost.org/) (>= 1.63)
 
-```
- $ git clone https://github.com/joaovicentesouto/INE5421.git
- $ cd INE5421
- $ mkdir build
- $ cd build
- $ cmake ..
- $ make
- $ cd tests/
- $ ./formal_languages_tests
-```
+[![how-to-compile](https://asciinema.org/a/Q7Mnh9KIzoaqwnB4mGWTcTYPm.png)](https://asciinema.org/a/Q7Mnh9KIzoaqwnB4mGWTcTYPm?autoplay=1)
 
 # Credits
 
