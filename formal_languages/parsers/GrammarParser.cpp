@@ -81,9 +81,7 @@ void new_productions(symbol_type current, IteratorWrapper &begin, IteratorWrappe
     {
         string_type character(&(*begin.iterator()), &(*begin.iterator()) + 1);
 
-        string_type match = is_initial? "[&a-z0-9]" : "[a-z0-9]";
-
-        if (std::regex_match(character, std::regex(match)))
+        if (std::regex_match(character, std::regex(is_initial? "[&a-z0-9]" : "[a-z0-9]")))
         {
             symbol_type terminal(character);
             vt.insert(terminal);
@@ -105,7 +103,6 @@ void new_productions(symbol_type current, IteratorWrapper &begin, IteratorWrappe
             }
         }
 
-
         if (*begin.iterator() == '\n' || *begin.iterator() == *end.iterator())
             break;
 
@@ -115,102 +112,9 @@ void new_productions(symbol_type current, IteratorWrapper &begin, IteratorWrappe
         begin.next();
     }
 
-    begin.next();
+    if (*begin.iterator() != *end.iterator())
+        begin.next();
 }
-
-/*regular_ptr parse(IteratorWrapper &begin, const IteratorWrapper &end)
-{
-
-    if (begin.iterator() == end.iterator())
-        return new empty_type();
-
-    string_type caracter(&(*begin.iterator()), &(*begin.iterator()) + 1);
-
-    if (*begin.iterator() == '(')
-    {
-        begin.next();
-        auto exp = parse(begin, end);
-
-        while (*begin.iterator() == '|')
-        {
-            begin.next();
-            exp = exp | parse(begin, end);
-        }
-
-        if (*begin.iterator() != ')')
-            throw std::out_of_range("Expressão mal formada");
-
-        begin.next();
-        switch (*begin.iterator()) {
-        case '*':
-            begin.next();
-            return exp ^ expression::Operation::Star;
-
-        case '+':
-            begin.next();
-            return exp ^ expression::Operation::Plus;
-
-        case '?':
-            begin.next();
-            return exp ^ expression::Operation::Optional;
-
-        default:
-            begin.next();
-            return exp;
-        }
-    }
-    else if (std::regex_match(caracter, std::regex("[a-z0-9]")))
-    {
-        regular_ptr exp(new unit_type(*begin.iterator()));
-
-        begin.next();
-
-        if (begin.iterator() == end.iterator() ||
-                *begin.iterator() == ')')
-            return exp;
-
-        caracter = string_type(&(*begin.iterator()), &(*begin.iterator()) + 1);
-
-        if (std::regex_match(caracter, std::regex("[a-z0-9]"))
-                || *begin.iterator() == '(')
-            return exp + parse(begin, end);
-
-        switch (*begin.iterator()) {
-        case '*':
-            exp = exp ^ expression::Operation::Star;
-            begin.next();
-            break;
-
-        case '+':
-            exp = exp ^ expression::Operation::Plus;
-            begin.next();
-            break;
-
-        case '?':
-            exp = exp ^ expression::Operation::Optional;
-            begin.next();
-            break;
-
-        default:
-            break;
-        }
-
-
-
-        if (*begin.iterator() == '|')
-            return exp;
-        else
-            return exp + parse(begin, end);
-    }
-
-    auto b_it = begin.iterator();
-
-    if (*b_it == '*' || *b_it == '+' || *b_it == ')')
-        throw std::out_of_range("Expressão mal formada");
-
-    begin.next();
-    return new empty_type();
-}*/
 
 } // namespace parser
 } // namespace formal_device

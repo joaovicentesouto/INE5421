@@ -38,6 +38,7 @@ TEST_CASE("Grammar Parser: valid Grammar", "[grammar][parser]")
     CHECK_NOTHROW(make_regular_grammar("S -> a\nS -> b"));
     CHECK_NOTHROW(make_regular_grammar("S -> a\nA-> a | bB"));
     CHECK_NOTHROW(make_regular_grammar("S -> aA | aB | c\nA-> a | b"));
+    CHECK_NOTHROW(make_regular_grammar("S -> aA | b\nA -> aC | b\nC -> bS | c"));
 }
 
 TEST_CASE("Grammar Parser: Invalid Grammar", "[grammar][parser]")
