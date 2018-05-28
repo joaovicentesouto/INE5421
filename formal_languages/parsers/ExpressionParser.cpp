@@ -7,16 +7,16 @@ namespace parser
 
 regular_ptr make_regular_expression_from_file(const string_type & file_path)
 {
-    return regular_ptr(new epsilon_type());
-}
-
-regular_ptr make_regular_expression(string_type exp)
-{
     //std::ifstream t(file_path);
     //string_type exp((std::istreambuf_iterator<char>(t)), std::istreambuf_iterator<char>());
 
     //exp.erase( std::remove_if(exp.begin(), exp.end(), std::isspace), exp.end());
 
+    return regular_ptr(new epsilon_type());
+}
+
+regular_ptr make_regular_expression(string_type exp)
+{
     exp = std::regex_replace( exp, std::regex(" "), "" );
     IteratorWrapper begin(exp.begin()), end(exp.end());
 
@@ -146,8 +146,6 @@ regular_ptr parse(IteratorWrapper &begin, const IteratorWrapper &end)
         default:
             break;
         }
-
-
 
         if (*begin.iterator() == '|')
             return exp;

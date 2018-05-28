@@ -41,6 +41,8 @@ public slots:
     void update_automaton(const dfa_type& automaton, QString automaton_name);
     void update_automaton(const ndfa_type& automaton, QString automaton_name);
 
+    void clean_up();
+
 private slots:
     void on_m_new_grammar_btn_clicked();
     void on_m_new_machine_btn_clicked();
@@ -73,11 +75,11 @@ private slots:
     void on_m_membership_clicked();
 
 private:
-    Ui::DynamicAutomatonWidget *ui;
-    Facade * m_facade{nullptr};
-    unsigned m_number;
-    Facade::automaton_type_ptr m_current;
-    unsigned                   m_current_item;
+    Ui::DynamicAutomatonWidget * ui;
+    Facade *                     m_facade{nullptr};
+    unsigned                     m_number;
+    Facade::automaton_type_ptr   m_current;
+    unsigned                     m_current_item;
 };
 
 #endif // DYNAMICAUTOMATONWIDGET_HPP

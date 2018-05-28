@@ -25,6 +25,9 @@ DeSimoneTree::dfa_type DeSimoneTree::execute()
     using node_set_type    = DeSimoneNode::node_set_type;
     using composition_type = DeSimoneNode::composition_type;
 
+    if (m_root->is_empty())
+        return DeSimoneTree::dfa_type();
+
     dfa_type::set_type<symbol_name_type> alphabet;
     dfa_type::set_type<symbol_name_type> states;
     dfa_type::set_type<symbol_name_type> final_states;

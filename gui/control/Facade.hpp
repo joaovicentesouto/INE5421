@@ -54,6 +54,7 @@ public slots:
     void new_expression(unsigned machine, expression_type_ptr expression);
     void new_automaton(unsigned machine, dfa_type automaton);
     void new_automaton(unsigned machine, ndfa_type automaton);
+    void clean_up();
 
 signals:
     void update_automaton_to_m1(const dfa_type& automaton, QString automaton_name);

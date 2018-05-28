@@ -10,6 +10,17 @@ Facade::~Facade()
 
 }
 
+void Facade::clean_up()
+{
+    m_m1 = automaton_type_ptr();
+    m_m2 = automaton_type_ptr();
+    m_result = automaton_type_ptr();
+
+    m_m1_history.clear();
+    m_m2_history.clear();
+    m_result_history.clear();
+}
+
 Facade::automaton_type_ptr Facade::request_automaton(unsigned machine, QString automaton)
 {
     if (machine == 1)

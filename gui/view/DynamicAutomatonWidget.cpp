@@ -29,6 +29,20 @@ Facade::automaton_type_ptr DynamicAutomatonWidget::current_machine()
     return m_current;
 }
 
+void DynamicAutomatonWidget::clean_up()
+{
+    ui->m_machine->clear();
+    ui->m_machine->setRowCount(0);
+    ui->m_machine->setColumnCount(0);
+
+    ui->m_history->clear();
+    ui->m_sentence->clear();
+    ui->m_n_of_sentences->clear();
+
+    m_current = Facade::automaton_type_ptr();
+    m_current_item = 0;
+}
+
 void DynamicAutomatonWidget::on_m_new_grammar_btn_clicked()
 {
     NewGrammarDialog dialog(m_number, this);

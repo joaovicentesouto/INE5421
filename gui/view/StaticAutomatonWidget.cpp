@@ -18,6 +18,18 @@ void StaticAutomatonWidget::set_facade(Facade * facade)
     m_facade = facade;
 }
 
+void StaticAutomatonWidget::clean_up()
+{
+    ui->m_machine->clear();
+    ui->m_machine->setRowCount(0);
+    ui->m_machine->setColumnCount(0);
+
+    ui->m_history->clear();
+
+    m_current = Facade::automaton_type_ptr();
+    m_current_item = 0;
+}
+
 void StaticAutomatonWidget::update_result(Facade::automaton_ptr_container_type& result)
 {
     m_current = result.back().first;
