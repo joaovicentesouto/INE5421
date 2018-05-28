@@ -118,35 +118,42 @@
        </property>
       </widget>
      </item>
+     <item>
+      <widget class="QPushButton" name="m_n_sentences">
+       <property name="text">
+        <string>Senteças tam. N</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QSpinBox" name="m_n_of_sentences">
+       <property name="maximum">
+        <number>999999999</number>
+       </property>
+      </widget>
+     </item>
     </layout>
    </item>
    <item>
     <layout class="QHBoxLayout" name="horizontalLayout_2">
      <item>
-      <widget class="QPushButton" name="pushButton">
+      <widget class="QPushButton" name="m_finitude">
        <property name="text">
         <string>Finitude</string>
        </property>
       </widget>
      </item>
      <item>
-      <widget class="QPushButton" name="pushButton_3">
+      <widget class="QPushButton" name="m_emptiness">
        <property name="text">
         <string>Ling. Vazia</string>
        </property>
       </widget>
      </item>
      <item>
-      <widget class="QPushButton" name="pushButton_4">
+      <widget class="QPushButton" name="m_membership">
        <property name="text">
         <string>Membro</string>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QPushButton" name="pushButton_2">
-       <property name="text">
-        <string>Senteças tam. N</string>
        </property>
       </widget>
      </item>

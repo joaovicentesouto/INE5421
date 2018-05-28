@@ -62,6 +62,12 @@ DevicesConverter::grammar_type DevicesConverter::convert(const ndfa_type & ndfa)
     dfa_type::state_set_type states(minimum.m_states);
     dfa_type::state_set_type final_states(minimum.m_final_states);
 
+    if (final_states.find(minimum.m_initial_state) != final_states.end())
+    {
+        vt.insert(grammar_type::symbol_type("&"));
+        productions[initial_symbol].insert(new grammar::TerminalProduction(grammar_type::symbol_type("&")));
+    }
+
     for (auto state : states)
     {
         dfa_type::transition_map_type transitions(minimum.m_transitions);

@@ -63,6 +63,8 @@ private slots:
 
     void on_m_optional_btn_clicked();
 
+    void on_m_n_sentences_clicked();
+
 private:
     Ui::DynamicAutomatonWidget *ui;
     Facade * m_facade{nullptr};

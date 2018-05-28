@@ -82,6 +82,9 @@ Regular::set_type<Regular::string_type> Regular::sentences_generator(int n) cons
             SentencialForm new_form = production << sentence;
             if (new_form.sentence().size() <= n)
                 sentencial_forms.push_back(new_form);
+            else if (n == 0)
+                if (new_form.sentence() == "&")
+                    sentencial_forms.push_back(new_form);
         }
     }
 
@@ -89,7 +92,8 @@ Regular::set_type<Regular::string_type> Regular::sentences_generator(int n) cons
 
     for (auto sentence : sentencial_forms)
         if (sentence.is_sentence())
-            if (sentence.sentence().size() == n)
+            if ((sentence.sentence().size() == n && sentence.sentence() != "&")
+                                      || (n == 0 && sentence.sentence() == "&"))
                 sentences.insert(sentence.sentence());
 
     return sentences;

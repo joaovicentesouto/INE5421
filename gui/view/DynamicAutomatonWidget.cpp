@@ -213,3 +213,25 @@ void DynamicAutomatonWidget::on_m_minimization_btn_clicked()
 
     m_facade->minimization(m_current);
 }
+
+void DynamicAutomatonWidget::on_m_n_sentences_clicked()
+{
+    if (!m_current.get())
+        return;
+
+    formal_device::manipulator::DevicesConverter converter;
+
+    ndfa_type * to_grammar;
+
+    const dfa_type * automaton = dynamic_cast<const dfa_type*>(m_current.get());
+    if (automaton)
+        to_grammar = new ndfa_type(*automaton);
+    else
+        to_grammar = new ndfa_type(*dynamic_cast<const ndfa_type*>(m_current.get()));
+
+    unsigned n = ui->m_n_of_sentences->value();
+    auto sentences = converter.convert(*to_grammar).sentences_generator(n);
+
+    GrammarViewer dialog(sentences, this);
+    dialog.exec();
+}
