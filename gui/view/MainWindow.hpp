@@ -3,6 +3,7 @@
 
 #include <QMainWindow>
 #include <control/Facade.hpp>
+#include <view/BooleanDialog.hpp>
 
 namespace Ui {
 class MainWindow;
@@ -24,6 +25,10 @@ private slots:
     void on_m_and_btn_clicked();
 
     void on_m_diff_btn_clicked();
+
+    void on_m_contains_btn_clicked();
+
+    void on_m_equality_btn_clicked();
 
 private:
     Ui::MainWindow *ui;

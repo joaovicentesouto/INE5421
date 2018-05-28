@@ -75,3 +75,37 @@ void MainWindow::on_m_diff_btn_clicked()
     if (m1.get() && m2.get())
         m_facade->difference(m1, m2);
 }
+
+void MainWindow::on_m_contains_btn_clicked()
+{
+    Facade::automaton_type_ptr m1 = ui->m_machine_1->current_machine();
+    Facade::automaton_type_ptr m2 = ui->m_machine_2->current_machine();
+
+    QString answer("T(M1) não está contida em T(M2)");
+
+    if (m1.get() && m2.get())
+        if (m_facade->contains(m2, m1))
+        {
+            answer = "T(M1) está contida em T(M2)";
+        }
+
+    BooleanDialog dialog(answer, this);
+    dialog.exec();
+}
+
+void MainWindow::on_m_equality_btn_clicked()
+{
+    Facade::automaton_type_ptr m1 = ui->m_machine_1->current_machine();
+    Facade::automaton_type_ptr m2 = ui->m_machine_2->current_machine();
+
+    QString answer("T(M1) != T(M2)");
+
+    if (m1.get() && m2.get())
+        if (m_facade->equivalence(m1, m2))
+        {
+            answer = "T(M1) = T(M2)";
+        }
+
+    BooleanDialog dialog(answer, this);
+    dialog.exec();
+}

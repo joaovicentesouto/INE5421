@@ -626,3 +626,49 @@ void Facade::difference(automaton_type_ptr m1, automaton_type_ptr m2)
 
     emit update_result(intermediates);
 }
+
+bool Facade::contains(automaton_type_ptr m1, automaton_type_ptr m2)
+{
+    const dfa_type*   dfa_m1 = dynamic_cast<const dfa_type*>(m1.get());
+    const ndfa_type* ndfa_m1 = dynamic_cast<const ndfa_type*>(m1.get());
+    const dfa_type*   dfa_m2 = dynamic_cast<const dfa_type*>(m2.get());
+    const ndfa_type* ndfa_m2 = dynamic_cast<const ndfa_type*>(m2.get());
+
+    if (dfa_m1)
+    {
+        if (dfa_m2)
+            return dfa_m1->containment(*dfa_m2);
+        else
+            return dfa_m1->containment(ndfa_m2->determination());
+    }
+    else
+    {
+        if (dfa_m2)
+            return ndfa_m1->containment(*dfa_m2);
+        else
+            return ndfa_m1->containment(*ndfa_m2);
+    }
+}
+
+bool Facade::equivalence(automaton_type_ptr m1, automaton_type_ptr m2)
+{
+    const dfa_type*   dfa_m1 = dynamic_cast<const dfa_type*>(m1.get());
+    const ndfa_type* ndfa_m1 = dynamic_cast<const ndfa_type*>(m1.get());
+    const dfa_type*   dfa_m2 = dynamic_cast<const dfa_type*>(m2.get());
+    const ndfa_type* ndfa_m2 = dynamic_cast<const ndfa_type*>(m2.get());
+
+    if (dfa_m1)
+    {
+        if (dfa_m2)
+            return dfa_m1->equivalence(*dfa_m2);
+        else
+            return dfa_m1->equivalence(ndfa_m2->determination());
+    }
+    else
+    {
+        if (dfa_m2)
+            return ndfa_m1->equivalence(*dfa_m2);
+        else
+            return ndfa_m1->equivalence(*ndfa_m2);
+    }
+}
