@@ -11,6 +11,7 @@
 #include <view/NewAutomatonDialog.hpp>
 #include <view/NewExpressionDialog.hpp>
 #include <view/GrammarViewer.hpp>
+#include <view/BooleanDialog.hpp>
 
 #include <formal_languages/manipulators/DevicesConverter.hpp>
 
@@ -64,6 +65,8 @@ private slots:
     void on_m_optional_btn_clicked();
 
     void on_m_n_sentences_clicked();
+
+    void on_m_finitude_clicked();
 
 private:
     Ui::DynamicAutomatonWidget *ui;

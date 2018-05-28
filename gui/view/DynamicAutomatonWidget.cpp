@@ -235,3 +235,23 @@ void DynamicAutomatonWidget::on_m_n_sentences_clicked()
     GrammarViewer dialog(sentences, this);
     dialog.exec();
 }
+
+void DynamicAutomatonWidget::on_m_finitude_clicked()
+{
+    if (!m_current.get())
+        return;
+
+    QString answer("T(M) é infinita");
+
+    const dfa_type * automaton = dynamic_cast<const dfa_type*>(m_current.get());
+    if (automaton) {
+        if (automaton->finiteness())
+            answer = "T(M) é finita";
+    } else {
+        if (dynamic_cast<const ndfa_type*>(m_current.get())->finiteness())
+            answer = "T(M) é finita";
+    }
+
+    BooleanDialog dialog(answer, this);
+    dialog.exec();
+}

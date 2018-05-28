@@ -418,22 +418,11 @@ bool Deterministic::finiteness() const
 
     state_set_type temporary;
     state_set_type permanent;
-    state_set_type sink_set;
+    
+    if (minimum.m_final_states.empty())
+        return true;
 
-    for (auto state : minimum.m_states)
-        if (minimum.m_transitions[state].empty())
-            sink_set.insert(state);
-
-    while (!sink_set.empty())
-    {
-        state_type state = *sink_set.begin();
-        sink_set.erase(state);
-
-        if (minimum.contains_cycle(state, temporary, permanent))
-            return false;
-    }
-
-    return true;
+    return !minimum.contains_cycle(minimum.m_initial_state, temporary, permanent);
 }
 
 bool Deterministic::contains_cycle(state_type state, state_set_type & temporary, state_set_type & permanent)
@@ -444,19 +433,15 @@ bool Deterministic::contains_cycle(state_type state, state_set_type & temporary,
     if (temporary.find(state) != temporary.end())
         return true;
 
-    temporary.emplace(state);
+    temporary.insert(state);
 
-    for (auto state_pred : m_states)
-    {
-        transition_map_type copy(m_transitions);
-        for (auto trans : copy[state_pred])
-            if (trans.second == state)
-                if (contains_cycle(state_pred, temporary, permanent))
-                    return true;
-    }
+    transition_map_type copy(m_transitions);
+    for (auto trans : copy[state])
+        if (contains_cycle(trans.second, temporary, permanent))
+            return true;
 
     temporary.erase(state);
-    permanent.emplace(state);
+    permanent.insert(state);
 
     return false;
 }

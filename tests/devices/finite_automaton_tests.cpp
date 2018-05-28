@@ -670,7 +670,16 @@ TEST_CASE("Deterministic: Finitiness FA", "[finite_automaton][symbol]")
     state_set_type  states{q0, q1};
     state_set_type  final_states{q1};
 
-    SECTION("Finite")
+    SECTION("Finite empty")
+    {
+        det_transition_map_type transitions;
+
+        Deterministic machine(alphabet, states, transitions, final_states, q0);
+
+        CHECK(machine.finiteness());
+    }
+
+    SECTION("Finite a")
     {
         det_transition_map_type transitions;
         transitions[q0][a] = q1;
@@ -680,7 +689,18 @@ TEST_CASE("Deterministic: Finitiness FA", "[finite_automaton][symbol]")
         CHECK(machine.finiteness());
     }
 
-    SECTION("Finite")
+    SECTION("Finite a+")
+    {
+        det_transition_map_type transitions;
+        transitions[q0][a] = q1;
+        transitions[q1][a] = q1;
+
+        Deterministic machine(alphabet, states, transitions, final_states, q0);
+
+        CHECK(!machine.emptiness());
+    }
+
+    SECTION("Finite ab*")
     {
         det_transition_map_type transitions;
         transitions[q0][a] = q1;
