@@ -304,10 +304,21 @@ void Facade::determination(automaton_type_ptr automaton)
     const ndfa_type * ndfa = dynamic_cast<const ndfa_type*>(automaton.get());
     if (ndfa)
     {
-        ndfa_type reverse = ndfa->determination();
+        ndfa_type aux;
+
+        if (ndfa->contains_epsilon_transition())
+        {
+            aux = ndfa->remove_epsilon();
+            intermediates.push_back(
+                std::make_pair(automaton_type_ptr(new ndfa_type(aux)), "Remove & transições"));
+        }
+        else
+            aux = *ndfa;
+
+        dfa_type reverse = aux.determination();
 
         intermediates.push_back(
-            std::make_pair(automaton_type_ptr(new ndfa_type(reverse)), "Determinístico"));
+            std::make_pair(automaton_type_ptr(new dfa_type(reverse)), "Determinístico"));
     }
 
     m_result_history.clear();

@@ -654,10 +654,7 @@ TEST_CASE("Deterministic: Minimization Empty Language FA", "[finite_automaton][s
 
     Deterministic machine(alphabet, states, transitions, final_states, q0);
 
-    state_set_type states_empty;
-    det_transition_map_type empty_transitions;
-
-    Deterministic minimum(alphabet, states_empty, empty_transitions, states_empty, error);
+    Deterministic minimum(alphabet);
 
     CHECK((machine.minimization() == minimum));
     CHECK((machine.emptiness()));

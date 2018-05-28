@@ -5,6 +5,20 @@ namespace formal_device
 namespace finite_automaton
 {
 
+Deterministic::Deterministic(const symbol_set_type& alphabet) :
+    m_alphabet(alphabet)
+{
+    for (auto symbol : m_alphabet)
+        m_transitions[m_initial_state][symbol] = m_initial_state;
+}
+
+Deterministic::Deterministic(symbol_set_type&& alphabet) :
+    m_alphabet(std::move(alphabet))
+{
+    for (auto symbol : m_alphabet)
+        m_transitions[m_initial_state][symbol] = m_initial_state;
+}
+
 const Deterministic::symbol_set_type& Deterministic::alphabet() const
 {
     return m_alphabet;
@@ -220,6 +234,15 @@ Deterministic Deterministic::minimization() const
                         = class_to_new_state[old_state_to_class[trans.second]];
     }
 
+    if (new_states.empty())
+    {
+        new_initial_state = state_type("q0");
+        new_states.insert(new_initial_state);
+
+        for (auto symbol : new_alphabet)
+            new_transitions[new_initial_state][symbol] = new_initial_state;
+    }
+
     return Deterministic(std::move(new_alphabet),
                          std::move(new_states),
                          std::move(new_transitions),
@@ -384,11 +407,7 @@ bool Deterministic::membership(const string_type &sentece) const
 
 bool Deterministic::emptiness() const
 {
-    state_type error;
-    state_set_type states_empty;
-    transition_map_type empty_transitions;
-
-    Deterministic empty(m_alphabet, states_empty, empty_transitions, states_empty, error);
+    Deterministic empty(m_alphabet);
 
     return minimization() == empty;
 }

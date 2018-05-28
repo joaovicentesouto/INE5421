@@ -77,6 +77,9 @@ class Deterministic : public GenericAutomaton
     {
     }
 
+    Deterministic(const symbol_set_type& alphabet);
+    Deterministic(symbol_set_type&& alphabet);
+
     // Class member functions
     const symbol_set_type& alphabet() const;
     const state_set_type& states() const;
@@ -117,10 +120,10 @@ private:
     bool contains_cycle(state_type state, state_set_type & temporary, state_set_type & permanent);
 
     symbol_set_type     m_alphabet;
-    state_set_type      m_states;
+    state_set_type      m_states{state_type("q0")};
     transition_map_type m_transitions;
     state_set_type      m_final_states;
-    state_type          m_initial_state;
+    state_type          m_initial_state{"q0"};
 };
 
 class NonDeterministic : public GenericAutomaton
