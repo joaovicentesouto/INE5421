@@ -285,7 +285,6 @@
    <addaction name="menuFile"/>
    <addaction name="menuEditar"/>
   </widget>
-  <widget class="QStatusBar" name="statusBar"/>
   <action name="actionLimpar_tudo">
    <property name="text">
     <string>Limpar tudo</string>
