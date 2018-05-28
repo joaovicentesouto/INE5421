@@ -270,6 +270,56 @@ void Facade::reflexive_closure(automaton_type_ptr automaton)
     emit update_result(intermediates);
 }
 
+void Facade::transitive_closure(automaton_type_ptr automaton)
+{
+    automaton_ptr_container_type intermediates{std::make_pair(automaton, "Original")};
+
+    ndfa_type reflexive;
+
+    const dfa_type * dfa = dynamic_cast<const dfa_type*>(automaton.get());
+    if (dfa)
+        reflexive = (*dfa)^formal_device::finite_automaton::Operation::Transitive;
+    else
+    {
+        const ndfa_type * ndfa = dynamic_cast<const ndfa_type*>(automaton.get());
+        reflexive = (*ndfa)^formal_device::finite_automaton::Operation::Transitive;
+    }
+
+    intermediates.push_back(
+        std::make_pair(automaton_type_ptr(new ndfa_type(reflexive)), "Fecho Transitivo"));
+
+    m_result_history.clear();
+    for (auto pair : intermediates)
+        m_result_history[pair.second] = pair.first;
+
+    emit update_result(intermediates);
+}
+
+void Facade::optional(automaton_type_ptr automaton)
+{
+    automaton_ptr_container_type intermediates{std::make_pair(automaton, "Original")};
+
+    ndfa_type reflexive;
+
+    const dfa_type * dfa = dynamic_cast<const dfa_type*>(automaton.get());
+    if (dfa)
+        reflexive = (*dfa)^formal_device::finite_automaton::Operation::Optional;
+    else
+    {
+        const ndfa_type * ndfa = dynamic_cast<const ndfa_type*>(automaton.get());
+        reflexive = (*ndfa)^formal_device::finite_automaton::Operation::Optional;
+    }
+
+    intermediates.push_back(
+        std::make_pair(automaton_type_ptr(new ndfa_type(reflexive)), "Optional"));
+
+    m_result_history.clear();
+    for (auto pair : intermediates)
+        m_result_history[pair.second] = pair.first;
+
+    emit update_result(intermediates);
+}
+
 void Facade::reverse(automaton_type_ptr automaton)
 {
     automaton_ptr_container_type intermediates{std::make_pair(automaton, "Original")};

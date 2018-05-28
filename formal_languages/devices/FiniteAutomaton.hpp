@@ -24,11 +24,7 @@ namespace manipulator
 namespace finite_automaton
 {
 
-class GenericAutomaton
-{
-public:
-    virtual ~GenericAutomaton() = default;
-};
+class NonDeterministic;
 
 enum class Operation
 {
@@ -39,7 +35,17 @@ enum class Operation
     Optional
 };
 
-class NonDeterministic;
+class GenericAutomaton
+{
+public:
+    using string_type = std::string;
+
+    virtual ~GenericAutomaton() = default;
+
+    virtual bool membership(const string_type& sentece) const = 0;
+    virtual bool emptiness() const = 0;
+    virtual bool finiteness() const = 0;
+};
 
 class Deterministic : public GenericAutomaton
 {
@@ -52,7 +58,7 @@ class Deterministic : public GenericAutomaton
     template <class Key, class Value>
     using map_type            = std::map<Key, Value>;
 
-    using string_type         = std::string;
+    using string_type         = GenericAutomaton::string_type;
     using state_type          = State;
     using symbol_type         = Symbol;
     using state_set_type      = set_type<state_type>;

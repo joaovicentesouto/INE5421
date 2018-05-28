@@ -53,11 +53,15 @@ private slots:
 
     void on_m_closure_btn_clicked();
 
+    void on_m_transitive_btn_clicked();
+
     void on_m_reverse_btn_clicked();
 
     void on_m_determinization_btn_clicked();
 
     void on_m_minimization_btn_clicked();
+
+    void on_m_optional_btn_clicked();
 
 private:
     Ui::DynamicAutomatonWidget *ui;

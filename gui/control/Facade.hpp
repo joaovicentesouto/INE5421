@@ -36,6 +36,8 @@ public:
 
     void complement(automaton_type_ptr automaton);
     void reflexive_closure(automaton_type_ptr automaton);
+    void transitive_closure(automaton_type_ptr automaton);
+    void optional(automaton_type_ptr automaton);
     void reverse(automaton_type_ptr automaton);
     void determination(automaton_type_ptr automaton);
     void minimization(automaton_type_ptr automaton);

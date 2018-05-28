@@ -174,6 +174,22 @@ void DynamicAutomatonWidget::on_m_closure_btn_clicked()
     m_facade->reflexive_closure(m_current);
 }
 
+void DynamicAutomatonWidget::on_m_transitive_btn_clicked()
+{
+    if (!m_current.get())
+        return ;
+
+    m_facade->transitive_closure(m_current);
+}
+
+void DynamicAutomatonWidget::on_m_optional_btn_clicked()
+{
+    if (!m_current.get())
+        return ;
+
+    m_facade->optional(m_current);
+}
+
 void DynamicAutomatonWidget::on_m_reverse_btn_clicked()
 {
     if (!m_current.get())
