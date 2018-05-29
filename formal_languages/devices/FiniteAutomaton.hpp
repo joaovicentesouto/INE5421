@@ -92,22 +92,22 @@ class Deterministic : public GenericAutomaton
     const transition_map_type& transitions() const;
     const state_set_type& final_states() const;
     const state_type& initial_state() const;
-    string_type to_string() const;
 
     // Basic properties
-    Deterministic operator!() const; // not
+    Deterministic    operator!() const; // not
     NonDeterministic operator|(const Deterministic & machine) const; // or
     NonDeterministic operator+(const Deterministic & machine) const; // concat
-    Deterministic operator&(const Deterministic & machine) const; // and
-    Deterministic operator-(const Deterministic & machine) const; // difference
+    Deterministic    operator&(const Deterministic & machine) const; // and
+    Deterministic    operator-(const Deterministic & machine) const; // difference
     NonDeterministic operator^(const Operation & op) const; // operation
+    bool operator==(const Deterministic & machine) const;
 
     Deterministic complete() const;
-    Deterministic remove_epsilon_transition() const;
     Deterministic minimization() const;
-
     Deterministic remove_dead_states() const;
     Deterministic remove_unreachable_states() const;
+    Deterministic remove_epsilon_transition() const;
+    void equivalence_classes(set_type<state_set_type> & set) const;
 
     // decision problems
     bool membership(const string_type& sentece) const;
@@ -119,9 +119,8 @@ class Deterministic : public GenericAutomaton
     bool is_complete() const;
     bool contains_epsilon_transition() const;
 
-    bool operator==(const Deterministic & machine) const;
+    string_type to_string() const;
 
-    void equivalence_classes(set_type<state_set_type> & set);
 private:
     bool contains_cycle(state_type state, state_set_type & temporary, state_set_type & permanent);
 
@@ -150,8 +149,6 @@ public:
     // Class constructors
     NonDeterministic() = default;
 
-    NonDeterministic(const Deterministic &machine);
-
     NonDeterministic(const NonDeterministic &) = default;
     NonDeterministic &operator=(const NonDeterministic &) = default;
     NonDeterministic(NonDeterministic &&) = default;
@@ -167,24 +164,16 @@ public:
     {
     }
 
+    NonDeterministic(const Deterministic &machine);
+    NonDeterministic(const symbol_set_type& alphabet);
+    NonDeterministic(symbol_set_type&& alphabet);
+
     // Class member functions
     const symbol_set_type& alphabet() const;
     const state_set_type& states() const;
     const transition_map_type& transitions() const;
     const state_set_type& final_states() const;
     const state_type& initial_state() const;
-    string_type to_string() const;
-    bool contains_epsilon_transition() const;
-
-    Deterministic remove_epsilon() const;
-    Deterministic determination() const;
-    Deterministic minimization() const;
-
-    bool membership(const string_type& sentence) const;
-    bool emptiness() const;
-    bool finiteness() const;
-    bool containment(const NonDeterministic & machine) const;
-    bool equivalence(const NonDeterministic & machine) const;
 
     Deterministic operator!() const; // not
     NonDeterministic operator|(const NonDeterministic & machine) const; // or
@@ -192,14 +181,28 @@ public:
     Deterministic operator&(const NonDeterministic & machine) const; // and
     Deterministic operator-(const NonDeterministic & machine) const; // difference
     NonDeterministic operator^(const Operation & op) const; // operation
-
     bool operator==(const NonDeterministic & machine) const;
+
+    Deterministic determination() const;
+    Deterministic minimization() const;
+    Deterministic remove_epsilon() const;
+
+    bool membership(const string_type& sentence) const;
+    bool emptiness() const;
+    bool finiteness() const;
+    bool containment(const NonDeterministic & machine) const;
+    bool equivalence(const NonDeterministic & machine) const;
+
+    bool contains_epsilon_transition() const;
+
+    string_type to_string() const;
 
 private:
     NonDeterministic reflexive() const;
     NonDeterministic transitive() const;
     NonDeterministic optional() const;
     NonDeterministic reverse() const;
+
     void build_closure(state_set_type& set, state_type state) const;
 
     symbol_set_type     m_alphabet;

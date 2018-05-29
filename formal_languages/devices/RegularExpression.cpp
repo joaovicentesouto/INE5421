@@ -63,7 +63,7 @@ bool Empty::operator==(const regular_ptr &reg) const
     return dynamic_cast<const Empty*>(reg.get());
 }
 
-simone_node_ptr Empty::node_myself()
+simone_node_ptr Empty::node_myself() const
 {
     auto unit = new UnitNode();
     unit->m_symbol = "Empty";
@@ -102,7 +102,7 @@ bool Epsilon::operator==(const regular_ptr &reg) const
     return dynamic_cast<const Epsilon*>(reg.get());
 }
 
-simone_node_ptr Epsilon::node_myself()
+simone_node_ptr Epsilon::node_myself() const
 {
     auto unit = new UnitNode();
     unit->m_symbol = "&";
@@ -166,7 +166,7 @@ bool Unit::operator==(const regular_ptr &reg) const
     return m_symbol == check->m_symbol;
 }
 
-simone_node_ptr Unit::node_myself()
+simone_node_ptr Unit::node_myself() const
 {
     auto unit = new UnitNode();
     unit->m_symbol = m_symbol;
@@ -231,7 +231,7 @@ bool Union::operator==(const regular_ptr &reg) const
            m_right_expression == check->m_right_expression;
 }
 
-simone_node_ptr Union::node_myself()
+simone_node_ptr Union::node_myself() const
 {
     auto union_ptr = new UnionNode();
     
@@ -299,7 +299,7 @@ bool Concatenation::operator==(const regular_ptr &reg) const
            m_right_expression == check->m_right_expression;
 }
 
-simone_node_ptr Concatenation::node_myself()
+simone_node_ptr Concatenation::node_myself() const
 {
     auto concatenation_ptr = new ConcatenationNode();
     
@@ -366,7 +366,7 @@ bool ReflexiveClosure::operator==(const regular_ptr &reg) const
     return m_expression == check->m_expression;
 }
 
-simone_node_ptr ReflexiveClosure::node_myself()
+simone_node_ptr ReflexiveClosure::node_myself() const
 {
     auto reflexive_ptr = new ReflexiveNode();
     
@@ -448,7 +448,7 @@ bool TransitiveClosure::operator==(const regular_ptr &reg) const
     return m_expression == check->m_expression;
 }
 
-simone_node_ptr TransitiveClosure::node_myself()
+simone_node_ptr TransitiveClosure::node_myself() const
 {
     auto transitive_ptr = new ConcatenationNode();
     auto reflexive_ptr = new ReflexiveNode();
@@ -535,7 +535,7 @@ bool Optional::operator==(const regular_ptr &reg) const
     return m_expression == check->m_expression;
 }
 
-simone_node_ptr Optional::node_myself()
+simone_node_ptr Optional::node_myself() const
 {
     auto optional_ptr = new OptionalNode();
     
