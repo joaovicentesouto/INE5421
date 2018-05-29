@@ -46,7 +46,8 @@ public:
     void concatenation(automaton_type_ptr m1, automaton_type_ptr m2);
     void intersection(automaton_type_ptr m1, automaton_type_ptr m2);
     void difference(automaton_type_ptr m1, automaton_type_ptr m2);
-    bool contains(automaton_type_ptr m1, automaton_type_ptr m2);
+
+    bool is_contained(automaton_type_ptr m1, automaton_type_ptr m2);
     bool equivalence(automaton_type_ptr m1, automaton_type_ptr m2);
 
 public slots:

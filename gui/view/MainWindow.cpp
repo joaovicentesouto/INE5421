@@ -100,10 +100,8 @@ void MainWindow::on_m_contains_btn_clicked()
 
     if (m1.get() && m2.get())
     {
-        if (m_facade->contains(m2, m1))
-        {
+        if (m_facade->is_contained(m1, m2))
             answer = "T(M1) está contida em T(M2)";
-        }
 
         BooleanDialog dialog(answer, this);
         dialog.exec();
@@ -120,9 +118,7 @@ void MainWindow::on_m_equality_btn_clicked()
     if (m1.get() && m2.get())
     {
         if (m_facade->equivalence(m1, m2))
-        {
             answer = "T(M1) = T(M2)";
-        }
 
         BooleanDialog dialog(answer, this);
         dialog.exec();

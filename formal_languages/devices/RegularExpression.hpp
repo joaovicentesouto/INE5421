@@ -55,7 +55,7 @@ class Regular
     virtual regular_ptr operator^(const Operation &op) const = 0;     // Closure
     virtual bool operator==(const regular_ptr &reg) const = 0;
 
-    virtual simone_node_ptr node_myself() = 0;
+    virtual simone_node_ptr node_myself() const = 0;
     virtual string_type to_string() const = 0;
 
   private:
@@ -79,7 +79,7 @@ class Empty : public Regular
     regular_ptr operator^(const Operation &op) const;
     bool operator==(const regular_ptr &reg) const;
 
-    simone_node_ptr node_myself();
+    simone_node_ptr node_myself() const;
     string_type to_string() const;
 
   private:
@@ -103,7 +103,7 @@ class Epsilon : public Regular
     regular_ptr operator^(const Operation &op) const;
     bool operator==(const regular_ptr &reg) const;
 
-    simone_node_ptr node_myself();
+    simone_node_ptr node_myself() const;
     string_type to_string() const;
 
   private:
@@ -135,7 +135,7 @@ class Unit : public Regular
     regular_ptr operator^(const Operation &op) const;
     bool operator==(const regular_ptr &reg) const;
 
-    simone_node_ptr node_myself();
+    simone_node_ptr node_myself() const;
     string_type to_string() const;
 
   private:
@@ -168,7 +168,7 @@ class Union : public Regular
     regular_ptr operator^(const Operation &op) const;
     bool operator==(const regular_ptr &reg) const;
 
-    simone_node_ptr node_myself();
+    simone_node_ptr node_myself() const;
     string_type to_string() const;
 
   private:
@@ -202,7 +202,7 @@ class Concatenation : public Regular
     regular_ptr operator^(const Operation &op) const;
     bool operator==(const regular_ptr &reg) const;
 
-    simone_node_ptr node_myself();
+    simone_node_ptr node_myself() const;
     string_type to_string() const;
 
   private:
@@ -235,7 +235,7 @@ class ReflexiveClosure : public Regular
     regular_ptr operator^(const Operation &op) const;
     bool operator==(const regular_ptr &reg) const;
 
-    simone_node_ptr node_myself();
+    simone_node_ptr node_myself() const;
     string_type to_string() const;
 
   private:
@@ -267,7 +267,7 @@ class TransitiveClosure : public Regular
     regular_ptr operator^(const Operation &op) const;
     bool operator==(const regular_ptr &reg) const;
 
-    simone_node_ptr node_myself();
+    simone_node_ptr node_myself() const;
     string_type to_string() const;
 
   private:
@@ -299,7 +299,7 @@ class Optional : public Regular
     regular_ptr operator^(const Operation &op) const;
     bool operator==(const regular_ptr &reg) const;
 
-    simone_node_ptr node_myself();
+    simone_node_ptr node_myself() const;
     string_type to_string() const;
 
   private:

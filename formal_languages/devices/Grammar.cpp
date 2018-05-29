@@ -64,7 +64,7 @@ Regular::string_type Regular::to_string() const
 
 Regular::set_type<Regular::string_type> Regular::sentences_generator(int n) const
 {
-    std::vector<SentencialForm> sentencial_forms{SentencialForm(m_initial_symbol, "&")};
+    container_type<SentencialForm> sentencial_forms{SentencialForm(m_initial_symbol, "&")};
 
     int current_size = 0;
     while (current_size < sentencial_forms.size())
@@ -99,12 +99,12 @@ Regular::set_type<Regular::string_type> Regular::sentences_generator(int n) cons
     return sentences;
 }
 
-bool Regular::operator==(const Regular &regular)
+bool Regular::operator==(const Regular &regular) const
 {
-    return m_vn == regular.m_vn &&
-           m_vt == regular.m_vt &&
-           m_productions == regular.m_productions &&
-           m_initial_symbol == regular.m_initial_symbol;
+    return m_vn             == regular.m_vn
+        && m_vt             == regular.m_vt
+        && m_productions    == regular.m_productions
+        && m_initial_symbol == regular.m_initial_symbol;
 }
 
 }   // namespace grammar
