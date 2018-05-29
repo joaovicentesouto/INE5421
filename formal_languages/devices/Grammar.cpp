@@ -35,7 +35,11 @@ Regular::string_type Regular::to_string() const
     int i = productions[m_initial_symbol].size();
     for (auto production : productions[m_initial_symbol])
     {
-        string += production->to_string();
+        if (production->is_terminal())
+            string += " " + production->to_string() + " ";
+        else
+            string += production->to_string();
+
         if (--i > 0)
             string += " | ";
     }
@@ -52,7 +56,11 @@ Regular::string_type Regular::to_string() const
         i = productions[non_terminal].size();
         for (auto production : productions[non_terminal])
         {
-            string += production->to_string();
+            if (production->is_terminal())
+                string += " " + production->to_string() + " ";
+            else
+                string += production->to_string();
+
             if (--i > 0)
                 string += " | ";
         }

@@ -803,7 +803,7 @@ NonDeterministic NonDeterministic::reflexive() const
 
 NonDeterministic NonDeterministic::transitive() const
 {
-    return *this + (*this)^Operation::Reflexive;
+    return *this + ((*this)^Operation::Reflexive);
 }
 
 NonDeterministic NonDeterministic::optional() const

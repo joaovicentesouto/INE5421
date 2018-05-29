@@ -285,19 +285,27 @@ void Facade::transitive_closure(automaton_type_ptr automaton)
 {
     automaton_ptr_container_type intermediates{std::make_pair(automaton, "Original")};
 
-    ndfa_type reflexive;
+    ndfa_type reflexive, concat;
 
     const dfa_type * dfa = dynamic_cast<const dfa_type*>(automaton.get());
     if (dfa)
-        reflexive = (*dfa)^formal_device::finite_automaton::Operation::Transitive;
+    {
+        reflexive = (*dfa)^formal_device::finite_automaton::Operation::Reflexive;
+        concat = ndfa_type(*dfa) + reflexive;
+    }
     else
     {
         const ndfa_type * ndfa = dynamic_cast<const ndfa_type*>(automaton.get());
-        reflexive = (*ndfa)^formal_device::finite_automaton::Operation::Transitive;
+
+        reflexive = (*ndfa)^formal_device::finite_automaton::Operation::Reflexive;
+        concat = *ndfa + reflexive;
     }
 
     intermediates.push_back(
-        std::make_pair(automaton_type_ptr(new ndfa_type(reflexive)), "Fecho Transitivo"));
+        std::make_pair(automaton_type_ptr(new ndfa_type(reflexive)), "Fecho Reflexivo: M1"));
+
+    intermediates.push_back(
+        std::make_pair(automaton_type_ptr(new ndfa_type(concat)), "M1 + M1*"));
 
     m_result_history.clear();
     for (auto pair : intermediates)
@@ -310,19 +318,19 @@ void Facade::optional(automaton_type_ptr automaton)
 {
     automaton_ptr_container_type intermediates{std::make_pair(automaton, "Original")};
 
-    ndfa_type reflexive;
+    ndfa_type optional_;
 
     const dfa_type * dfa = dynamic_cast<const dfa_type*>(automaton.get());
     if (dfa)
-        reflexive = (*dfa)^formal_device::finite_automaton::Operation::Optional;
+        optional_ = (*dfa)^formal_device::finite_automaton::Operation::Optional;
     else
     {
         const ndfa_type * ndfa = dynamic_cast<const ndfa_type*>(automaton.get());
-        reflexive = (*ndfa)^formal_device::finite_automaton::Operation::Optional;
+        optional_ = (*ndfa)^formal_device::finite_automaton::Operation::Optional;
     }
 
     intermediates.push_back(
-        std::make_pair(automaton_type_ptr(new ndfa_type(reflexive)), "Optional"));
+        std::make_pair(automaton_type_ptr(new ndfa_type(optional_)), "Optional"));
 
     m_result_history.clear();
     for (auto pair : intermediates)

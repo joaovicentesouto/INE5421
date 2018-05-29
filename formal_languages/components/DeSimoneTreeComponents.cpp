@@ -60,7 +60,7 @@ void UnionNode::down(const state_name_type& state, composition_type & compositio
 
 void UnionNode::scape(const state_name_type& state, composition_type & composition, node_set_type & marked)
 {
-	m_right->up(state, composition, marked);
+	m_right->scape(state, composition, marked);
 }
 
 void UnionNode::to_sew(DeSimoneNode* target)
@@ -95,7 +95,7 @@ void ConcatenationNode::down(const state_name_type& state, composition_type & co
 
 void ConcatenationNode::scape(const state_name_type& state, composition_type & composition, node_set_type & marked)
 {
-	m_right->up(state, composition, marked);
+	m_right->scape(state, composition, marked);
 }
 
 void ConcatenationNode::to_sew(DeSimoneNode* target)
