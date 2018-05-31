@@ -49,29 +49,17 @@ private slots:
     void on_m_new_exp_btn_clicked();
 
     void on_m_history_itemClicked(QListWidgetItem *item);
-
     void on_m_grammar_btn_clicked();
-
     void on_m_negation_btn_clicked();
-
     void on_m_closure_btn_clicked();
-
-    void on_m_transitive_btn_clicked();
-
     void on_m_reverse_btn_clicked();
-
     void on_m_determinization_btn_clicked();
-
     void on_m_minimization_btn_clicked();
-
+    void on_m_transitive_btn_clicked();
     void on_m_optional_btn_clicked();
-
     void on_m_n_sentences_clicked();
-
     void on_m_finitude_clicked();
-
     void on_m_emptiness_clicked();
-
     void on_m_membership_clicked();
 
 private:

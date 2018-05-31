@@ -24,7 +24,6 @@ signals:
 
 private slots:
     void on_m_ok_btn_clicked();
-
     void on_m_cancel_btn_clicked();
 
 private:

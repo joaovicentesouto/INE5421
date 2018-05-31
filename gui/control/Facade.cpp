@@ -98,9 +98,23 @@ void Facade::new_expression(unsigned machine, expression_type_ptr expression)
 void Facade::new_automaton(unsigned machine, dfa_type automaton)
 {
     if (machine == 1)
-        emit update_automaton_to_m1(automaton, "");
+    {
+        m_m1 = automaton_type_ptr(new dfa_type(automaton));
+        QString automaton_name = "Máquina " + QString::number(m_m1_history.size());
+
+        m_m1_history[automaton_name] = m_m1;
+
+        emit update_automaton_to_m1(automaton, automaton_name);
+    }
     else if (machine == 2)
-        emit update_automaton_to_m2(automaton, "");
+    {
+        m_m2 = automaton_type_ptr(new dfa_type(automaton));
+        QString automaton_name = "Máquina " + QString::number(m_m2_history.size());
+
+        m_m2_history[automaton_name] = m_m2;
+
+        emit update_automaton_to_m2(automaton, automaton_name);
+    }
     else
     {
         std::map<QString, automaton_type_ptr> * map;
@@ -159,9 +173,23 @@ void Facade::new_automaton(unsigned machine, dfa_type automaton)
 void Facade::new_automaton(unsigned machine, ndfa_type automaton)
 {
     if (machine == 1)
-        emit update_automaton_to_m1(automaton, "");
+    {
+        m_m1 = automaton_type_ptr(new ndfa_type(automaton));
+        QString automaton_name = "Máquina " + QString::number(m_m1_history.size());
+
+        m_m1_history[automaton_name] = m_m1;
+
+        emit update_automaton_to_m1(automaton, automaton_name);
+    }
     else if (machine == 2)
-        emit update_automaton_to_m2(automaton, "");
+    {
+        m_m2 = automaton_type_ptr(new ndfa_type(automaton));
+        QString automaton_name = "Máquina " + QString::number(m_m2_history.size());
+
+        m_m2_history[automaton_name] = m_m2;
+
+        emit update_automaton_to_m2(automaton, automaton_name);
+    }
     else
     {
         std::map<QString, automaton_type_ptr> * map;
