@@ -45,6 +45,12 @@ public:
     virtual bool membership(const string_type& sentece) const = 0;
     virtual bool emptiness() const = 0;
     virtual bool finiteness() const = 0;
+
+    template <class Derived>
+    const Derived* derived_ptr() const
+    {
+        return dynamic_cast<const Derived*>(this);
+    }
 };
 
 class Deterministic : public GenericAutomaton

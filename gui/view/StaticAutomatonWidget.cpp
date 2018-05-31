@@ -34,14 +34,12 @@ void StaticAutomatonWidget::update_result(Facade::automaton_ptr_container_type& 
 {
     m_current = result.back().first;
 
-    const dfa_type * automaton = dynamic_cast<const dfa_type*>(m_current.get());
-    if (automaton)
-        ui->m_machine << *automaton;
+    if (m_current->derived_ptr<dfa_type>())
+        ui->m_machine << *m_current->derived_ptr<dfa_type>();
     else
-        ui->m_machine << *dynamic_cast<const ndfa_type*>(m_current.get());
+        ui->m_machine << *m_current->derived_ptr<ndfa_type>();
 
     ui->m_history->clear();
-
     m_current_item = result.size()-1;
 
     for (auto pair : result)
@@ -58,11 +56,10 @@ void StaticAutomatonWidget::on_m_history_itemClicked(QListWidgetItem *item)
 
     m_current = m_facade->request_automaton(3, item->text());
 
-    const dfa_type * automaton = dynamic_cast<const dfa_type*>(m_current.get());
-    if (automaton)
-        ui->m_machine << *automaton;
+    if (m_current->derived_ptr<dfa_type>())
+        ui->m_machine << *m_current->derived_ptr<dfa_type>();
     else
-        ui->m_machine << *dynamic_cast<const ndfa_type*>(m_current.get());
+        ui->m_machine << *m_current->derived_ptr<ndfa_type>();
 }
 
 void StaticAutomatonWidget::on_m_grammar_clicked()
@@ -70,24 +67,22 @@ void StaticAutomatonWidget::on_m_grammar_clicked()
     if (!m_current.get())
         return;
 
+    grammar_type grammar;
     formal_device::manipulator::DevicesConverter converter;
 
-    ndfa_type * to_grammar;
-
-    const dfa_type * automaton = dynamic_cast<const dfa_type*>(m_current.get());
-    if (automaton)
-        to_grammar = new ndfa_type(*automaton);
+    if (m_current->derived_ptr<dfa_type>())
+        grammar = converter.convert(*m_current->derived_ptr<dfa_type>());
     else
-        to_grammar = new ndfa_type(*dynamic_cast<const ndfa_type*>(m_current.get()));
+        grammar = converter.convert(*m_current->derived_ptr<ndfa_type>());
 
-    GrammarViewer dialog(converter.convert(*to_grammar), this);
+    GrammarViewer dialog(grammar, this);
     dialog.exec();
 }
 
 void StaticAutomatonWidget::on_m_to_m1_clicked()
 {
-    const dfa_type  * dfa  = dynamic_cast<const dfa_type*>(m_current.get());
-    const ndfa_type * ndfa = dynamic_cast<const ndfa_type*>(m_current.get());
+    const dfa_type  * dfa  = m_current->derived_ptr<dfa_type>();
+    const ndfa_type * ndfa = m_current->derived_ptr<ndfa_type>();
 
     if (dfa)
         emit new_automaton(11, *dfa);
@@ -98,8 +93,8 @@ void StaticAutomatonWidget::on_m_to_m1_clicked()
 
 void StaticAutomatonWidget::on_m_to_m2_clicked()
 {
-    const dfa_type  * dfa  = dynamic_cast<const dfa_type*>(m_current.get());
-    const ndfa_type * ndfa = dynamic_cast<const ndfa_type*>(m_current.get());
+    const dfa_type  * dfa  = m_current->derived_ptr<dfa_type>();
+    const ndfa_type * ndfa = m_current->derived_ptr<ndfa_type>();
 
     if (dfa)
         emit new_automaton(12, *dfa);

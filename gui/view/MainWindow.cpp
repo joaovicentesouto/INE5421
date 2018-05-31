@@ -130,10 +130,10 @@ void MainWindow::on_m_swap_clicked()
     Facade::automaton_type_ptr m1 = ui->m_machine_1->current_machine();
     Facade::automaton_type_ptr m2 = ui->m_machine_2->current_machine();
 
-    const dfa_type*   dfa_m1 = dynamic_cast<const dfa_type*>(m1.get());
-    const ndfa_type* ndfa_m1 = dynamic_cast<const ndfa_type*>(m1.get());
-    const dfa_type*   dfa_m2 = dynamic_cast<const dfa_type*>(m2.get());
-    const ndfa_type* ndfa_m2 = dynamic_cast<const ndfa_type*>(m2.get());
+    const dfa_type*   dfa_m1 = m1->derived_ptr<dfa_type>();
+    const ndfa_type* ndfa_m1 = m1->derived_ptr<ndfa_type>();
+    const dfa_type*   dfa_m2 = m2->derived_ptr<dfa_type>();
+    const ndfa_type* ndfa_m2 = m2->derived_ptr<ndfa_type>();
 
     if (dfa_m2)
         emit new_automaton(11, *dfa_m2);

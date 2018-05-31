@@ -146,11 +146,10 @@ void DynamicAutomatonWidget::on_m_history_itemClicked(QListWidgetItem *item)
 
     m_current = m_facade->request_automaton(m_number, item->text());
 
-    const dfa_type * automaton = dynamic_cast<const dfa_type*>(m_current.get());
-    if (automaton)
-        ui->m_machine << *automaton;
+    if (m_current->derived_ptr<dfa_type>())
+        ui->m_machine << *m_current->derived_ptr<dfa_type>();
     else
-        ui->m_machine << *dynamic_cast<const ndfa_type*>(m_current.get());
+        ui->m_machine << *m_current->derived_ptr<ndfa_type>();
 }
 
 void DynamicAutomatonWidget::on_m_grammar_btn_clicked()
@@ -158,17 +157,15 @@ void DynamicAutomatonWidget::on_m_grammar_btn_clicked()
     if (!m_current.get())
         return;
 
+    grammar_type grammar;
     formal_device::manipulator::DevicesConverter converter;
 
-    ndfa_type * to_grammar;
-
-    const dfa_type * automaton = dynamic_cast<const dfa_type*>(m_current.get());
-    if (automaton)
-        to_grammar = new ndfa_type(*automaton);
+    if (m_current->derived_ptr<dfa_type>())
+        grammar = converter.convert(*m_current->derived_ptr<dfa_type>());
     else
-        to_grammar = new ndfa_type(*dynamic_cast<const ndfa_type*>(m_current.get()));
+        grammar = converter.convert(*m_current->derived_ptr<ndfa_type>());
 
-    GrammarViewer dialog(converter.convert(*to_grammar), this);
+    GrammarViewer dialog(grammar, this);
     dialog.exec();
 }
 
@@ -233,18 +230,16 @@ void DynamicAutomatonWidget::on_m_n_sentences_clicked()
     if (!m_current.get())
         return;
 
+    grammar_type grammar;
     formal_device::manipulator::DevicesConverter converter;
 
-    ndfa_type * to_grammar;
-
-    const dfa_type * automaton = dynamic_cast<const dfa_type*>(m_current.get());
-    if (automaton)
-        to_grammar = new ndfa_type(*automaton);
+    if (m_current->derived_ptr<dfa_type>())
+        grammar = converter.convert(*m_current->derived_ptr<dfa_type>());
     else
-        to_grammar = new ndfa_type(*dynamic_cast<const ndfa_type*>(m_current.get()));
+        grammar = converter.convert(*m_current->derived_ptr<ndfa_type>());
 
     unsigned n = ui->m_n_of_sentences->value();
-    auto sentences = converter.convert(*to_grammar).sentences_generator(n);
+    auto sentences = grammar.sentences_generator(n);
 
     GrammarViewer dialog(sentences, this);
     dialog.exec();
@@ -255,16 +250,7 @@ void DynamicAutomatonWidget::on_m_finitude_clicked()
     if (!m_current.get())
         return;
 
-    QString answer("T(M) é infinita");
-
-    const dfa_type * automaton = dynamic_cast<const dfa_type*>(m_current.get());
-    if (automaton) {
-        if (automaton->finiteness())
-            answer = "T(M) é finita";
-    } else {
-        if (dynamic_cast<const ndfa_type*>(m_current.get())->finiteness())
-            answer = "T(M) é finita";
-    }
+    QString answer = m_current->finiteness()? "T(M) é finita" : "T(M) é infinita";
 
     BooleanDialog dialog(answer, this);
     dialog.exec();
@@ -275,16 +261,7 @@ void DynamicAutomatonWidget::on_m_emptiness_clicked()
     if (!m_current.get())
         return;
 
-    QString answer("T(M) não é vazia");
-
-    const dfa_type * automaton = dynamic_cast<const dfa_type*>(m_current.get());
-    if (automaton) {
-        if (automaton->emptiness())
-            answer = "T(M) é vazia";
-    } else {
-        if (dynamic_cast<const ndfa_type*>(m_current.get())->emptiness())
-            answer = "T(M) é vazia";
-    }
+    QString answer = m_current->emptiness()? "T(M) é vazia" : "T(M) não é vazia";
 
     BooleanDialog dialog(answer, this);
     dialog.exec();
@@ -297,18 +274,10 @@ void DynamicAutomatonWidget::on_m_membership_clicked()
 
     QString answer = "\"" + ui->m_sentence->text() + "\"";
 
-    const dfa_type * automaton = dynamic_cast<const dfa_type*>(m_current.get());
-    if (automaton) {
-        if (automaton->membership(ui->m_sentence->text().toStdString()))
-            answer += " pertence a T(M)";
-        else
-            answer += " não pertence a T(M)";
-    } else {
-        if (dynamic_cast<const ndfa_type*>(m_current.get())->membership(ui->m_sentence->text().toStdString()))
-            answer += " pertence a T(M)";
-        else
-            answer += " não pertence a T(M)";
-    }
+    if (m_current->membership(ui->m_sentence->text().toStdString()))
+        answer += " pertence a T(M)";
+    else
+        answer += " não pertence a T(M)";
 
     BooleanDialog dialog(answer, this);
     dialog.exec();
