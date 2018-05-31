@@ -4,6 +4,7 @@
 #include <QDialog>
 #include <QTableWidgetItem>
 #include <formal_languages/devices/FiniteAutomaton.hpp>
+#include <formal_languages/parsers/FiniteAutomatonParser.hpp>
 
 namespace Ui {
 class NewAutomatonDialog;
@@ -30,9 +31,17 @@ private slots:
     void on_btnClean_clicked();
 
     void on_automatonTable_itemChanged(QTableWidgetItem *item);
+    void symbol_care(QTableWidgetItem *item);
+    void symbol_verification();
+    void state_repaint(QTableWidgetItem *item);
+    void state_care(QTableWidgetItem *item);
+    void state_verification();
+    void transition_care(QTableWidgetItem *item);
+    bool transition_verification(QString state);
+
+    ndfa_type create_machine();
 
 signals:
-    void new_automaton(unsigned machine, QString automaton);
     void new_automaton(unsigned machine, dfa_type automaton);
     void new_automaton(unsigned machine, ndfa_type automaton);
 
