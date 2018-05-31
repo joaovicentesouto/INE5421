@@ -5,6 +5,11 @@ namespace formal_device
 namespace expression
 {
 
+bool UnitNode::is_empty()
+{
+    return m_symbol == "Empty";
+}
+
 void UnitNode::up(const state_name_type& state, composition_type & composition, node_set_type & marked)
 {
     scape(state, composition, marked);
@@ -36,6 +41,11 @@ UnionNode::~UnionNode()
 	delete m_right;
 }
 
+bool UnionNode::is_empty()
+{
+    return m_left->is_empty() && m_right->is_empty();
+}
+
 void UnionNode::up(const state_name_type& state, composition_type & composition, node_set_type & marked)
 {
 	m_right->scape(state, composition, marked);
@@ -50,7 +60,7 @@ void UnionNode::down(const state_name_type& state, composition_type & compositio
 
 void UnionNode::scape(const state_name_type& state, composition_type & composition, node_set_type & marked)
 {
-	m_right->up(state, composition, marked);
+	m_right->scape(state, composition, marked);
 }
 
 void UnionNode::to_sew(DeSimoneNode* target)
@@ -61,10 +71,16 @@ void UnionNode::to_sew(DeSimoneNode* target)
 
 
 // -----------------------------------------------------------------------------------------------------
+
 ConcatenationNode::~ConcatenationNode()
 {
 	delete m_left;
 	delete m_right;
+}
+
+bool ConcatenationNode::is_empty()
+{
+    return m_left->is_empty() && m_right->is_empty();
 }
 
 void ConcatenationNode::up(const state_name_type& state, composition_type & composition, node_set_type & marked)
@@ -79,7 +95,7 @@ void ConcatenationNode::down(const state_name_type& state, composition_type & co
 
 void ConcatenationNode::scape(const state_name_type& state, composition_type & composition, node_set_type & marked)
 {
-	m_right->up(state, composition, marked);
+	m_right->scape(state, composition, marked);
 }
 
 void ConcatenationNode::to_sew(DeSimoneNode* target)
@@ -93,6 +109,11 @@ void ConcatenationNode::to_sew(DeSimoneNode* target)
 ReflexiveNode::~ReflexiveNode()
 {
 	delete m_left;
+}
+
+bool ReflexiveNode::is_empty()
+{
+    return m_left->is_empty();
 }
 
 void ReflexiveNode::up(const state_name_type& state, composition_type & composition, node_set_type & marked)
@@ -137,6 +158,11 @@ void ReflexiveNode::to_sew(DeSimoneNode* target)
 OptionalNode::~OptionalNode()
 {
 	delete m_left;
+}
+
+bool OptionalNode::is_empty()
+{
+    return m_left->is_empty();
 }
 
 void OptionalNode::up(const state_name_type& state, composition_type & composition, node_set_type & marked)

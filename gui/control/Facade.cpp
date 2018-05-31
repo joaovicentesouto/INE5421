@@ -10,6 +10,17 @@ Facade::~Facade()
 
 }
 
+void Facade::clean_up()
+{
+    m_m1 = automaton_type_ptr();
+    m_m2 = automaton_type_ptr();
+    m_result = automaton_type_ptr();
+
+    m_m1_history.clear();
+    m_m2_history.clear();
+    m_result_history.clear();
+}
+
 Facade::automaton_type_ptr Facade::request_automaton(unsigned machine, QString automaton)
 {
     if (machine == 1)
@@ -87,9 +98,23 @@ void Facade::new_expression(unsigned machine, expression_type_ptr expression)
 void Facade::new_automaton(unsigned machine, dfa_type automaton)
 {
     if (machine == 1)
-        emit update_automaton_to_m1(automaton, "");
+    {
+        m_m1 = automaton_type_ptr(new dfa_type(automaton));
+        QString automaton_name = "Máquina " + QString::number(m_m1_history.size());
+
+        m_m1_history[automaton_name] = m_m1;
+
+        emit update_automaton_to_m1(automaton, automaton_name);
+    }
     else if (machine == 2)
-        emit update_automaton_to_m2(automaton, "");
+    {
+        m_m2 = automaton_type_ptr(new dfa_type(automaton));
+        QString automaton_name = "Máquina " + QString::number(m_m2_history.size());
+
+        m_m2_history[automaton_name] = m_m2;
+
+        emit update_automaton_to_m2(automaton, automaton_name);
+    }
     else
     {
         std::map<QString, automaton_type_ptr> * map;
@@ -105,7 +130,7 @@ void Facade::new_automaton(unsigned machine, dfa_type automaton)
 
         for (auto p : *map)
         {
-            const dfa_type* dfa = dynamic_cast<const dfa_type*>(p.second.get());
+            const dfa_type* dfa = p.second->derived_ptr<dfa_type>();
 
             if (!dfa)
                 continue;
@@ -148,9 +173,23 @@ void Facade::new_automaton(unsigned machine, dfa_type automaton)
 void Facade::new_automaton(unsigned machine, ndfa_type automaton)
 {
     if (machine == 1)
-        emit update_automaton_to_m1(automaton, "");
+    {
+        m_m1 = automaton_type_ptr(new ndfa_type(automaton));
+        QString automaton_name = "Máquina " + QString::number(m_m1_history.size());
+
+        m_m1_history[automaton_name] = m_m1;
+
+        emit update_automaton_to_m1(automaton, automaton_name);
+    }
     else if (machine == 2)
-        emit update_automaton_to_m2(automaton, "");
+    {
+        m_m2 = automaton_type_ptr(new ndfa_type(automaton));
+        QString automaton_name = "Máquina " + QString::number(m_m2_history.size());
+
+        m_m2_history[automaton_name] = m_m2;
+
+        emit update_automaton_to_m2(automaton, automaton_name);
+    }
     else
     {
         std::map<QString, automaton_type_ptr> * map;
@@ -166,7 +205,7 @@ void Facade::new_automaton(unsigned machine, ndfa_type automaton)
 
         for (auto p : *map)
         {
-            const ndfa_type* ndfa = dynamic_cast<const ndfa_type*>(p.second.get());
+            const ndfa_type* ndfa = p.second->derived_ptr<ndfa_type>();
 
             if (!ndfa)
                 continue;
@@ -213,7 +252,7 @@ void Facade::complement(automaton_type_ptr automaton)
     dfa_type complet;
     dfa_type negation;
 
-    const dfa_type * dfa = dynamic_cast<const dfa_type*>(automaton.get());
+    const dfa_type * dfa = automaton->derived_ptr<dfa_type>();
     if (dfa)
     {
         complet  = dfa->complete();
@@ -221,7 +260,7 @@ void Facade::complement(automaton_type_ptr automaton)
     }
     else
     {
-        const ndfa_type * ndfa = dynamic_cast<const ndfa_type*>(automaton.get());
+        const ndfa_type * ndfa = automaton->derived_ptr<ndfa_type>();
 
         dfa_type deterministic = ndfa->determination();
         complet                = deterministic.complete();
@@ -251,17 +290,75 @@ void Facade::reflexive_closure(automaton_type_ptr automaton)
 
     ndfa_type reflexive;
 
-    const dfa_type * dfa = dynamic_cast<const dfa_type*>(automaton.get());
+    const dfa_type * dfa = automaton->derived_ptr<dfa_type>();
     if (dfa)
         reflexive = (*dfa)^formal_device::finite_automaton::Operation::Reflexive;
     else
     {
-        const ndfa_type * ndfa = dynamic_cast<const ndfa_type*>(automaton.get());
+        const ndfa_type * ndfa = automaton->derived_ptr<ndfa_type>();
         reflexive = (*ndfa)^formal_device::finite_automaton::Operation::Reflexive;
     }
 
     intermediates.push_back(
         std::make_pair(automaton_type_ptr(new ndfa_type(reflexive)), "Fecho Reflexivo"));
+
+    m_result_history.clear();
+    for (auto pair : intermediates)
+        m_result_history[pair.second] = pair.first;
+
+    emit update_result(intermediates);
+}
+
+void Facade::transitive_closure(automaton_type_ptr automaton)
+{
+    automaton_ptr_container_type intermediates{std::make_pair(automaton, "Original")};
+
+    ndfa_type reflexive, concat;
+
+    const dfa_type * dfa = automaton->derived_ptr<dfa_type>();
+    if (dfa)
+    {
+        reflexive = (*dfa)^formal_device::finite_automaton::Operation::Reflexive;
+        concat = ndfa_type(*dfa) + reflexive;
+    }
+    else
+    {
+        const ndfa_type * ndfa = automaton->derived_ptr<ndfa_type>();
+
+        reflexive = (*ndfa)^formal_device::finite_automaton::Operation::Reflexive;
+        concat = *ndfa + reflexive;
+    }
+
+    intermediates.push_back(
+        std::make_pair(automaton_type_ptr(new ndfa_type(reflexive)), "Fecho Reflexivo: M1"));
+
+    intermediates.push_back(
+        std::make_pair(automaton_type_ptr(new ndfa_type(concat)), "M1 + M1*"));
+
+    m_result_history.clear();
+    for (auto pair : intermediates)
+        m_result_history[pair.second] = pair.first;
+
+    emit update_result(intermediates);
+}
+
+void Facade::optional(automaton_type_ptr automaton)
+{
+    automaton_ptr_container_type intermediates{std::make_pair(automaton, "Original")};
+
+    ndfa_type optional_;
+
+    const dfa_type * dfa = automaton->derived_ptr<dfa_type>();
+    if (dfa)
+        optional_ = (*dfa)^formal_device::finite_automaton::Operation::Optional;
+    else
+    {
+        const ndfa_type * ndfa = automaton->derived_ptr<ndfa_type>();
+        optional_ = (*ndfa)^formal_device::finite_automaton::Operation::Optional;
+    }
+
+    intermediates.push_back(
+        std::make_pair(automaton_type_ptr(new ndfa_type(optional_)), "Optional"));
 
     m_result_history.clear();
     for (auto pair : intermediates)
@@ -276,12 +373,12 @@ void Facade::reverse(automaton_type_ptr automaton)
 
     ndfa_type reverse;
 
-    const dfa_type * dfa = dynamic_cast<const dfa_type*>(automaton.get());
+    const dfa_type * dfa = automaton->derived_ptr<dfa_type>();
     if (dfa)
         reverse = (*dfa)^formal_device::finite_automaton::Operation::Reverse;
     else
     {
-        const ndfa_type * ndfa = dynamic_cast<const ndfa_type*>(automaton.get());
+        const ndfa_type * ndfa = automaton->derived_ptr<ndfa_type>();
         reverse = (*ndfa)^formal_device::finite_automaton::Operation::Reverse;
     }
 
@@ -301,13 +398,24 @@ void Facade::determination(automaton_type_ptr automaton)
 
     automaton_ptr_container_type intermediates{original_pair};
 
-    const ndfa_type * ndfa = dynamic_cast<const ndfa_type*>(automaton.get());
+    const ndfa_type * ndfa = automaton->derived_ptr<ndfa_type>();
     if (ndfa)
     {
-        ndfa_type reverse = ndfa->determination();
+        ndfa_type aux;
+
+        if (ndfa->contains_epsilon_transition())
+        {
+            aux = ndfa->remove_epsilon();
+            intermediates.push_back(
+                std::make_pair(automaton_type_ptr(new ndfa_type(aux)), "Remove & transições"));
+        }
+        else
+            aux = *ndfa;
+
+        dfa_type reverse = aux.determination();
 
         intermediates.push_back(
-            std::make_pair(automaton_type_ptr(new ndfa_type(reverse)), "Determinístico"));
+            std::make_pair(automaton_type_ptr(new dfa_type(reverse)), "Determinístico"));
     }
 
     m_result_history.clear();
@@ -323,12 +431,12 @@ void Facade::minimization(automaton_type_ptr automaton)
 
     automaton_ptr_container_type intermediates{original_pair};
 
-    const dfa_type * dfa = dynamic_cast<const dfa_type*>(automaton.get());
+    const dfa_type * dfa = automaton->derived_ptr<dfa_type>();
     if (dfa)
         dfa = new dfa_type(*dfa);
     else
     {
-        const ndfa_type * ndfa = dynamic_cast<const ndfa_type*>(automaton.get());
+        const ndfa_type * ndfa = automaton->derived_ptr<ndfa_type>();
 
         dfa_type deterministic = ndfa->determination();
 
@@ -365,10 +473,10 @@ void Facade::union_(automaton_type_ptr m1, automaton_type_ptr m2)
         std::make_pair(m2, "Original: M2")
     };
 
-    const dfa_type*   dfa_m1 = dynamic_cast<const dfa_type*>(m1.get());
-    const ndfa_type* ndfa_m1 = dynamic_cast<const ndfa_type*>(m1.get());
-    const dfa_type*   dfa_m2 = dynamic_cast<const dfa_type*>(m2.get());
-    const ndfa_type* ndfa_m2 = dynamic_cast<const ndfa_type*>(m2.get());
+    const dfa_type*   dfa_m1 = m1->derived_ptr<dfa_type>();
+    const ndfa_type* ndfa_m1 = m1->derived_ptr<ndfa_type>();
+    const dfa_type*   dfa_m2 = m2->derived_ptr<dfa_type>();
+    const ndfa_type* ndfa_m2 = m2->derived_ptr<ndfa_type>();
 
     ndfa_type _union;
 
@@ -399,10 +507,10 @@ void Facade::concatenation(automaton_type_ptr m1, automaton_type_ptr m2)
         std::make_pair(m2, "Original: M2")
     };
 
-    const dfa_type*   dfa_m1 = dynamic_cast<const dfa_type*>(m1.get());
-    const ndfa_type* ndfa_m1 = dynamic_cast<const ndfa_type*>(m1.get());
-    const dfa_type*   dfa_m2 = dynamic_cast<const dfa_type*>(m2.get());
-    const ndfa_type* ndfa_m2 = dynamic_cast<const ndfa_type*>(m2.get());
+    const dfa_type*   dfa_m1 = m1->derived_ptr<dfa_type>();
+    const ndfa_type* ndfa_m1 = m1->derived_ptr<ndfa_type>();
+    const dfa_type*   dfa_m2 = m2->derived_ptr<dfa_type>();
+    const ndfa_type* ndfa_m2 = m2->derived_ptr<ndfa_type>();
 
     ndfa_type concat;
 
@@ -433,10 +541,10 @@ void Facade::intersection(automaton_type_ptr m1, automaton_type_ptr m2)
         std::make_pair(m2, "Original: M2")
     };
 
-    const dfa_type*   dfa_m1 = dynamic_cast<const dfa_type*>(m1.get());
-    const ndfa_type* ndfa_m1 = dynamic_cast<const ndfa_type*>(m1.get());
-    const dfa_type*   dfa_m2 = dynamic_cast<const dfa_type*>(m2.get());
-    const ndfa_type* ndfa_m2 = dynamic_cast<const ndfa_type*>(m2.get());
+    const dfa_type*   dfa_m1 = m1->derived_ptr<dfa_type>();
+    const ndfa_type* ndfa_m1 = m1->derived_ptr<ndfa_type>();
+    const dfa_type*   dfa_m2 = m2->derived_ptr<dfa_type>();
+    const ndfa_type* ndfa_m2 = m2->derived_ptr<ndfa_type>();
 
     /* ------ Complement M1 / M2 ------ */
 
@@ -479,22 +587,6 @@ void Facade::intersection(automaton_type_ptr m1, automaton_type_ptr m2)
     intermediates.push_back(
         std::make_pair(automaton_type_ptr(new ndfa_type(deterministic)), "Complemento: !(M1 | M2)"));
 
-    /* ------ M1 & M2 ------ */
-
-    if (dfa_m1 && dfa_m2)
-        non_deterministic = *dfa_m1 & *dfa_m2;
-    else
-    {
-        ndfa_type _m1 = dfa_m1? *dfa_m1 : *ndfa_m1;
-        ndfa_type _m2 = dfa_m2? *dfa_m2 : *ndfa_m2;
-
-        non_deterministic = _m1 & _m2;
-    }
-
-    intermediates.push_back(
-        std::make_pair(automaton_type_ptr(new ndfa_type(non_deterministic)), "Intersecção: M1 & M2"));
-
-
     /* ------ Result ------ */
 
     m_result_history.clear();
@@ -512,10 +604,10 @@ void Facade::difference(automaton_type_ptr m1, automaton_type_ptr m2)
         std::make_pair(m2, "Original: M2")
     };
 
-    const dfa_type*   dfa_m1 = dynamic_cast<const dfa_type*>(m1.get());
-    const ndfa_type* ndfa_m1 = dynamic_cast<const ndfa_type*>(m1.get());
-    const dfa_type*   dfa_m2 = dynamic_cast<const dfa_type*>(m2.get());
-    const ndfa_type* ndfa_m2 = dynamic_cast<const ndfa_type*>(m2.get());
+    const dfa_type*   dfa_m1 = m1->derived_ptr<dfa_type>();
+    const ndfa_type* ndfa_m1 = m1->derived_ptr<ndfa_type>();
+    const dfa_type*   dfa_m2 = m2->derived_ptr<dfa_type>();
+    const ndfa_type* ndfa_m2 = m2->derived_ptr<ndfa_type>();
 
     /* ------ Complement M1 / M2 ------ */
 
@@ -541,20 +633,44 @@ void Facade::difference(automaton_type_ptr m1, automaton_type_ptr m2)
     intermediates.push_back(
         std::make_pair(automaton_type_ptr(new ndfa_type(non_deterministic)), "Intersecção: M1 & !M2"));
 
+    /* ------ Result ------ */
+
+    m_result_history.clear();
+
+    for (auto pair : intermediates)
+        m_result_history[pair.second] = pair.first;
+
+    emit update_result(intermediates);
+}
+
+bool Facade::is_contained(automaton_type_ptr m1, automaton_type_ptr m2)
+{
+    automaton_ptr_container_type intermediates{
+        std::make_pair(m1, "Original: M1"),
+        std::make_pair(m2, "Original: M2")
+    };
+
+    const dfa_type*   dfa_m1 = m1->derived_ptr<dfa_type>();
+    const ndfa_type* ndfa_m1 = m1->derived_ptr<ndfa_type>();
+    const dfa_type*   dfa_m2 = m2->derived_ptr<dfa_type>();
+    const ndfa_type* ndfa_m2 = m2->derived_ptr<ndfa_type>();
+
     /* ------ M1 - M2 (Direto) ------ */
 
+    dfa_type deterministic;
+
     if (dfa_m1 && dfa_m2)
-        non_deterministic = *dfa_m1 - *dfa_m2;
+        deterministic = *dfa_m1 - *dfa_m2;
     else
     {
         ndfa_type _m1 = dfa_m1? *dfa_m1 : *ndfa_m1;
         ndfa_type _m2 = dfa_m2? *dfa_m2 : *ndfa_m2;
 
-        non_deterministic = _m1 - _m2;
+        deterministic = _m1 - _m2;
     }
 
     intermediates.push_back(
-        std::make_pair(automaton_type_ptr(new ndfa_type(non_deterministic)), "Diferença: M1 - M2 (Direto)"));
+        std::make_pair(automaton_type_ptr(new dfa_type(deterministic)), "M1 ⊆ M2: M1 - M2 = φ?"));
 
     /* ------ Result ------ */
 
@@ -564,4 +680,89 @@ void Facade::difference(automaton_type_ptr m1, automaton_type_ptr m2)
         m_result_history[pair.second] = pair.first;
 
     emit update_result(intermediates);
+
+    /* ------ Contains ------ */
+
+    if (dfa_m1)
+    {
+        if (dfa_m2)
+            return dfa_m2->containment(*dfa_m1);
+        else
+            return ndfa_m2->containment(*dfa_m1);
+    }
+    else
+    {
+        if (dfa_m2)
+            return dfa_m2->containment(ndfa_m1->determination());
+        else
+            return ndfa_m2->containment(*ndfa_m1);
+    }
+}
+
+bool Facade::equivalence(automaton_type_ptr m1, automaton_type_ptr m2)
+{
+    automaton_ptr_container_type intermediates{
+        std::make_pair(m2, "Original: M1"),
+        std::make_pair(m1, "Original: M2")
+    };
+
+    const dfa_type*   dfa_m1 = m1->derived_ptr<dfa_type>();
+    const ndfa_type* ndfa_m1 = m1->derived_ptr<ndfa_type>();
+    const dfa_type*   dfa_m2 = m2->derived_ptr<dfa_type>();
+    const ndfa_type* ndfa_m2 = m2->derived_ptr<ndfa_type>();
+
+    /* ------ M2 - M1 ------ */
+
+    dfa_type non1diff2, non2diff1;
+
+    if (dfa_m1 && dfa_m2)
+    {
+        non2diff1 = *dfa_m1 - *dfa_m2;
+        non1diff2 = *dfa_m2 - *dfa_m1;
+    }
+    else
+    {
+        ndfa_type _m1 = dfa_m1? *dfa_m1 : *ndfa_m1;
+        ndfa_type _m2 = dfa_m2? *dfa_m2 : *ndfa_m2;
+
+        non2diff1 = _m1 - _m2;
+        non1diff2 = _m2 - _m1;
+    }
+
+    intermediates.push_back(
+        std::make_pair(automaton_type_ptr(new dfa_type(non2diff1)), "M1 ⊆ M2: M2 - M1 = φ?"));
+
+    intermediates.push_back(
+        std::make_pair(automaton_type_ptr(new dfa_type(non1diff2)), "M2 ⊆ M1: M1 - M2 = φ?"));
+
+    ndfa_type union_ = non2diff1 | non1diff2;
+
+    intermediates.push_back(
+        std::make_pair(automaton_type_ptr(new ndfa_type(union_)), "M1 - M2 | M2 - M1 = φ?"));
+
+    /* ------ Result ------ */
+
+    m_result_history.clear();
+
+    for (auto pair : intermediates)
+        m_result_history[pair.second] = pair.first;
+
+    emit update_result(intermediates);
+
+    /* ------ Contains ------ */
+
+    if (dfa_m1)
+    {
+        if (dfa_m2)
+            return dfa_m1->equivalence(*dfa_m2);
+        else
+            return dfa_m1->equivalence(ndfa_m2->determination());
+    }
+    else
+    {
+        if (dfa_m2)
+            return ndfa_m1->equivalence(*dfa_m2);
+        else
+            return ndfa_m1->equivalence(*ndfa_m2);
+    }
 }

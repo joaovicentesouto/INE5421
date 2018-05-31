@@ -24,11 +24,7 @@ namespace manipulator
 namespace finite_automaton
 {
 
-class GenericAutomaton
-{
-public:
-    virtual ~GenericAutomaton() = default;
-};
+class NonDeterministic;
 
 enum class Operation
 {
@@ -39,7 +35,23 @@ enum class Operation
     Optional
 };
 
-class NonDeterministic;
+class GenericAutomaton
+{
+public:
+    using string_type = std::string;
+
+    virtual ~GenericAutomaton() = default;
+
+    virtual bool membership(const string_type& sentece) const = 0;
+    virtual bool emptiness() const = 0;
+    virtual bool finiteness() const = 0;
+
+    template <class Derived>
+    const Derived* derived_ptr() const
+    {
+        return dynamic_cast<const Derived*>(this);
+    }
+};
 
 class Deterministic : public GenericAutomaton
 {
@@ -52,7 +64,7 @@ class Deterministic : public GenericAutomaton
     template <class Key, class Value>
     using map_type            = std::map<Key, Value>;
 
-    using string_type         = std::string;
+    using string_type         = GenericAutomaton::string_type;
     using state_type          = State;
     using symbol_type         = Symbol;
     using state_set_type      = set_type<state_type>;
@@ -77,28 +89,31 @@ class Deterministic : public GenericAutomaton
     {
     }
 
+    Deterministic(const symbol_set_type& alphabet);
+    Deterministic(symbol_set_type&& alphabet);
+
     // Class member functions
     const symbol_set_type& alphabet() const;
     const state_set_type& states() const;
     const transition_map_type& transitions() const;
     const state_set_type& final_states() const;
     const state_type& initial_state() const;
-    string_type to_string() const;
 
     // Basic properties
-    Deterministic operator!() const; // not
+    Deterministic    operator!() const; // not
     NonDeterministic operator|(const Deterministic & machine) const; // or
     NonDeterministic operator+(const Deterministic & machine) const; // concat
-    NonDeterministic operator&(const Deterministic & machine) const; // and
-    NonDeterministic operator-(const Deterministic & machine) const; // difference
+    Deterministic    operator&(const Deterministic & machine) const; // and
+    Deterministic    operator-(const Deterministic & machine) const; // difference
     NonDeterministic operator^(const Operation & op) const; // operation
+    bool operator==(const Deterministic & machine) const;
 
     Deterministic complete() const;
-    Deterministic remove_epsilon_transition() const;
     Deterministic minimization() const;
-
     Deterministic remove_dead_states() const;
     Deterministic remove_unreachable_states() const;
+    Deterministic remove_epsilon_transition() const;
+    void equivalence_classes(set_type<state_set_type> & set) const;
 
     // decision problems
     bool membership(const string_type& sentece) const;
@@ -110,68 +125,16 @@ class Deterministic : public GenericAutomaton
     bool is_complete() const;
     bool contains_epsilon_transition() const;
 
-    bool operator==(const Deterministic & machine) const;
+    string_type to_string() const;
 
-    void equivalence_classes(set_type<state_set_type> & set);
 private:
-    NonDeterministic reflexive() const;
-    NonDeterministic transitive() const;
-    NonDeterministic optional() const;
-    NonDeterministic reverse() const;
-
-    bool topologicalOrdering()
-    {
-        std::list<state_type> list;
-        state_set_type temporary;
-        state_set_type permanent;
-        state_set_type sink_set;
-
-        for (auto state : m_states)
-            if (m_transitions[state].empty())
-                sink_set.insert(state);
-
-        while (!sink_set.empty())
-        {
-
-            state_type state = *sink_set.begin();
-            sink_set.erase(state);
-
-            visit(state, list, temporary, permanent);
-        }
-
-        return true;
-    }
-
-    void visit(state_type state, std::list<state_type> & list, state_set_type & temporary, state_set_type & permanent)
-    {
-
-        if (permanent.find(state) != permanent.end())
-            return;
-
-        if (temporary.find(state) != temporary.end())
-            throw std::out_of_range("Is not a DAG, contains a cycle!");
-
-        temporary.emplace(state);
-
-        for (auto state_pred : m_states)
-        {
-            transition_map_type copy(m_transitions);
-            for (auto trans : copy[state_pred])
-                if (trans.second == state)
-                    visit(state_pred, list, temporary, permanent);
-        }
-
-        temporary.erase(state);
-        permanent.emplace(state);
-
-        list.push_back(state);
-    }
+    bool contains_cycle(state_type state, state_set_type & temporary, state_set_type & permanent);
 
     symbol_set_type     m_alphabet;
-    state_set_type      m_states;
+    state_set_type      m_states{state_type("q0")};
     transition_map_type m_transitions;
     state_set_type      m_final_states;
-    state_type          m_initial_state;
+    state_type          m_initial_state{"q0"};
 };
 
 class NonDeterministic : public GenericAutomaton
@@ -192,8 +155,6 @@ public:
     // Class constructors
     NonDeterministic() = default;
 
-    NonDeterministic(const Deterministic &machine);
-
     NonDeterministic(const NonDeterministic &) = default;
     NonDeterministic &operator=(const NonDeterministic &) = default;
     NonDeterministic(NonDeterministic &&) = default;
@@ -209,17 +170,28 @@ public:
     {
     }
 
+    NonDeterministic(const Deterministic &machine);
+    NonDeterministic(const symbol_set_type& alphabet);
+    NonDeterministic(symbol_set_type&& alphabet);
+
     // Class member functions
     const symbol_set_type& alphabet() const;
     const state_set_type& states() const;
     const transition_map_type& transitions() const;
     const state_set_type& final_states() const;
     const state_type& initial_state() const;
-    string_type to_string() const;
 
-    Deterministic remove_epsilon() const;
+    Deterministic operator!() const; // not
+    NonDeterministic operator|(const NonDeterministic & machine) const; // or
+    NonDeterministic operator+(const NonDeterministic & machine) const; // concat
+    Deterministic operator&(const NonDeterministic & machine) const; // and
+    Deterministic operator-(const NonDeterministic & machine) const; // difference
+    NonDeterministic operator^(const Operation & op) const; // operation
+    bool operator==(const NonDeterministic & machine) const;
+
     Deterministic determination() const;
     Deterministic minimization() const;
+    Deterministic remove_epsilon() const;
 
     bool membership(const string_type& sentence) const;
     bool emptiness() const;
@@ -227,20 +199,16 @@ public:
     bool containment(const NonDeterministic & machine) const;
     bool equivalence(const NonDeterministic & machine) const;
 
-    NonDeterministic operator!() const; // not
-    NonDeterministic operator|(const NonDeterministic & machine) const; // or
-    NonDeterministic operator+(const NonDeterministic & machine) const; // concat
-    NonDeterministic operator&(const NonDeterministic & machine) const; // and
-    NonDeterministic operator-(const NonDeterministic & machine) const; // difference
-    NonDeterministic operator^(const Operation & op) const; // operation
+    bool contains_epsilon_transition() const;
 
-    bool operator==(const NonDeterministic & machine) const;
+    string_type to_string() const;
 
 private:
     NonDeterministic reflexive() const;
     NonDeterministic transitive() const;
     NonDeterministic optional() const;
     NonDeterministic reverse() const;
+
     void build_closure(state_set_type& set, state_type state) const;
 
     symbol_set_type     m_alphabet;

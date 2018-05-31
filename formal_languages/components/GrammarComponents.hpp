@@ -22,25 +22,71 @@ class Symbol
 
     using string_type = std::string;
 
+    //! Default Construct Symbol
+    /*!
+        \brief Constructs an epsilon symbol.
+    */
     Symbol() = default;
 
+    //! Delete copy constructor
     Symbol(const Symbol &) = default;
     Symbol &operator=(const Symbol &) = default;
+
+    //! Move Constructor
     Symbol(Symbol &&) = default;
     Symbol &operator=(Symbol &&) = default;
 
-    Symbol(const string_type &symbol);
-    Symbol(string_type &&symbol);
+    //! Construct Symbol
+    /*!
+        \brief Constructs an symbol with a string value.
+    */
+    Symbol(const string_type &value);
 
+    //! Construct Symbol
+    /*!
+        \param Value name.
+        \brief Constructs an symbol with a moved string value.
+    */
+    Symbol(string_type &&value);
+
+    //! Get value
+    /*!
+        \param Value name
+        \brief Simple get.
+        \return The name of the symbol.
+    */
     string_type value() const;
+
+    //! Terminal check
+    /*!
+        \brief Verifies whether a symbol is terminal or not (belongs to A-Z or &).
+        \return True if is a terminal symbol.
+    */
     bool is_terminal() const;
+
+    //! Equality operator (from another symbol)
+    /*!
+        \brief Verifies that symbols are the same.
+        \return True if contains the same value.
+    */
     bool operator==(const Symbol &symbol) const;
+
+    //! Equality operator (from string value)
+    /*!
+        \brief Verifies that a symbol contains the same value.
+        \return True if contains the same value.
+    */
     bool operator==(const string_type &symbol) const;
 
+    //! Less than operator
+    /*!
+        \brief It checks to see if one symbol is smaller than another.
+        \return True if is less than.
+    */
     bool operator<(const Symbol &symbol) const;
 
   private:
-    string_type m_value{"&"};
+    string_type m_value{"&"};   //!< Value of the symbol [a-z&]
 };
 
 class SentencialForm
@@ -49,13 +95,26 @@ class SentencialForm
     using string_type = std::string;
     using symbol_type = Symbol;
 
+    //! Default Construct SentencialForm
+    /*!
+        \brief There is no sentence form without symbols.
+    */
     SentencialForm() = delete;
 
+    //! Delete copy constructor
     SentencialForm(const SentencialForm &) = default;
     SentencialForm &operator=(const SentencialForm &) = default;
+
+    //! Move constructor
     SentencialForm(SentencialForm &&) = default;
     SentencialForm &operator=(SentencialForm &&) = default;
 
+    //! Polymorphic Construct SentencialForm
+    /*!
+        \param Non terminal symbol
+        \param Terminal symbol
+        \brief Constructs a sentenced form with a sentence and a non-terminal symbol
+    */
     template <class Arg1, class Arg2>
     SentencialForm(Arg1 &&non_terminal, Arg2 &&sentence) :
         m_sentence{std::forward<Arg2>(sentence)},
@@ -63,16 +122,39 @@ class SentencialForm
     {
     }
 
+    //! Sentence check
+    /*!
+        \brief Verifies that a sentence has ' & ' as a non-terminal symbol.
+        \return True if is a sentence.
+    */
     bool is_sentence() const;
+
+    //! Get non terminal symbol
+    /*!
+        \brief Simple get.
+        \return The non terminal symbol
+    */
     symbol_type non_terminal();
+
+    //! Get sentence
+    /*!
+        \brief Simple get.
+        \return The sentence on a string value
+    */
     string_type sentence();
 
     SentencialForm operator+(const symbol_type &symbol) const;
+
+    //! Equality operator
+    /*!
+        \brief Verifies the sentence and non terminal values are the same.
+        \return True if are the same.
+    */
     bool operator==(const SentencialForm &from) const;
 
   private:
-    string_type m_sentence;
-    symbol_type m_non_terminal;
+    string_type m_sentence;     //!< Sentence value
+    symbol_type m_non_terminal; //!< Non terminal symbol
 };
 
 class Sentence : public SentencialForm

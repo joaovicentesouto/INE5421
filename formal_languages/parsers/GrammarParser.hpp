@@ -26,7 +26,7 @@ void new_non_terminal(IteratorWrapper &begin, IteratorWrapper &end,
                       production_map_type &productions, symbol_type &initial);
 void new_productions(symbol_type current, IteratorWrapper &begin, IteratorWrapper &end,
                      vocabulary_set_type &vn, vocabulary_set_type &vt,
-                     production_map_type &productions);
+                     production_map_type &productions, bool is_initial);
 
 grammar::Regular make_regular_grammar_from_file(const string_type & file_path);
 grammar::Regular make_regular_grammar(string_type str_grammar);

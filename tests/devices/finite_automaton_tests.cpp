@@ -1,6 +1,7 @@
 #include "../catch.hpp"
 
 #include <formal_languages/devices/FiniteAutomaton.hpp>
+#include <formal_languages/manipulators/Printer.hpp>
 
 using namespace formal_device::finite_automaton;
 
@@ -60,6 +61,9 @@ TEST_CASE("Finite Automaton: Complement Deterministic", "[finite_automaton][symb
         Deterministic complement(alphabet, states, transitions, final_states, initial);
 
         CHECK((!machine == complement));
+        CHECK((machine == !!machine));
+        CHECK((complement == !!complement));
+        
     }
 }
 
@@ -627,10 +631,7 @@ TEST_CASE("Deterministic: Remove unreacheble and dead states of Empty Language F
 
     SECTION("Only q0", "[a]")
     {
-        state_set_type empty_states;
-        det_transition_map_type empty_transitions;
-
-        Deterministic empty(alphabet, empty_states, empty_transitions, empty_states, error);
+        Deterministic empty(alphabet);
 
         CHECK((machine.remove_unreachable_states().remove_dead_states() == empty));
     }
@@ -654,10 +655,7 @@ TEST_CASE("Deterministic: Minimization Empty Language FA", "[finite_automaton][s
 
     Deterministic machine(alphabet, states, transitions, final_states, q0);
 
-    state_set_type states_empty;
-    det_transition_map_type empty_transitions;
-
-    Deterministic minimum(alphabet, states_empty, empty_transitions, states_empty, error);
+    Deterministic minimum(alphabet);
 
     CHECK((machine.minimization() == minimum));
     CHECK((machine.emptiness()));
@@ -673,7 +671,16 @@ TEST_CASE("Deterministic: Finitiness FA", "[finite_automaton][symbol]")
     state_set_type  states{q0, q1};
     state_set_type  final_states{q1};
 
-    SECTION("Finite")
+    SECTION("Finite empty")
+    {
+        det_transition_map_type transitions;
+
+        Deterministic machine(alphabet, states, transitions, final_states, q0);
+
+        CHECK(machine.finiteness());
+    }
+
+    SECTION("Finite a")
     {
         det_transition_map_type transitions;
         transitions[q0][a] = q1;
@@ -683,7 +690,18 @@ TEST_CASE("Deterministic: Finitiness FA", "[finite_automaton][symbol]")
         CHECK(machine.finiteness());
     }
 
-    SECTION("Finite")
+    SECTION("Finite a+")
+    {
+        det_transition_map_type transitions;
+        transitions[q0][a] = q1;
+        transitions[q1][a] = q1;
+
+        Deterministic machine(alphabet, states, transitions, final_states, q0);
+
+        CHECK(!machine.emptiness());
+    }
+
+    SECTION("Finite ab*")
     {
         det_transition_map_type transitions;
         transitions[q0][a] = q1;
@@ -699,7 +717,6 @@ TEST_CASE("Deterministic: containment FA", "[finite_automaton][symbol]")
 {
     symbol_type a("a");
     symbol_type b("b");
-//    symbol_type c("c");
     state_type q0("q0"), q1("q1"), q2("q2");
 
     symbol_set_type alphabet_m1{a, b};
@@ -724,12 +741,7 @@ TEST_CASE("Deterministic: containment FA", "[finite_automaton][symbol]")
 
     SECTION("Contains")
     {
-        CHECK(m1.containment(m1));
-    }
-
-    SECTION("Contains2")
-    {
-        CHECK(m2.containment(m2));
+        CHECK(m1.containment(m2));
     }
 
     SECTION("Contains2")
@@ -746,11 +758,53 @@ TEST_CASE("Deterministic: containment FA", "[finite_automaton][symbol]")
     }
 }
 
+TEST_CASE("Deterministic: containment FA 2", "[finite_automaton][symbol]")
+{
+    symbol_type a("a");
+    symbol_type b("b");
+    state_type q0("q0"), q1("q1");
+
+    symbol_set_type alphabet_m1{a};
+    state_set_type  states{q0, q1};
+    state_set_type  final_states{q1};
+
+    det_transition_map_type transitions_m1;
+    transitions_m1[q0][a] = q1;
+
+    Deterministic m1(alphabet_m1, states, transitions_m1, final_states, q0);
+
+    symbol_set_type alphabet_m2{a, b};
+
+    det_transition_map_type transitions_m2;
+    transitions_m2[q0][a] = q1;
+    transitions_m2[q1][b] = q1;
+
+    Deterministic m2(alphabet_m2, states, transitions_m2, final_states, q0);
+
+    SECTION("Contains")
+    {
+        CHECK(!m1.containment(m2));
+    }
+
+    SECTION("Contains2")
+    {
+        CHECK(m2.containment(m1));
+        CHECK((m1 - m2).emptiness());
+    }
+
+    SECTION("Equivalence")
+    {
+        CHECK(m2.equivalence(m2));
+        CHECK(m1.equivalence(m1));
+        CHECK(!m2.equivalence(m1));
+        CHECK(!m1.equivalence(m2));
+    }
+}
+
 TEST_CASE("Deterministic: containment FA with dead state", "[finite_automaton][symbol]")
 {
     symbol_type a("a");
     symbol_type b("b");
-//    symbol_type c("c");
     state_type q0("q0"), q1("q1"), q2("q2"), q3("q3");
 
     symbol_set_type alphabet_m1{a, b};

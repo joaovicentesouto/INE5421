@@ -1,6 +1,7 @@
 #include "../catch.hpp"
 
 #include <formal_languages/parsers/ExpressionParser.hpp>
+#include <formal_languages/manipulators/DeSimoneTree.hpp>
 
 using namespace formal_device::parser;
 
@@ -108,11 +109,7 @@ TEST_CASE("Regular Expression Parser: Complex String", "[expression][parser]")
                         )
                     );
 
-
-
         CHECK((current_exp == exp));
-        
-        //CHECK_NOTHROW(make_regular_expression("(ab?)*"));
     }
 }
 
@@ -163,9 +160,18 @@ TEST_CASE("Regular Expression Parser: Valid expressions", "[expression][parser]"
     CHECK_NOTHROW(make_regular_expression("(a | b)+"));
     CHECK_NOTHROW(make_regular_expression("(a | b)?"));
 
+    CHECK_NOTHROW(make_regular_expression("a*|b*"));
+    CHECK_NOTHROW(make_regular_expression("a*b*b* | bcd? | c*cd+"));
+
     CHECK_NOTHROW(make_regular_expression("(ab*)?"));
     CHECK_NOTHROW(make_regular_expression("(ab?)*"));
     CHECK_NOTHROW(make_regular_expression("(ab? | c)*"));
+    CHECK_NOTHROW(make_regular_expression("(a|(b|c))"));
+    CHECK_NOTHROW(make_regular_expression("((b|c)|a)"));
+    CHECK_NOTHROW(make_regular_expression("a|(b|c)"));
+    CHECK_NOTHROW(make_regular_expression("(b|c)|a"));
+    CHECK_NOTHROW(make_regular_expression("a|b(b|c)|c"));
+    CHECK_NOTHROW(make_regular_expression("(a)|(b)((b?)?|(c*)*)|c|(a+)?a"));
 
     CHECK_NOTHROW(make_regular_expression("b?(ac)?c+"));
     CHECK_NOTHROW(make_regular_expression("(abc)(abc)"));
@@ -174,6 +180,3 @@ TEST_CASE("Regular Expression Parser: Valid expressions", "[expression][parser]"
     CHECK_NOTHROW(make_regular_expression("(ab? | c | b?(ac)?c+ | d)*"));
     CHECK_NOTHROW(make_regular_expression("(ab? | c | b?(ac)?c+ | d)* | (a+(b*)b? | c | b?(ac)?c+ | d)?"));
 }
-
-
-

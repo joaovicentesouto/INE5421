@@ -26,7 +26,7 @@ TEST_CASE("Devices manipulator: Grammar to NDFA", "[expression][parser]")
     // ----------------------
 
     finite_automaton::NonDeterministic::symbol_type a_f("a"), b_f("b");
-    finite_automaton::NonDeterministic::state_type q0("S"), q1("A"), q2("B"), q3("C"), q4("END");
+    finite_automaton::NonDeterministic::state_type q0("S"), q1("A"), q2("B"), q3("C"), q4("FIM");
 
     finite_automaton::NonDeterministic::symbol_set_type alphabet{a_f, b_f};
     finite_automaton::NonDeterministic::state_set_type  states{q0, q1, q2, q3, q4};
@@ -56,7 +56,7 @@ TEST_CASE("Devices manipulator: Grammar to NDFA", "[expression][parser]")
 
 TEST_CASE("Devices manipulator: NDFA to Grammar", "[expression][parser]")
 {
-    grammar::Regular::symbol_type S("q0"), A("q1"), a("a"), b("b");
+    grammar::Regular::symbol_type S("Q0"), A("Q1"), a("a"), b("b");
     grammar::Regular::vocabulary_set_type vn{S, A}, vt{a, b};
 
     grammar::Regular::production_type_ptr p1(new grammar::NonTerminalProduction(a, A)),
@@ -74,7 +74,7 @@ TEST_CASE("Devices manipulator: NDFA to Grammar", "[expression][parser]")
 
     finite_automaton::Deterministic::symbol_type a_("a");
     finite_automaton::Deterministic::symbol_type b_("b");
-    finite_automaton::Deterministic::state_type q0("q0"), q1("q1");
+    finite_automaton::Deterministic::state_type q0("Q0"), q1("Q1");
 
     finite_automaton::Deterministic::symbol_set_type alphabet{a_, b_};
 

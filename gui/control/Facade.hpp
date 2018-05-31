@@ -36,6 +36,8 @@ public:
 
     void complement(automaton_type_ptr automaton);
     void reflexive_closure(automaton_type_ptr automaton);
+    void transitive_closure(automaton_type_ptr automaton);
+    void optional(automaton_type_ptr automaton);
     void reverse(automaton_type_ptr automaton);
     void determination(automaton_type_ptr automaton);
     void minimization(automaton_type_ptr automaton);
@@ -45,11 +47,15 @@ public:
     void intersection(automaton_type_ptr m1, automaton_type_ptr m2);
     void difference(automaton_type_ptr m1, automaton_type_ptr m2);
 
+    bool is_contained(automaton_type_ptr m1, automaton_type_ptr m2);
+    bool equivalence(automaton_type_ptr m1, automaton_type_ptr m2);
+
 public slots:
     void new_grammar(unsigned machine, grammar_type grammar);
     void new_expression(unsigned machine, expression_type_ptr expression);
     void new_automaton(unsigned machine, dfa_type automaton);
     void new_automaton(unsigned machine, ndfa_type automaton);
+    void clean_up();
 
 signals:
     void update_automaton_to_m1(const dfa_type& automaton, QString automaton_name);

@@ -25,6 +25,8 @@ class Regular
     using set_type                     = std::set<T>;
     template <class Key, class Value>
     using map_type                     = std::map<Key, Value>;
+    template <class T>
+    using container_type               = std::vector<T>;
 
     using string_type                  = std::string;
     using symbol_type                  = Symbol;
@@ -62,7 +64,7 @@ class Regular
 
     set_type<string_type> sentences_generator(int n) const;
 
-    bool operator==(const Regular &regular);
+    bool operator==(const Regular &regular) const;
 
   public:
     vocabulary_set_type m_vn;

@@ -34,9 +34,6 @@ OPTION(GUI OFF)
 # Handle raquirements
 ################################################################################
 
-# Find Boost
-find_package(Boost 1.58 REQUIRED)
-
 # Find GUI Dependencies
 IF(GUI)
     if (APPLE)
@@ -46,12 +43,12 @@ IF(GUI)
         set(CMAKE_PREFIX_PATH ${CMAKE_PREFIX_PATH} ${QT5_MODULE_PATH})
     endif(APPLE)
 
-    if (UNIX)
+    if (UNIX AND NOT APPLE)
         message("-- Qt5 on Mac: You need the QT5 path installed by Qt creator if you want to compile without the using Qt Creator.")
         set(QT5_PATH $ENV{HOME}/Qt/5.9.1/gcc_64/ CACHE PATH "Path to Qt5")
         set(QT5_MODULE_PATH ${QT5_PATH}/lib/cmake)
         set(CMAKE_PREFIX_PATH ${CMAKE_PREFIX_PATH} ${QT5_MODULE_PATH})
-    endif(UNIX)
+    endif(UNIX AND NOT APPLE)
 
     # Find Qt5
     find_package(Qt5 REQUIRED COMPONENTS Widgets)

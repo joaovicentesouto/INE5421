@@ -10,21 +10,17 @@ namespace formal_device
 namespace expression
 {
 
-// class State;
-// class Hasher;
-//struct DeSimoneNode;
-
-// using dfa_type = int;
-
 struct DeSimoneNode
 {
-    using string_type = std::string;
+    using string_type      = std::string;
     using symbol_name_type = string_type;
-    using state_name_type = string_type; // usar o state?
-    using node_set_type = std::set<DeSimoneNode*>;
+    using state_name_type  = string_type;
+    using node_set_type    = std::set<DeSimoneNode*>;
     using composition_type = std::map<state_name_type, std::map<symbol_name_type, node_set_type>>;
 
     virtual ~DeSimoneNode() = default;
+
+    virtual bool is_empty() = 0;
 
     virtual void up(const state_name_type& state, composition_type & composition, node_set_type & marked) = 0;
     virtual void down(const state_name_type& state, composition_type & composition, node_set_type & marked) = 0;
@@ -36,6 +32,8 @@ struct UnitNode : public DeSimoneNode
 {
 	UnitNode() = default;
 	~UnitNode() = default;
+
+    bool is_empty();
 
     void up(const state_name_type& state, composition_type & composition, node_set_type & marked);
     void down(const state_name_type& state, composition_type & composition, node_set_type & marked);
@@ -51,6 +49,8 @@ struct UnionNode : public DeSimoneNode
 	UnionNode() = default;
 	~UnionNode();
 
+    bool is_empty();
+
     void up(const state_name_type& state, composition_type & composition, node_set_type & marked);
     void down(const state_name_type& state, composition_type & composition, node_set_type & marked);
     void scape(const state_name_type& state, composition_type & composition, node_set_type & marked);
@@ -64,6 +64,8 @@ struct ConcatenationNode : public DeSimoneNode
 {
 	ConcatenationNode() = default;
 	~ConcatenationNode();
+
+    bool is_empty();
 
     void up(const state_name_type& state, composition_type & composition, node_set_type & marked);
     void down(const state_name_type& state, composition_type & composition, node_set_type & marked);
@@ -79,6 +81,8 @@ struct ReflexiveNode : public DeSimoneNode
 	ReflexiveNode() = default;
 	~ReflexiveNode();
 
+    bool is_empty();
+
     void up(const state_name_type& state, composition_type & composition, node_set_type & marked);
     void down(const state_name_type& state, composition_type & composition, node_set_type & marked);
     void scape(const state_name_type& state, composition_type & composition, node_set_type & marked);
@@ -92,6 +96,8 @@ struct OptionalNode : public DeSimoneNode
 {
 	OptionalNode() = default;
 	~OptionalNode();
+
+    bool is_empty();
 
     void up(const state_name_type& state, composition_type & composition, node_set_type & marked);
     void down(const state_name_type& state, composition_type & composition, node_set_type & marked);

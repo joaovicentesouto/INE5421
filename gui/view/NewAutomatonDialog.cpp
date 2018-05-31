@@ -35,18 +35,24 @@ void NewAutomatonDialog::on_btnAddLine_clicked()
 
 void NewAutomatonDialog::on_btnDeleteLine_clicked()
 {
-    int i = 0, j = -1;
+    int i = 0;
     for (auto k : ui->automatonTable->selectionModel()->selectedIndexes()) {
-        if (j == k.row() || k.row() == 0)
+        if (k.row() == 0)
             continue;
-        j = k.row();
         ui->automatonTable->removeRow(k.row() - i++);
     }
 
-
-    for (int i = 1; i < ui->automatonTable->rowCount(); i++)
-        for (int j = 1; j < ui->automatonTable->columnCount(); j++)
-            transition_care(ui->automatonTable->item(i, j));
+    for (int i = 0; i < ui->automatonTable->rowCount(); i++)
+        for (int j = 0; j < ui->automatonTable->columnCount(); j++) {
+            if (i == j && j == 0)
+                continue;
+            if (i == 0)
+                symbol_care(ui->automatonTable->item(i, j));
+            if (j == 0)
+                state_care(ui->automatonTable->item(i, j));
+            else
+                transition_care(ui->automatonTable->item(i, j));
+        }
 }
 
 void NewAutomatonDialog::on_btnAddColumn_clicked()
@@ -65,7 +71,6 @@ void NewAutomatonDialog::on_btnDeleteColumn_clicked()
         j = k.column();
         ui->automatonTable->removeColumn(k.column() - i++);
     }
-
 }
 
 void NewAutomatonDialog::on_btnCancel_clicked()

@@ -35,7 +35,11 @@ Regular::string_type Regular::to_string() const
     int i = productions[m_initial_symbol].size();
     for (auto production : productions[m_initial_symbol])
     {
-        string += production->to_string();
+        if (production->is_terminal())
+            string += " " + production->to_string() + " ";
+        else
+            string += production->to_string();
+
         if (--i > 0)
             string += " | ";
     }
@@ -52,7 +56,11 @@ Regular::string_type Regular::to_string() const
         i = productions[non_terminal].size();
         for (auto production : productions[non_terminal])
         {
-            string += production->to_string();
+            if (production->is_terminal())
+                string += " " + production->to_string() + " ";
+            else
+                string += production->to_string();
+
             if (--i > 0)
                 string += " | ";
         }
@@ -64,7 +72,7 @@ Regular::string_type Regular::to_string() const
 
 Regular::set_type<Regular::string_type> Regular::sentences_generator(int n) const
 {
-    std::vector<SentencialForm> sentencial_forms{SentencialForm(m_initial_symbol, "&")};
+    container_type<SentencialForm> sentencial_forms{SentencialForm(m_initial_symbol, "&")};
 
     int current_size = 0;
     while (current_size < sentencial_forms.size())
@@ -82,6 +90,9 @@ Regular::set_type<Regular::string_type> Regular::sentences_generator(int n) cons
             SentencialForm new_form = production << sentence;
             if (new_form.sentence().size() <= n)
                 sentencial_forms.push_back(new_form);
+            else if (n == 0)
+                if (new_form.sentence() == "&")
+                    sentencial_forms.push_back(new_form);
         }
     }
 
@@ -89,18 +100,19 @@ Regular::set_type<Regular::string_type> Regular::sentences_generator(int n) cons
 
     for (auto sentence : sentencial_forms)
         if (sentence.is_sentence())
-            if (sentence.sentence().size() == n)
+            if ((sentence.sentence().size() == n && sentence.sentence() != "&")
+                                      || (n == 0 && sentence.sentence() == "&"))
                 sentences.insert(sentence.sentence());
 
     return sentences;
 }
 
-bool Regular::operator==(const Regular &regular)
+bool Regular::operator==(const Regular &regular) const
 {
-    return m_vn == regular.m_vn &&
-           m_vt == regular.m_vt &&
-           m_productions == regular.m_productions &&
-           m_initial_symbol == regular.m_initial_symbol;
+    return m_vn             == regular.m_vn
+        && m_vt             == regular.m_vt
+        && m_productions    == regular.m_productions
+        && m_initial_symbol == regular.m_initial_symbol;
 }
 
 }   // namespace grammar

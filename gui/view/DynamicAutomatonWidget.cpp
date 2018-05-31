@@ -29,6 +29,20 @@ Facade::automaton_type_ptr DynamicAutomatonWidget::current_machine()
     return m_current;
 }
 
+void DynamicAutomatonWidget::clean_up()
+{
+    ui->m_machine->clear();
+    ui->m_machine->setRowCount(0);
+    ui->m_machine->setColumnCount(0);
+
+    ui->m_history->clear();
+    ui->m_sentence->clear();
+    ui->m_n_of_sentences->clear();
+
+    m_current = Facade::automaton_type_ptr();
+    m_current_item = 0;
+}
+
 void DynamicAutomatonWidget::on_m_new_grammar_btn_clicked()
 {
     NewGrammarDialog dialog(m_number, this);
@@ -42,15 +56,30 @@ void DynamicAutomatonWidget::update_automaton(const dfa_type& automaton, QString
 {
     ui->m_machine << automaton;
 
+    unsigned count_machines = ui->m_history->count();
+
+    if (count_machines > 0)
+        ui->m_history->item(m_current_item)->setBackgroundColor(Qt::white);
+
     bool exists = false;
 
-    for (auto i = 0; i < ui->m_history->count(); ++i)
-        exists |= (ui->m_history->item(i)->text() == automaton_name);
+    for (auto i = 0; i < count_machines; ++i)
+    {
+        if (ui->m_history->item(i)->text() == automaton_name)
+        {
+            exists = true;
+            m_current_item = i;
+            break;
+        }
+    }
 
     if (!exists)
     {
+        m_current_item = count_machines;
         ui->m_history->addItem(automaton_name);
     }
+
+    ui->m_history->item(m_current_item)->setBackgroundColor(Qt::gray);
 
     m_current = Facade::automaton_type_ptr(new dfa_type(automaton));
 }
@@ -59,15 +88,30 @@ void DynamicAutomatonWidget::update_automaton(const ndfa_type& automaton, QStrin
 {
     ui->m_machine << automaton;
 
+    unsigned count_machines = ui->m_history->count();
+
+    if (count_machines)
+        ui->m_history->item(m_current_item)->setBackgroundColor(Qt::white);
+
     bool exists = false;
 
-    for (auto i = 0; i < ui->m_history->count(); ++i)
-        exists |= (ui->m_history->item(i)->text() == automaton_name);
+    for (auto i = 0; i < count_machines; ++i)
+    {
+        if (ui->m_history->item(i)->text() == automaton_name)
+        {
+            exists = true;
+            m_current_item = i;
+            break;
+        }
+    }
 
     if (!exists)
     {
+        m_current_item = count_machines;
         ui->m_history->addItem(automaton_name);
     }
+
+    ui->m_history->item(m_current_item)->setBackgroundColor(Qt::gray);
 
     m_current = Facade::automaton_type_ptr(new ndfa_type(automaton));
 }
@@ -96,13 +140,16 @@ void DynamicAutomatonWidget::on_m_new_machine_btn_clicked()
 
 void DynamicAutomatonWidget::on_m_history_itemClicked(QListWidgetItem *item)
 {
+    ui->m_history->item(m_current_item)->setBackgroundColor(Qt::white);
+    m_current_item = ui->m_history->currentRow();
+    ui->m_history->item(m_current_item)->setBackgroundColor(Qt::gray);
+
     m_current = m_facade->request_automaton(m_number, item->text());
 
-    const dfa_type * automaton = dynamic_cast<const dfa_type*>(m_current.get());
-    if (automaton)
-        ui->m_machine << *automaton;
+    if (m_current->derived_ptr<dfa_type>())
+        ui->m_machine << *m_current->derived_ptr<dfa_type>();
     else
-        ui->m_machine << *dynamic_cast<const ndfa_type*>(m_current.get());
+        ui->m_machine << *m_current->derived_ptr<ndfa_type>();
 }
 
 void DynamicAutomatonWidget::on_m_grammar_btn_clicked()
@@ -110,17 +157,15 @@ void DynamicAutomatonWidget::on_m_grammar_btn_clicked()
     if (!m_current.get())
         return;
 
+    grammar_type grammar;
     formal_device::manipulator::DevicesConverter converter;
 
-    ndfa_type * to_grammar;
-
-    const dfa_type * automaton = dynamic_cast<const dfa_type*>(m_current.get());
-    if (automaton)
-        to_grammar = new ndfa_type(*automaton);
+    if (m_current->derived_ptr<dfa_type>())
+        grammar = converter.convert(*m_current->derived_ptr<dfa_type>());
     else
-        to_grammar = new ndfa_type(*dynamic_cast<const ndfa_type*>(m_current.get()));
+        grammar = converter.convert(*m_current->derived_ptr<ndfa_type>());
 
-    GrammarViewer dialog(converter.convert(*to_grammar), this);
+    GrammarViewer dialog(grammar, this);
     dialog.exec();
 }
 
@@ -138,6 +183,22 @@ void DynamicAutomatonWidget::on_m_closure_btn_clicked()
         return ;
 
     m_facade->reflexive_closure(m_current);
+}
+
+void DynamicAutomatonWidget::on_m_transitive_btn_clicked()
+{
+    if (!m_current.get())
+        return ;
+
+    m_facade->transitive_closure(m_current);
+}
+
+void DynamicAutomatonWidget::on_m_optional_btn_clicked()
+{
+    if (!m_current.get())
+        return ;
+
+    m_facade->optional(m_current);
 }
 
 void DynamicAutomatonWidget::on_m_reverse_btn_clicked()
@@ -162,4 +223,62 @@ void DynamicAutomatonWidget::on_m_minimization_btn_clicked()
         return ;
 
     m_facade->minimization(m_current);
+}
+
+void DynamicAutomatonWidget::on_m_n_sentences_clicked()
+{
+    if (!m_current.get())
+        return;
+
+    grammar_type grammar;
+    formal_device::manipulator::DevicesConverter converter;
+
+    if (m_current->derived_ptr<dfa_type>())
+        grammar = converter.convert(*m_current->derived_ptr<dfa_type>());
+    else
+        grammar = converter.convert(*m_current->derived_ptr<ndfa_type>());
+
+    unsigned n = ui->m_n_of_sentences->value();
+    auto sentences = grammar.sentences_generator(n);
+
+    GrammarViewer dialog(sentences, this);
+    dialog.exec();
+}
+
+void DynamicAutomatonWidget::on_m_finitude_clicked()
+{
+    if (!m_current.get())
+        return;
+
+    QString answer = m_current->finiteness()? "T(M) é finita" : "T(M) é infinita";
+
+    BooleanDialog dialog(answer, this);
+    dialog.exec();
+}
+
+void DynamicAutomatonWidget::on_m_emptiness_clicked()
+{
+    if (!m_current.get())
+        return;
+
+    QString answer = m_current->emptiness()? "T(M) é vazia" : "T(M) não é vazia";
+
+    BooleanDialog dialog(answer, this);
+    dialog.exec();
+}
+
+void DynamicAutomatonWidget::on_m_membership_clicked()
+{
+    if (!m_current.get() || ui->m_sentence->text() == "")
+        return;
+
+    QString answer = "\"" + ui->m_sentence->text() + "\"";
+
+    if (m_current->membership(ui->m_sentence->text().toStdString()))
+        answer += " pertence a T(M)";
+    else
+        answer += " não pertence a T(M)";
+
+    BooleanDialog dialog(answer, this);
+    dialog.exec();
 }

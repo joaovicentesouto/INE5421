@@ -26,6 +26,7 @@ public:
 
 public slots:
     void update_result(Facade::automaton_ptr_container_type& result);
+    void clean_up();
 
 private slots:
     void on_m_history_itemClicked(QListWidgetItem *item);
@@ -45,6 +46,7 @@ private:
 
     Facade * m_facade;
     Facade::automaton_type_ptr m_current;
+    unsigned                   m_current_item;
 };
 
 #endif // STATICAUTOMATONWIDGET_HPP
