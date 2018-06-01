@@ -35,7 +35,7 @@ file(GLOB_RECURSE formal_languages_gui_userinterface
 ################################################################################
 
 # Add gui executable
-add_executable( formal_languages_gui ${formal_languages_gui_source} ${formal_languages_gui_userinterface} )
+add_executable( formal_languages_gui MACOSX_BUNDLE ${formal_languages_gui_source} ${formal_languages_gui_userinterface} )
 
 # Add executable dependencies
 target_link_libraries(formal_languages_gui PUBLIC
