@@ -95,7 +95,7 @@ regular_ptr parse(IteratorWrapper &begin, const IteratorWrapper &end)
             break;
         }
 
-        if (*begin.iterator() == ')')
+        if (*begin.iterator() == ')' | *begin.iterator() == '|')
             return exp;
 
         if (begin.iterator() != end.iterator())
@@ -146,6 +146,10 @@ regular_ptr parse(IteratorWrapper &begin, const IteratorWrapper &end)
         default:
             break;
         }
+
+        if (begin.iterator() == end.iterator() ||
+                *begin.iterator() == ')')
+            return exp;
 
         if (*begin.iterator() == '|')
             return exp;

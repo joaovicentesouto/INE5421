@@ -2,6 +2,7 @@
 
 #include <formal_languages/parsers/ExpressionParser.hpp>
 #include <formal_languages/manipulators/DeSimoneTree.hpp>
+#include <formal_languages/manipulators/Printer.hpp>
 
 using namespace formal_device::parser;
 
@@ -133,8 +134,24 @@ TEST_CASE("Regular Expression Parser: Valid expressions", "[expression][parser]"
     CHECK_NOTHROW(make_regular_expression("(a?)"));
 
     CHECK_NOTHROW(make_regular_expression("ab*"));
+    CHECK(make_regular_expression("ab*") == make_regular_expression("a(b*)"));
+    CHECK(make_regular_expression("ab*") == make_regular_expression("((a)(b*))"));
+
     CHECK_NOTHROW(make_regular_expression("a*b"));
+    CHECK(make_regular_expression("a*b") == make_regular_expression("(a*)b"));
+
     CHECK_NOTHROW(make_regular_expression("a*b*"));
+    CHECK(make_regular_expression("a*b*") == make_regular_expression("(a*)b*"));
+
+    CHECK(make_regular_expression("0+ |  0* 1 ")
+      == make_regular_expression("(0+)|((0*)1)"));
+
+    CHECK(make_regular_expression("0+ |((00 | 0 1+ 0 )*( 11 | 1 0+ 1) )*( 00 | 0 1+ 0 )* 1 0+")
+      == make_regular_expression("(0+)|(((00)|(0(1+)0))*((11)|(1(0+)1)))*((00)|(0(1+)0))*(1(0+))"));
+
+    CHECK(make_regular_expression("0+ |0*1((00 | 0 1+ 0 )*( 11 | 1 0+ 1) )*( 00 | 0 1+ 0 )* 1 0+")
+      == make_regular_expression("(0+)|(0)*(1(((00)|(0(1+)0))*((11)|(1(0+)1)))*((00)|(0(1+)0))*(1(0+)))"));
+
     CHECK_NOTHROW(make_regular_expression("ab+"));
     CHECK_NOTHROW(make_regular_expression("a+b"));
     CHECK_NOTHROW(make_regular_expression("a?b?"));
