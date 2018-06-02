@@ -5,6 +5,12 @@ namespace formal_device
 namespace expression
 {
 
+RegularPointer::RegularPointer() :
+    std::shared_ptr<Regular>(new Empty())
+{
+
+}
+
 RegularPointer::RegularPointer(Regular * reg) :
     std::shared_ptr<Regular>(reg)
 {
@@ -327,7 +333,7 @@ regular_ptr ReflexiveClosure::operator|(const regular_ptr &reg) const
         return clone();
 
     if (dynamic_cast<const Epsilon*>(reg.get()))
-        return new Optional(clone());
+        return (*this)^Operation::Optional;
 
     return new Union(clone(), reg);
 }
@@ -409,7 +415,7 @@ regular_ptr TransitiveClosure::operator|(const regular_ptr &reg) const
         return clone();
 
     if (dynamic_cast<const Epsilon*>(reg.get()))
-        return new Optional(clone());
+        return (*this)^Operation::Optional;
 
     return new Union(clone(), reg);
 }
@@ -428,13 +434,13 @@ regular_ptr TransitiveClosure::operator^(const Operation &op) const
     switch (op)
     {
     case Operation::Star :
-        return new ReflexiveClosure(m_expression);
+        return m_expression^Operation::Star;
 
     case Operation::Plus :
         return clone();
 
     case Operation::Optional :
-        return new ReflexiveClosure(m_expression);
+        return m_expression^Operation::Star;
     }
 }
 
@@ -515,10 +521,10 @@ regular_ptr Optional::operator^(const Operation &op) const
     switch (op)
     {
     case Operation::Star :
-        return new ReflexiveClosure(m_expression);
+        return m_expression^Operation::Star;
 
     case Operation::Plus :
-        return new ReflexiveClosure(m_expression);
+        return m_expression^Operation::Star;
 
     case Operation::Optional :
         return clone();

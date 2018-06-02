@@ -229,7 +229,7 @@ TEST_CASE("Regular Expression: ReflexiveClosure", "[regular_expression][reflexiv
 
         CHECK((reflex | a)             == new Union(reflex, a));
         CHECK((reflex | new Empty())   == reflex);
-        CHECK((reflex | new Epsilon()) == new Optional(reflex));
+        CHECK((reflex | new Epsilon()) == reflex);
         CHECK((reflex | reflex)        == reflex);
     }
 
@@ -262,7 +262,7 @@ TEST_CASE("Regular Expression: TransitiveClosure", "[regular_expression][transit
 
         CHECK((trans | a)             == new Union(trans, a));
         CHECK((trans | new Empty())   == trans);
-        CHECK((trans | new Epsilon()) == new Optional(trans));
+        CHECK((trans | new Epsilon()) == new ReflexiveClosure(a));
         CHECK((trans | trans)         == trans);
     }
 

@@ -29,6 +29,7 @@ class Regular;
 class RegularPointer : public std::shared_ptr<Regular>
 {
   public:
+    RegularPointer();
     RegularPointer(Regular * reg);
 
     RegularPointer(const RegularPointer &) = default;
@@ -108,8 +109,6 @@ class Epsilon : public Regular
 
   private:
     regular_ptr clone() const;
-
-    string_type m_symbol{"&"};
 };
 
 class Unit : public Regular
