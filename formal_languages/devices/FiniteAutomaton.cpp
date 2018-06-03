@@ -880,7 +880,7 @@ NonDeterministic NonDeterministic::reverse() const
 
 Deterministic NonDeterministic::determination() const
 {
-    using map_of_states_set_type = std::unordered_map<state_set_type, state_type, Hasher>;
+    using map_of_states_set_type = std::map<state_set_type, state_type>;
     using deque_of_states_set_type = std::deque<state_set_type>;
     using vector_of_states_set_type = std::vector<state_set_type>;
 
@@ -969,8 +969,8 @@ Deterministic NonDeterministic::remove_epsilon() const
     if (!contains_epsilon_transition())
         return determination();
 
-    using map_of_states_set_type = std::unordered_map<state_set_type, state_type, Hasher>;
-    using state_to_states_set_type = std::unordered_map<state_type, state_set_type, Hasher>;
+    using map_of_states_set_type = std::map<state_set_type, state_type>;
+    using state_to_states_set_type = std::map<state_type, state_set_type>;
     using deque_of_states_set_type = std::deque<state_set_type>;
     using vector_of_states_set_type = std::vector<state_set_type>;
 

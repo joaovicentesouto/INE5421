@@ -14,78 +14,137 @@ namespace finite_automaton
 class Symbol
 {
 public:
-    friend class Hasher;
     using string_type = std::string;
 
+    //! Default Construct Symbol
+    /*!
+        \brief Constructs an epsilon symbol.
+    */
     Symbol() = default;
 
+    //! Copy constructor
     Symbol(const Symbol &) = default;
     Symbol &operator=(const Symbol &) = default;
+
+    //! Move constructor
     Symbol(Symbol &&) = default;
     Symbol &operator=(Symbol &&) = default;
 
+    //! Construct Symbol
+    /*!
+        \brief Constructs an symbol with a copy string value.
+        \param symbol Value name.
+    */
     Symbol(const string_type &symbol);
+
+    //! Construct Symbol
+    /*!
+        \brief Constructs an symbol with a moved string value.
+        \param symbol Value name.
+    */
     Symbol(string_type &&symbol);
 
-    ~Symbol() = default;
-
+    //! Equality operator (from another symbol)
+    /*!
+        \brief Verifies that symbols are the same.
+        \param symbol Another symbol.
+        \return True if contains the same value.
+    */
     bool operator==(const Symbol &symbol) const;
+
+    //! Equality operator (from string value)
+    /*!
+        \brief Verifies that a symbol contains the same value.
+        \param symbol Another symbol.
+        \return True if contains the same value.
+    */
     bool operator==(const string_type &symbol) const;
 
+    //! Less than operator
+    /*!
+        \brief It checks to see if one symbol is smaller than another.
+        \param symbol Another symbol.
+        \return True if is less than.
+    */
     bool operator<(const Symbol &symbol) const;
 
+    //! Get value
+    /*!
+        \brief Simple get.
+        \return The name of the symbol.
+    */
     string_type value() const;
 
 private:
-    string_type m_symbol{"&"};
+    string_type m_symbol{"&"};   //! Symbol name
 };
 
 class State
 {
 public:
-    friend class Hasher;
     using string_type = std::string;
 
+    //! Default Construct State
+    /*!
+        \brief Constructs an error state.
+    */
     State() = default;
 
+    //! Copy constructor
     State(const State &) = default;
     State &operator=(const State &) = default;
+
+    //! Move constructor
     State(State &&) = default;
     State &operator=(State &&) = default;
 
+    //! Construct State
+    /*!
+        \brief Constructs an state with a copy string value.
+        \param state Value name.
+    */
     State(const string_type &state);
+
+    //! Construct State
+    /*!
+        \brief Constructs an state with a moved string value.
+        \param state Value name.
+    */
     State(string_type &&state);
 
-    ~State() = default;
-
+    //! Equality operator (from another state)
+    /*!
+        \brief Verifies that states are the same.
+        \param state Another state.
+        \return True if contains the same value.
+    */
     bool operator==(const State &state) const;
+
+    //! Equality operator (from string value)
+    /*!
+        \brief Verifies that a state contains the same value.
+        \param state Another state.
+        \return True if contains the same value.
+    */
     bool operator==(const string_type &state) const;
 
-    State operator+(const State &sufix) const;
-    State operator+(const string_type &sufix) const;
-
+    //! Less than operator
+    /*!
+        \brief It checks to see if one state is smaller than another.
+        \param state Another state.
+        \return True if is less than.
+    */
     bool operator<(const State &state) const;
 
+    //! Get value
+    /*!
+        \brief Simple get.
+        \return The name of the state.
+    */
     string_type value() const;
 
 private:
-    string_type m_state{"Error"}; // error
-};
-
-class Hasher
-{
-public:
-    template <class T>
-    using set_type            = std::set<T>;
-    template <class Key, class Value>
-    using map_type            = std::unordered_map<Key, Value, Hasher>;
-
-    using symbol_type = Symbol;
-    using state_type  = State;
-
-    std::size_t operator()(const symbol_type &symbol) const;
-    std::size_t operator()(const state_type &state) const;
-    std::size_t operator()(const set_type<state_type> &set) const;
+    string_type m_state{"Error"};   //! State name
 };
 
 } // namespace finite_automaton

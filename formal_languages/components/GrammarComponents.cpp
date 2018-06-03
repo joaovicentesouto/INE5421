@@ -182,7 +182,7 @@ Production::string_type TerminalProduction::terminal() const
     return m_terminal.value();
 }
 
-Production::string_type TerminalProduction::to_string()
+Production::string_type TerminalProduction::to_string() const
 {
     return m_terminal.value();
 }
@@ -231,30 +231,9 @@ NonTerminalProduction::string_type NonTerminalProduction::terminal() const
     return m_terminal.value();
 }
 
-Production::string_type NonTerminalProduction::to_string()
+Production::string_type NonTerminalProduction::to_string() const
 {
     return m_terminal.value() + m_non_terminal.value();
-}
-
-/* ----------------------------------------------------------------------- */
-
-std::size_t Hasher::operator()(const symbol_type &symbol) const
-{
-    return std::hash<std::string>()(symbol.m_value);
-}
-
-std::size_t Hasher::operator()(const production_type_ptr &prod) const
-{
-    if (prod->is_terminal())
-    {
-        const TerminalProduction* term = dynamic_cast<const TerminalProduction*>(prod.get());
-        return std::hash<std::string>()(term->m_terminal.m_value);
-    }
-    else
-    {
-        const NonTerminalProduction* term = dynamic_cast<const NonTerminalProduction*>(prod.get());
-        return std::hash<std::string>()(term->m_terminal.m_value + term->m_non_terminal.m_value);
-    }
 }
 
 }   // namespace grammar
