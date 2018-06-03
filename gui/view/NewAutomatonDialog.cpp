@@ -199,7 +199,7 @@ void NewAutomatonDialog::symbol_care(QTableWidgetItem *item)
         item->setBackground(QColor("#ff6969"));
         return;
     }
-    for (auto character : QString("'!@#$%&*()-_=+§|ABCDEFGHIJKLMNOPQRSTUVWXYZ,<.>;:/?]}º[{ª\\\""))
+    for (auto character : QString("'!@#$%*()-_=+§|ABCDEFGHIJKLMNOPQRSTUVWXYZ,<.>;:/?]}º[{ª\\\""))
         if (item->text().compare(character) == 0) {
             item->setBackground(QColor("#ff6969"));
             return;
@@ -214,7 +214,7 @@ void NewAutomatonDialog::symbol_verification()
         if (ui->automatonTable->item(0, j)->text().size() != 1)
             continue;
         bool paint = true;
-        for (auto character : QString("'!@#$%&*()-_=+§|ABCDEFGHIJKLMNOPQRSTUVWXYZ,<.>;:/?]}º[{ª\\\""))
+        for (auto character : QString("'!@#$%*()-_=+§|ABCDEFGHIJKLMNOPQRSTUVWXYZ,<.>;:/?]}º[{ª\\\""))
             if (ui->automatonTable->item(0, j)->text().compare(character) == 0)
                 paint = false;
 

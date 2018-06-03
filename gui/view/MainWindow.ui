@@ -252,7 +252,7 @@
        <widget class="StaticAutomatonWidget" name="m_result_machine" native="true">
         <property name="minimumSize">
          <size>
-          <width>300</width>
+          <width>350</width>
           <height>0</height>
          </size>
         </property>
