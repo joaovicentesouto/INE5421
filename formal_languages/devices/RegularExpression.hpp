@@ -17,8 +17,8 @@ namespace expression
 
 enum class Operation
 {
-    Star,
-    Plus,
+    Reflexive,
+    Transitive,
     Optional
 };
 

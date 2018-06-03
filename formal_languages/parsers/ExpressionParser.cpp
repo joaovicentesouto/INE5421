@@ -70,11 +70,11 @@ regular_ptr parse(IteratorWrapper &begin, const IteratorWrapper &end)
 
         switch (*begin.iterator()) {
         case '*':
-            exp = exp ^ expression::Operation::Star;
+            exp = exp ^ expression::Operation::Reflexive;
             break;
 
         case '+':
-            exp = exp ^ expression::Operation::Plus;
+            exp = exp ^ expression::Operation::Transitive;
             break;
 
         case '?':
@@ -119,12 +119,12 @@ regular_ptr parse(IteratorWrapper &begin, const IteratorWrapper &end)
 
         switch (*begin.iterator()) {
         case '*':
-            exp = exp ^ expression::Operation::Star;
+            exp = exp ^ expression::Operation::Reflexive;
             begin.next();
             break;
 
         case '+':
-            exp = exp ^ expression::Operation::Plus;
+            exp = exp ^ expression::Operation::Transitive;
             begin.next();
             break;
 

@@ -133,7 +133,7 @@ regular_ptr Unit::operator|(const regular_ptr &reg) const
         return clone();
 
     if (dynamic_cast<const Epsilon*>(reg.get()))
-        return new Optional(clone());
+        return (*this)^Operation::Optional;
 
     return new Union(clone(), reg);
 }
@@ -151,10 +151,10 @@ regular_ptr Unit::operator^(const Operation &op) const
 {
     switch (op)
     {
-    case Operation::Star :
+    case Operation::Reflexive :
         return new ReflexiveClosure(clone());
 
-    case Operation::Plus :
+    case Operation::Transitive :
         return new TransitiveClosure(clone());
 
     case Operation::Optional :
@@ -197,7 +197,7 @@ regular_ptr Union::operator|(const regular_ptr &reg) const
         return clone();
 
     if (dynamic_cast<const Epsilon*>(reg.get()))
-        return new Optional(clone());
+        return (*this)^Operation::Optional;
 
     return new Union(clone(), reg);
 }
@@ -215,10 +215,10 @@ regular_ptr Union::operator^(const Operation &op) const
 {
     switch (op)
     {
-    case Operation::Star :
+    case Operation::Reflexive :
         return new ReflexiveClosure(clone());
 
-    case Operation::Plus :
+    case Operation::Transitive :
         return new TransitiveClosure(clone());
 
     case Operation::Optional :
@@ -265,7 +265,7 @@ regular_ptr Concatenation::operator|(const regular_ptr &reg) const
         return clone();
 
     if (dynamic_cast<const Epsilon*>(reg.get()))
-        return new Optional(clone());
+        return (*this)^Operation::Optional;
 
     return new Union(clone(), reg);
 }
@@ -283,10 +283,10 @@ regular_ptr Concatenation::operator^(const Operation &op) const
 {
     switch (op)
     {
-    case Operation::Star :
+    case Operation::Reflexive :
         return new ReflexiveClosure(clone());
 
-    case Operation::Plus :
+    case Operation::Transitive :
         return new TransitiveClosure(clone());
 
     case Operation::Optional :
@@ -351,10 +351,10 @@ regular_ptr ReflexiveClosure::operator^(const Operation &op) const
 {
     switch (op)
     {
-    case Operation::Star :
+    case Operation::Reflexive :
         return clone();
 
-    case Operation::Plus :
+    case Operation::Transitive :
         return clone();
 
     case Operation::Optional :
@@ -433,14 +433,14 @@ regular_ptr TransitiveClosure::operator^(const Operation &op) const
 {
     switch (op)
     {
-    case Operation::Star :
-        return m_expression^Operation::Star;
+    case Operation::Reflexive :
+        return m_expression^Operation::Reflexive;
 
-    case Operation::Plus :
+    case Operation::Transitive :
         return clone();
 
     case Operation::Optional :
-        return m_expression^Operation::Star;
+        return m_expression^Operation::Reflexive;
     }
 }
 
@@ -520,11 +520,11 @@ regular_ptr Optional::operator^(const Operation &op) const
 {
     switch (op)
     {
-    case Operation::Star :
-        return m_expression^Operation::Star;
+    case Operation::Reflexive :
+        return m_expression^Operation::Reflexive;
 
-    case Operation::Plus :
-        return m_expression^Operation::Star;
+    case Operation::Transitive :
+        return m_expression^Operation::Reflexive;
 
     case Operation::Optional :
         return clone();
