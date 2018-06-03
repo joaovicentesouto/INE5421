@@ -22,9 +22,9 @@ void NewGrammarDialog::on_m_ok_btn_clicked()
         emit new_grammar(m_number, regular);
         this->close();
     }
-    catch (std::out_of_range)
+    catch (std::out_of_range error)
     {
-        ui->m_error->setText("Invalido");
+        ui->m_error->setText(QString::fromStdString(error.what()));
     }
 }
 

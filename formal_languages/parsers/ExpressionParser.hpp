@@ -21,8 +21,6 @@ using transitive_type      = expression::TransitiveClosure;
 using optional_type        = expression::Optional;
 using operations_type      = expression::Operation;
 
-regular_ptr make_regular_expression_from_file(const string_type & file_path);
-
 regular_ptr make_regular_expression(string_type exp);
 
 regular_ptr union_parser(IteratorWrapper &begin, const IteratorWrapper &end);

@@ -5,16 +5,6 @@ namespace formal_device
 namespace parser
 {
 
-regular_ptr make_regular_expression_from_file(const string_type & file_path)
-{
-    //std::ifstream t(file_path);
-    //string_type exp((std::istreambuf_iterator<char>(t)), std::istreambuf_iterator<char>());
-
-    //exp.erase( std::remove_if(exp.begin(), exp.end(), std::isspace), exp.end());
-
-    return regular_ptr(new epsilon_type());
-}
-
 regular_ptr make_regular_expression(string_type exp)
 {
     exp = std::regex_replace( exp, std::regex(" "), "" );
@@ -25,7 +15,7 @@ regular_ptr make_regular_expression(string_type exp)
     while (begin.iterator() != end.iterator())
     {
         if (*begin.iterator() == ')')
-            throw std::out_of_range("Expressão mal formada");
+            throw std::out_of_range("Expressão mal formada: ) sem (");
 
         if (*begin.iterator() == '|')
         {
@@ -74,7 +64,7 @@ regular_ptr parse(IteratorWrapper &begin, const IteratorWrapper &end)
         }
 
         if (*begin.iterator() != ')')
-            throw std::out_of_range("Expressão mal formada: begin != )");
+            throw std::out_of_range("Expressão mal formada: falta )");
 
         begin.next();
 
