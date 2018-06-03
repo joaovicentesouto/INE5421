@@ -292,13 +292,13 @@ Deterministic Deterministic::remove_unreachable_states() const
         if (m_final_states.find(current) != m_final_states.end())
             new_final_states.insert(current);
 
-        transition_map_type trans(m_transitions);
-        if (trans.find(current) != trans.end())
-            new_transitions[current] = trans[current];
+        transition_map_type trans_copy(m_transitions);
+        if (trans_copy.find(current) != trans_copy.end())
+            new_transitions[current] = trans_copy[current];
         else
             continue;
 
-        for (auto trans : trans[current])
+        for (auto trans : trans_copy[current])
             if (marked.find(trans.second) == marked.end())
             {
                 reachable.push_back(trans.second);
@@ -415,8 +415,8 @@ bool Deterministic::contains_cycle(state_type state, state_set_type & temporary,
 
     temporary.insert(state);
 
-    transition_map_type trans(m_transitions);
-    for (auto trans : trans[state])
+    transition_map_type trans_copy(m_transitions);
+    for (auto trans : trans_copy[state])
         if (contains_cycle(trans.second, temporary, permanent))
             return true;
 
