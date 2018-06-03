@@ -1,24 +1,33 @@
 #include "NewAutomatonDialog.hpp"
-#include "ui_NewAutomatonDialog.h"
-#include <iostream>
-#include <string>
 
-NewAutomatonDialog::NewAutomatonDialog(unsigned number, QWidget *parent) :
+NewAutomatonDialog::NewAutomatonDialog(unsigned number, automaton_type_ptr f_automaton, QWidget *parent) :
     QDialog(parent),
     ui(new Ui::NewAutomatonDialog),
     m_number(number)
 {
     ui->setupUi(this);
     ui->error_message->setVisible(false);
-    ui->automatonTable->setColumnCount(1);
-    ui->automatonTable->horizontalHeader()->hide();
-    ui->automatonTable->verticalHeader()->hide();
-    ui->automatonTable->insertRow(ui->automatonTable->rowCount());
+
+    if (f_automaton != nullptr)
+        if (f_automaton->derived_ptr<dfa_type>())
+            ui->automatonTable << *f_automaton->derived_ptr<dfa_type>();
+        else
+            ui->automatonTable << *f_automaton->derived_ptr<ndfa_type>();
+
+
+    if (ui->automatonTable->rowCount() == ui->automatonTable->columnCount() && ui->automatonTable->rowCount() == 0) {
+        ui->automatonTable->setColumnCount(1);
+        ui->automatonTable->horizontalHeader()->hide();
+        ui->automatonTable->verticalHeader()->hide();
+        ui->automatonTable->insertRow(ui->automatonTable->rowCount());
+    }
 
     QTableWidgetItem *item = new QTableWidgetItem("+");
     item->setFlags(Qt::NoItemFlags);
 
     ui->automatonTable->setItem(0, 0, item);
+
+    initialization = false;
 }
 
 NewAutomatonDialog::~NewAutomatonDialog()
@@ -167,17 +176,16 @@ void NewAutomatonDialog::on_btnClean_clicked()
 
 }
 
-int global_control = 1;
-
 void NewAutomatonDialog::on_automatonTable_itemChanged(QTableWidgetItem *item)
 {
-    if (global_control)
-        global_control--;
-    else
+    if (initialization || !verification)
         return;
 
+    if (verification)
+        verification = false;
+
     if ((item->row() == item->column() && item->column() == 0)) {
-        global_control++;
+        verification = true;
         return;
     }
 
@@ -190,7 +198,7 @@ void NewAutomatonDialog::on_automatonTable_itemChanged(QTableWidgetItem *item)
     if (item->column() > 0 && item->row() > 0)
         transition_care(item);
 
-    global_control++;
+    verification = true;
 }
 
 void NewAutomatonDialog::symbol_care(QTableWidgetItem *item)
@@ -199,7 +207,7 @@ void NewAutomatonDialog::symbol_care(QTableWidgetItem *item)
         item->setBackground(QColor("#ff6969"));
         return;
     }
-    for (auto character : QString("'!@#$%&*()-_=+§|ABCDEFGHIJKLMNOPQRSTUVWXYZ,<.>;:/?]}º[{ª\\\""))
+    for (auto character : QString("'!@#$%*()-_=+§|ABCDEFGHIJKLMNOPQRSTUVWXYZ,<.>;:/?]}º[{ª\\\""))
         if (item->text().compare(character) == 0) {
             item->setBackground(QColor("#ff6969"));
             return;
@@ -214,7 +222,7 @@ void NewAutomatonDialog::symbol_verification()
         if (ui->automatonTable->item(0, j)->text().size() != 1)
             continue;
         bool paint = true;
-        for (auto character : QString("'!@#$%&*()-_=+§|ABCDEFGHIJKLMNOPQRSTUVWXYZ,<.>;:/?]}º[{ª\\\""))
+        for (auto character : QString("'!@#$%*()-_=+§|ABCDEFGHIJKLMNOPQRSTUVWXYZ,<.>;:/?]}º[{ª\\\""))
             if (ui->automatonTable->item(0, j)->text().compare(character) == 0)
                 paint = false;
 
@@ -400,7 +408,7 @@ void NewAutomatonDialog::transition_care(QTableWidgetItem *item)
     std::string segment = item->text().toStdString();
     segment.erase(std::remove(segment.begin(), segment.end(), ' '), segment.end());
 
-    if (item->text().size() == 0) {
+    if (segment.size() == 0 || segment == "-") {
         item->setBackground(QColor("#ffffff"));
         return;
     }

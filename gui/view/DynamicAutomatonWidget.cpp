@@ -6,6 +6,7 @@ DynamicAutomatonWidget::DynamicAutomatonWidget(QWidget *parent) :
     ui(new Ui::DynamicAutomatonWidget)
 {
     ui->setupUi(this);
+    ui->m_machine->setEditTriggers(QAbstractItemView::EditTriggers(0));
 }
 
 DynamicAutomatonWidget::~DynamicAutomatonWidget()
@@ -127,10 +128,10 @@ void DynamicAutomatonWidget::on_m_new_exp_btn_clicked()
 
 void DynamicAutomatonWidget::on_m_new_machine_btn_clicked()
 {
-    NewAutomatonDialog dialog(m_number, this);
+    NewAutomatonDialog dialog(m_number, m_current, this);
 
     QObject::connect(&dialog, SIGNAL(new_automaton(unsigned, dfa_type)),
-                    m_facade, SLOT  (new_automaton(unsigned, dfa_type)));
+                     m_facade, SLOT  (new_automaton(unsigned, dfa_type)));
 
     QObject::connect(&dialog, SIGNAL(new_automaton(unsigned, ndfa_type)),
                     m_facade, SLOT  (new_automaton(unsigned, ndfa_type)));
