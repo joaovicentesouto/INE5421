@@ -6,6 +6,7 @@ StaticAutomatonWidget::StaticAutomatonWidget(QWidget *parent) :
     ui(new Ui::StaticAutomatonWidget)
 {
     ui->setupUi(this);
+    ui->m_machine->setEditTriggers(QAbstractItemView::EditTriggers(0));
 }
 
 StaticAutomatonWidget::~StaticAutomatonWidget()

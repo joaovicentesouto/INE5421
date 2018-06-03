@@ -3,8 +3,13 @@
 
 #include <QDialog>
 #include <QTableWidgetItem>
+#include <control/Filler.hpp>
 #include <formal_languages/devices/FiniteAutomaton.hpp>
 #include <formal_languages/parsers/FiniteAutomatonParser.hpp>
+#include <memory>
+#include "ui_NewAutomatonDialog.h"
+#include <iostream>
+#include <string>
 
 namespace Ui {
 class NewAutomatonDialog;
@@ -17,8 +22,9 @@ class NewAutomatonDialog : public QDialog
 public:
     using dfa_type = formal_device::finite_automaton::Deterministic;
     using ndfa_type = formal_device::finite_automaton::NonDeterministic;
+    using automaton_type_ptr = std::shared_ptr<formal_device::finite_automaton::GenericAutomaton>;
 
-    explicit NewAutomatonDialog(unsigned number, QWidget *parent = 0);
+    explicit NewAutomatonDialog(unsigned number, automaton_type_ptr f_automaton, QWidget *parent = 0);
     ~NewAutomatonDialog();
 
 private slots:
@@ -48,6 +54,8 @@ signals:
 private:
     Ui::NewAutomatonDialog *ui;
     unsigned m_number;
+    bool initialization = true;
+    bool verification = true;
 };
 
 #endif // NEWAUTOMATONDIALOG_H
