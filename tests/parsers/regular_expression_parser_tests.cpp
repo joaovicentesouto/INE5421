@@ -123,7 +123,6 @@ TEST_CASE("Regular Expression Parser: Valid expressions", "[expression][parser]"
     CHECK_NOTHROW(make_regular_expression("a*"));
     CHECK_NOTHROW(make_regular_expression("a+"));
     CHECK_NOTHROW(make_regular_expression("a?"));
-
     CHECK_NOTHROW(make_regular_expression("(a)"));
     CHECK_NOTHROW(make_regular_expression("(&)"));
     CHECK_NOTHROW(make_regular_expression("(a)*"));
@@ -132,26 +131,6 @@ TEST_CASE("Regular Expression Parser: Valid expressions", "[expression][parser]"
     CHECK_NOTHROW(make_regular_expression("(a*)"));
     CHECK_NOTHROW(make_regular_expression("(a+)"));
     CHECK_NOTHROW(make_regular_expression("(a?)"));
-
-    CHECK_NOTHROW(make_regular_expression("ab*"));
-    CHECK(make_regular_expression("ab*") == make_regular_expression("a(b*)"));
-    CHECK(make_regular_expression("ab*") == make_regular_expression("((a)(b*))"));
-
-    CHECK_NOTHROW(make_regular_expression("a*b"));
-    CHECK(make_regular_expression("a*b") == make_regular_expression("(a*)b"));
-
-    CHECK_NOTHROW(make_regular_expression("a*b*"));
-    CHECK(make_regular_expression("a*b*") == make_regular_expression("(a*)b*"));
-
-    CHECK(make_regular_expression("0+ |  0* 1 ")
-      == make_regular_expression("(0+)|((0*)1)"));
-
-    CHECK(make_regular_expression("0+ |((00 | 0 1+ 0 )*( 11 | 1 0+ 1) )*( 00 | 0 1+ 0 )* 1 0+")
-      == make_regular_expression("(0+)|(((00)|(0(1+)0))*((11)|(1(0+)1)))*((00)|(0(1+)0))*(1(0+))"));
-
-    CHECK(make_regular_expression("0+ |0*1((00 | 0 1+ 0 )*( 11 | 1 0+ 1) )*( 00 | 0 1+ 0 )* 1 0+")
-      == make_regular_expression("(0+)|(0)*(1(((00)|(0(1+)0))*((11)|(1(0+)1)))*((00)|(0(1+)0))*(1(0+)))"));
-
     CHECK_NOTHROW(make_regular_expression("ab+"));
     CHECK_NOTHROW(make_regular_expression("a+b"));
     CHECK_NOTHROW(make_regular_expression("a?b?"));
@@ -163,23 +142,18 @@ TEST_CASE("Regular Expression Parser: Valid expressions", "[expression][parser]"
     CHECK_NOTHROW(make_regular_expression("a+b?"));
     CHECK_NOTHROW(make_regular_expression("a?b*"));
     CHECK_NOTHROW(make_regular_expression("a?b+"));
-
     CHECK_NOTHROW(make_regular_expression("a | b"));
     CHECK_NOTHROW(make_regular_expression("a* | b"));
     CHECK_NOTHROW(make_regular_expression("a | b*"));
     CHECK_NOTHROW(make_regular_expression("a* | b*"));
-
     CHECK_NOTHROW(make_regular_expression("(ab)*"));
     CHECK_NOTHROW(make_regular_expression("(ab)+"));
     CHECK_NOTHROW(make_regular_expression("(ab)?"));
-
     CHECK_NOTHROW(make_regular_expression("(a | b)*"));
     CHECK_NOTHROW(make_regular_expression("(a | b)+"));
     CHECK_NOTHROW(make_regular_expression("(a | b)?"));
-
     CHECK_NOTHROW(make_regular_expression("a*|b*"));
     CHECK_NOTHROW(make_regular_expression("a*b*b* | bcd? | c*cd+"));
-
     CHECK_NOTHROW(make_regular_expression("(ab*)?"));
     CHECK_NOTHROW(make_regular_expression("(ab?)*"));
     CHECK_NOTHROW(make_regular_expression("(ab? | c)*"));
@@ -189,11 +163,30 @@ TEST_CASE("Regular Expression Parser: Valid expressions", "[expression][parser]"
     CHECK_NOTHROW(make_regular_expression("(b|c)|a"));
     CHECK_NOTHROW(make_regular_expression("a|b(b|c)|c"));
     CHECK_NOTHROW(make_regular_expression("(a)|(b)((b?)?|(c*)*)|c|(a+)?a"));
-
     CHECK_NOTHROW(make_regular_expression("b?(ac)?c+"));
     CHECK_NOTHROW(make_regular_expression("(abc)(abc)"));
     CHECK_NOTHROW(make_regular_expression("a+(b*)b?"));
     CHECK_NOTHROW(make_regular_expression("(b?(ac)?c+ | b?(ac)?c+)+ab*c((a)(b*)?)"));
     CHECK_NOTHROW(make_regular_expression("(ab? | c | b?(ac)?c+ | d)*"));
     CHECK_NOTHROW(make_regular_expression("(ab? | c | b?(ac)?c+ | d)* | (a+(b*)b? | c | b?(ac)?c+ | d)?"));
+
+    SECTION("Parenteses")
+    {
+        CHECK_NOTHROW(make_regular_expression("ab*"));
+        CHECK(make_regular_expression("ab*") == make_regular_expression("a(b*)"));
+        CHECK(make_regular_expression("ab*") == make_regular_expression("((a)(b*))"));
+
+        CHECK_NOTHROW(make_regular_expression("a*b"));
+        CHECK(make_regular_expression("a*b") == make_regular_expression("(a*)b"));
+        
+        CHECK_NOTHROW(make_regular_expression("a*b*"));
+        CHECK(make_regular_expression("a*b*") == make_regular_expression("(a*)b*"));
+
+        CHECK(make_regular_expression("0+ |  0* 1 ")
+          == make_regular_expression("(0+)|((0*)1)"));
+        CHECK(make_regular_expression("0+ |(( 00 | 0 1+ 0 )*( 11 | 1 0+ 1) )*( 00 | 0 1+ 0 )* 1 0+")
+          == make_regular_expression("(0+)|(((00)|(0(1+)0))*((11)|(1(0+)1)))*((00)|(0(1+)0))*(1(0+))"));
+        CHECK(make_regular_expression("0+ | 0 * 1(( 00 | 0 1+ 0 )*( 11 | 1 0+ 1) )*( 00 | 0 1+ 0 )* 1 0+")
+          == make_regular_expression("(0+)|(0)*(1(((00)|(0(1+)0))*((11)|(1(0+)1)))*((00)|(0(1+)0))*(1(0+)))"));
+    }
 }

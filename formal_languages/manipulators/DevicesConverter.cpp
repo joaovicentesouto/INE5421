@@ -52,7 +52,7 @@ DevicesConverter::grammar_type DevicesConverter::convert(const ndfa_type & ndfa)
 {
     using string_type = dfa_type::string_type;
 
-    //! Function to transform the names of the States to only letters letters.
+    //! Function to transform the names of the States to only upper letters.
     std::function<string_type(string_type)> to_upper = [](string_type s) {
         std::transform(s.begin(), s.end(), s.begin(), [](unsigned char c){ return std::toupper(c); });
         return s;

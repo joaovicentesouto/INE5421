@@ -38,8 +38,7 @@ Prepare an application to handle Finite Automaton (FA), Regular Grammar (RG) and
 ## How to compile
 
 ### Dependencies:
-* [Cmake](https://cmake.org/) (>= 3.5.2)
-* [Boost](http://www.boost.org/) (>= 1.63)
+* [Cmake](https://cmake.org/) (>= 3.5.1)
 
 [![how-to-compile](https://asciinema.org/a/Q7Mnh9KIzoaqwnB4mGWTcTYPm.png)](https://asciinema.org/a/Q7Mnh9KIzoaqwnB4mGWTcTYPm?autoplay=1)
 
