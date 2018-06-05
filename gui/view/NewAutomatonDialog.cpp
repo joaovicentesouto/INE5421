@@ -8,11 +8,13 @@ NewAutomatonDialog::NewAutomatonDialog(unsigned number, automaton_type_ptr f_aut
     ui->setupUi(this);
     ui->error_message->setVisible(false);
 
-    if (f_automaton != nullptr)
+    if (f_automaton.get())
+    {
         if (f_automaton->derived_ptr<dfa_type>())
             ui->automatonTable << *f_automaton->derived_ptr<dfa_type>();
         else
             ui->automatonTable << *f_automaton->derived_ptr<ndfa_type>();
+    }
 
 
     if (ui->automatonTable->rowCount() == ui->automatonTable->columnCount() && ui->automatonTable->rowCount() == 0) {

@@ -27,29 +27,22 @@ const Regular::symbol_type& Regular::initial_symbol() const
 
 Regular::set_type<Regular::string_type> Regular::sentences_generator(int n) const
 {
-    //! vector of sentential forms to be produced, begins with the form S, initial symbol.
     container_type<SentencialForm> sentencial_forms{SentencialForm(m_initial_symbol, "&")};
 
     int current_size = 0;
-
-    //! As long as new sentencing forms are produced
     while (current_size < sentencial_forms.size())
     {
         auto sentence = sentencial_forms[current_size++];
 
-        //! There is no way to generate new sentence forms from a sentence.
         if (sentence.is_sentence())
             continue;
 
-        //! For each production of the terminal symbol of the sentential form, it generates another sentential form.        
         production_map_type productions(m_productions);
-        for (auto production: productions[sentence.non_terminal()])
-        {
+        for (auto production: productions[sentence.non_terminal()]) {
             if (!production.get())
                 continue;
 
             SentencialForm new_form = production << sentence;
-
             if (new_form.sentence().size() <= n)
                 sentencial_forms.push_back(new_form);
             else if (n == 0)
@@ -60,12 +53,16 @@ Regular::set_type<Regular::string_type> Regular::sentences_generator(int n) cons
 
     set_type<string_type> sentences;
 
-    //! Creates set of sentences of size n.
     for (auto sentence : sentencial_forms)
         if (sentence.is_sentence())
+        {
             if ((sentence.sentence().size() == n && sentence.sentence() != "&")
                                       || (n == 0 && sentence.sentence() == "&"))
-                sentences.insert(sentence.sentence());
+            {
+                if ((n > 0 && sentence.sentence().find('&') == SentencialForm::string_type::npos) || (n == 0 && sentence.sentence() == "&"))
+                    sentences.insert(sentence.sentence());
+            }
+        }
 
     return sentences;
 }
@@ -77,6 +74,7 @@ bool Regular::operator==(const Regular &regular) const
         && m_productions    == regular.m_productions
         && m_initial_symbol == regular.m_initial_symbol;
 }
+
 
 Regular::string_type Regular::to_string() const
 {
@@ -122,6 +120,7 @@ Regular::string_type Regular::to_string() const
 
     return string;
 }
+
 
 }   // namespace grammar
 }   // namespace formal_device

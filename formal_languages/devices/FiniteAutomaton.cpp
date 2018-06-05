@@ -791,6 +791,7 @@ NonDeterministic NonDeterministic::reflexive() const
     state_type          new_initial_state = state_type("q0'");
 
     new_final_states.insert(new_initial_state);
+    new_states.insert(new_initial_state);
 
     /* ------ Copy of transitions from initial states to final states ------ */
 
