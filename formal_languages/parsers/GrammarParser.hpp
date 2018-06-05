@@ -23,10 +23,10 @@ using pair_production_type         = grammar::Regular::pair_production_type;
 
 void new_non_terminal(IteratorWrapper &begin, IteratorWrapper &end,
                       vocabulary_set_type &vn, vocabulary_set_type &vt,
-                      production_map_type &productions, symbol_type &initial);
+                      production_map_type &productions, symbol_type &initial, bool &contains_epsilon);
 void new_productions(symbol_type current, IteratorWrapper &begin, IteratorWrapper &end,
                      vocabulary_set_type &vn, vocabulary_set_type &vt,
-                     production_map_type &productions, bool is_initial);
+                     production_map_type &productions, symbol_type &initial, bool &contains_epsilon);
 
 grammar::Regular make_regular_grammar_from_file(const string_type & file_path);
 grammar::Regular make_regular_grammar(string_type str_grammar);

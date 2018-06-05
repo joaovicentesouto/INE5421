@@ -12,7 +12,7 @@ using symbol_set_type     = Deterministic::symbol_set_type;
 using det_transition_map_type     = Deterministic::transition_map_type;
 using non_det_transition_map_type = NonDeterministic::transition_map_type;
 
-TEST_CASE("Finite Automaton: Complement Deterministic", "[finite_automaton][symbol]")
+TEST_CASE("Finite Automaton: Complement Deterministic", "[finite_automaton]")
 {
     symbol_type a("a");
     symbol_type b("b");
@@ -67,7 +67,7 @@ TEST_CASE("Finite Automaton: Complement Deterministic", "[finite_automaton][symb
     }
 }
 
-TEST_CASE("Finite Automaton: Union", "[finite_automaton][symbol]")
+TEST_CASE("Finite Automaton: Union", "[finite_automaton]")
 {
     symbol_type a("a");
     symbol_type b("b");
@@ -110,7 +110,7 @@ TEST_CASE("Finite Automaton: Union", "[finite_automaton][symbol]")
     }
 }
 
-TEST_CASE("Finite Automaton: Concatenation", "[finite_automaton][symbol]")
+TEST_CASE("Finite Automaton: Concatenation", "[finite_automaton]")
 {
     SECTION("Concatenation 1", "[finite_automaton][fa]")
     {
@@ -188,7 +188,7 @@ TEST_CASE("Finite Automaton: Concatenation", "[finite_automaton][symbol]")
     }
 }
 
-TEST_CASE("Finite Automaton: Operations", "[finite_automaton][symbol]")
+TEST_CASE("Finite Automaton: Operations", "[finite_automaton]")
 {
     SECTION("Reflexive", "[finite_automaton][fa]")
     {
@@ -261,59 +261,8 @@ TEST_CASE("Finite Automaton: Operations", "[finite_automaton][symbol]")
     }
 }
 
-//TEST_CASE("Finite Automaton: Complement NonDeterministic", "[finite_automaton][symbol]")
-//{
-//    symbol_type a("a");
-//    symbol_type b("b");
-//    state_type q0("q0"), q1("q1"), q2("q2"), q3("q3");
 
-//    symbol_set_type alphabet{a, b};
-//    state_set_type  states{q0, q1, q2, q3};
-//    state_set_type  final_states{q1, q2};
-
-//    non_det_transition_map_type transitions;
-//    transitions[q0][a].insert(q2);
-//    transitions[q0][b].insert(q1);
-//    transitions[q1][a].insert(q2);
-//    transitions[q2][a].insert(q0);
-//    transitions[q2][b].insert(q3);
-//    transitions[q3][a].insert(q0);
-
-//    state_type initial = q0;
-
-//    NonDeterministic machine(alphabet, states, transitions, final_states, initial);
-
-//    SECTION("Complement", "[finite_automaton][fa]")
-//    {
-//        symbol_type a("a");
-//        symbol_type b("b");
-//        state_type q0("q0"), q1("q1"), q2("q2"), q3("q3"), error("Error");
-
-//        symbol_set_type alphabet{a, b};
-//        state_set_type  states{q0, q1, q2, q3, error};
-//        state_set_type  final_states{q0, q3, error};
-
-//        non_det_transition_map_type transitions;
-//        transitions[q0][a].insert(q2);
-//        transitions[q0][b].insert(q1);
-//        transitions[q1][a].insert(q2);
-//        transitions[q1][b].insert(error);
-//        transitions[q2][a].insert(q0);
-//        transitions[q2][b].insert(q3);
-//        transitions[q3][a].insert(q0);
-//        transitions[q3][b].insert(error);
-//        transitions[error][a].insert(error);
-//        transitions[error][b].insert(error);
-
-//        state_type initial = q0;
-
-//        NonDeterministic complement(alphabet, states, transitions, final_states, initial);
-
-//        CHECK((!machine == complement));
-//    }
-//}
-
-TEST_CASE("NonDeterministic: Determination", "[finite_automaton][symbol]")
+TEST_CASE("NonDeterministic: Determination", "[finite_automaton]")
 {
     symbol_type a("a");
     symbol_type b("b");
@@ -364,7 +313,7 @@ TEST_CASE("NonDeterministic: Determination", "[finite_automaton][symbol]")
     }
 }
 
-TEST_CASE("NonDeterministic: Remove & Epsilon", "[finite_automaton][symbol]")
+TEST_CASE("NonDeterministic: Remove & Epsilon", "[finite_automaton]")
 {
     symbol_type a("a");
     symbol_type b("b");
@@ -401,7 +350,7 @@ TEST_CASE("NonDeterministic: Remove & Epsilon", "[finite_automaton][symbol]")
     }
 }
 
-TEST_CASE("Deterministic: Remove unreachable", "[finite_automaton][symbol]")
+TEST_CASE("Deterministic: Remove unreachable", "[finite_automaton]")
 {
     symbol_type a("a");
     symbol_type b("b");
@@ -462,7 +411,7 @@ TEST_CASE("Deterministic: Remove unreachable", "[finite_automaton][symbol]")
     }
 }
 
-TEST_CASE("Deterministic: Remove dead states", "[finite_automaton][symbol]")
+TEST_CASE("Deterministic: Remove dead states", "[finite_automaton]")
 {
     symbol_type a("a");
     symbol_type b("b");
@@ -504,7 +453,7 @@ TEST_CASE("Deterministic: Remove dead states", "[finite_automaton][symbol]")
     CHECK((machine.remove_dead_states() == m_alive));
 }
 
-TEST_CASE("Deterministic: Complete FA", "[finite_automaton][symbol]")
+TEST_CASE("Deterministic: Complete FA", "[finite_automaton]")
 {
     symbol_type a("a");
     symbol_type b("b");
@@ -538,7 +487,7 @@ TEST_CASE("Deterministic: Complete FA", "[finite_automaton][symbol]")
     CHECK((machine.complete() == complet));
 }
 
-TEST_CASE("Deterministic: Classes of Equivalence FA", "[finite_automaton][symbol]")
+TEST_CASE("Deterministic: Classes of Equivalence FA", "[finite_automaton]")
 {
     symbol_type a("a");
     symbol_type b("b");
@@ -570,7 +519,7 @@ TEST_CASE("Deterministic: Classes of Equivalence FA", "[finite_automaton][symbol
     CHECK(classes == eq_classes);
 }
 
-TEST_CASE("Deterministic: Minimization FA", "[finite_automaton][symbol]")
+TEST_CASE("Deterministic: Minimization FA", "[finite_automaton]")
 {
     symbol_type a("a");
     symbol_type b("b");
@@ -601,7 +550,7 @@ TEST_CASE("Deterministic: Minimization FA", "[finite_automaton][symbol]")
     CHECK(machine.minimization() == minimum);
 }
 
-TEST_CASE("Deterministic: Remove unreacheble and dead states of Empty Language FA", "[finite_automaton][symbol]")
+TEST_CASE("Deterministic: Remove unreacheble and dead states of Empty Language FA", "[finite_automaton]")
 {
     symbol_type a("a");
     symbol_type b("b");
@@ -630,7 +579,7 @@ TEST_CASE("Deterministic: Remove unreacheble and dead states of Empty Language F
         CHECK(machine.remove_unreachable_states() == only_q0);
     }
 
-    SECTION("Only q0", "[a]")
+    SECTION("Empty", "[a]")
     {
         Deterministic empty(alphabet);
 
@@ -638,7 +587,7 @@ TEST_CASE("Deterministic: Remove unreacheble and dead states of Empty Language F
     }
 }
 
-TEST_CASE("Deterministic: Minimization Empty Language FA", "[finite_automaton][symbol]")
+TEST_CASE("Deterministic: Minimization Empty Language FA", "[finite_automaton]")
 {
     symbol_type a("a");
     symbol_type b("b");
@@ -662,7 +611,7 @@ TEST_CASE("Deterministic: Minimization Empty Language FA", "[finite_automaton][s
     CHECK((machine.emptiness()));
 }
 
-TEST_CASE("Deterministic: Finitiness FA", "[finite_automaton][symbol]")
+TEST_CASE("Deterministic: Finitiness FA", "[finite_automaton]")
 {
     symbol_type a("a");
     symbol_type b("b");
@@ -714,7 +663,7 @@ TEST_CASE("Deterministic: Finitiness FA", "[finite_automaton][symbol]")
     }
 }
 
-TEST_CASE("Deterministic: containment FA", "[finite_automaton][symbol]")
+TEST_CASE("Deterministic: containment FA", "[finite_automaton]")
 {
     symbol_type a("a");
     symbol_type b("b");
@@ -743,10 +692,6 @@ TEST_CASE("Deterministic: containment FA", "[finite_automaton][symbol]")
     SECTION("Contains")
     {
         CHECK(m1.containment(m2));
-    }
-
-    SECTION("Contains2")
-    {
         CHECK(!m2.containment(m1));
     }
 
@@ -759,7 +704,7 @@ TEST_CASE("Deterministic: containment FA", "[finite_automaton][symbol]")
     }
 }
 
-TEST_CASE("Deterministic: containment FA 2", "[finite_automaton][symbol]")
+TEST_CASE("Deterministic: containment FA 2", "[finite_automaton]")
 {
     symbol_type a("a");
     symbol_type b("b");
@@ -785,10 +730,6 @@ TEST_CASE("Deterministic: containment FA 2", "[finite_automaton][symbol]")
     SECTION("Contains")
     {
         CHECK(!m1.containment(m2));
-    }
-
-    SECTION("Contains2")
-    {
         CHECK(m2.containment(m1));
         CHECK((m1 - m2).emptiness());
     }
@@ -802,7 +743,7 @@ TEST_CASE("Deterministic: containment FA 2", "[finite_automaton][symbol]")
     }
 }
 
-TEST_CASE("Deterministic: containment FA with dead state", "[finite_automaton][symbol]")
+TEST_CASE("Deterministic: containment FA with dead state", "[finite_automaton]")
 {
     symbol_type a("a");
     symbol_type b("b");
@@ -833,15 +774,7 @@ TEST_CASE("Deterministic: containment FA with dead state", "[finite_automaton][s
     SECTION("Contains")
     {
         CHECK(m1.containment(m1));
-    }
-
-    SECTION("Contains2")
-    {
         CHECK(m2.containment(m2));
-    }
-
-    SECTION("Contains2")
-    {
         CHECK(!m2.containment(m1));
     }
 
@@ -854,9 +787,9 @@ TEST_CASE("Deterministic: containment FA with dead state", "[finite_automaton][s
     }
 }
 
-TEST_CASE("Deterministic: completeness", "[finite_automaton][symbol]")
+TEST_CASE("Deterministic: completeness", "[finite_automaton]")
 {
-    SECTION("Contains")
+    SECTION("Complete function")
     {
         symbol_type a("a");
         symbol_type b("b");
@@ -880,7 +813,7 @@ TEST_CASE("Deterministic: completeness", "[finite_automaton][symbol]")
         CHECK(machine.is_complete());
     }
 
-    SECTION("Contains")
+    SECTION("Simple complete")
     {
         symbol_type a("a");
         symbol_type b("b");
@@ -902,7 +835,7 @@ TEST_CASE("Deterministic: completeness", "[finite_automaton][symbol]")
     }
 }
 
-TEST_CASE("Deterministic: membership", "[finite_automaton][symbol]")
+TEST_CASE("Deterministic: membership", "[finite_automaton]")
 {
     symbol_type a("a");
     symbol_type b("b");

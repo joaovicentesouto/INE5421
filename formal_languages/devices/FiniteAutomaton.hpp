@@ -29,7 +29,6 @@ class NonDeterministic;
 enum class Operation
 {
     Reverse,
-    Complete,
     Reflexive,
     Transitive,
     Optional

@@ -25,51 +25,6 @@ const Regular::symbol_type& Regular::initial_symbol() const
     return m_initial_symbol;
 }
 
-Regular::string_type Regular::to_string() const
-{
-    string_type string;
-    string = m_initial_symbol.value() + " -> ";
-
-    auto productions(m_productions);
-
-    int i = productions[m_initial_symbol].size();
-    for (auto production : productions[m_initial_symbol])
-    {
-        if (production->is_terminal())
-            string += " " + production->to_string() + " ";
-        else
-            string += production->to_string();
-
-        if (--i > 0)
-            string += " | ";
-    }
-
-    string += "\n";
-
-    for (auto non_terminal : m_vn)
-    {
-        if (non_terminal == m_initial_symbol)
-            continue;
-
-        string += non_terminal.value() + " -> ";
-
-        i = productions[non_terminal].size();
-        for (auto production : productions[non_terminal])
-        {
-            if (production->is_terminal())
-                string += " " + production->to_string() + " ";
-            else
-                string += production->to_string();
-
-            if (--i > 0)
-                string += " | ";
-        }
-        string += "\n";
-    }
-
-    return string;
-}
-
 Regular::set_type<Regular::string_type> Regular::sentences_generator(int n) const
 {
     container_type<SentencialForm> sentencial_forms{SentencialForm(m_initial_symbol, "&")};
@@ -119,6 +74,53 @@ bool Regular::operator==(const Regular &regular) const
         && m_productions    == regular.m_productions
         && m_initial_symbol == regular.m_initial_symbol;
 }
+
+
+Regular::string_type Regular::to_string() const
+{
+    string_type string;
+    string = m_initial_symbol.value() + " -> ";
+
+    auto productions(m_productions);
+
+    int i = productions[m_initial_symbol].size();
+    for (auto production : productions[m_initial_symbol])
+    {
+        if (production->is_terminal())
+            string += " " + production->to_string() + " ";
+        else
+            string += production->to_string();
+
+        if (--i > 0)
+            string += " | ";
+    }
+
+    string += "\n";
+
+    for (auto non_terminal : m_vn)
+    {
+        if (non_terminal == m_initial_symbol)
+            continue;
+
+        string += non_terminal.value() + " -> ";
+
+        i = productions[non_terminal].size();
+        for (auto production : productions[non_terminal])
+        {
+            if (production->is_terminal())
+                string += " " + production->to_string() + " ";
+            else
+                string += production->to_string();
+
+            if (--i > 0)
+                string += " | ";
+        }
+        string += "\n";
+    }
+
+    return string;
+}
+
 
 }   // namespace grammar
 }   // namespace formal_device

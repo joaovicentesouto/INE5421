@@ -22,9 +22,9 @@ void NewExpressionDialog::on_m_ok_btn_clicked()
         emit new_expression(m_number, exp);
         this->close();
     }
-    catch (std::out_of_range)
+    catch (std::out_of_range error)
     {
-        ui->m_error->setText("Invalido");
+        ui->m_error->setText(QString::fromStdString(error.what()));
     }
 }
 

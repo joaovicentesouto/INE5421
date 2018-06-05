@@ -52,6 +52,7 @@ Deterministic Deterministic::operator!() const
 
     auto not_final = complement.m_final_states.end();
 
+    //! Create F '= K-F
     for(auto state : complement.m_states)
         if (complement.m_final_states.find(state) == not_final)
             new_final_states.insert(state);
@@ -87,7 +88,7 @@ NonDeterministic Deterministic::operator+(const Deterministic &machine) const
 
 Deterministic Deterministic::operator&(const Deterministic &machine) const
 {
-    return ! ( !*this | !machine );
+    return !( !*this | !machine );
 }
 
 Deterministic Deterministic::operator-(const Deterministic &machine) const
@@ -137,6 +138,7 @@ Deterministic Deterministic::complete() const
 
 Deterministic Deterministic::minimization() const
 {
+    //! Removes unreachable and dead states
     Deterministic assistant = remove_unreachable_states();
     assistant = assistant.remove_dead_states();
 
@@ -235,6 +237,7 @@ Deterministic Deterministic::remove_dead_states() const
 
     NonDeterministic::transition_map_type inverted_transitions;
 
+    //! Inverts the transitions
     for (auto state : m_states)
     {
         transition_map_type transitions(m_transitions);
@@ -244,6 +247,7 @@ Deterministic Deterministic::remove_dead_states() const
 
     std::deque<state_type> reachable(m_final_states.begin(), m_final_states.end());
 
+    //! Reaches all states that reach a final state.
     while (!reachable.empty())
     {
         auto current = reachable.front();
@@ -282,6 +286,8 @@ Deterministic Deterministic::remove_unreachable_states() const
     std::deque<state_type> reachable{new_initial_state};
     state_set_type marked;
 
+    //! From the initial state, it traverses the transitions by adding them
+    //! in the processing queue, until there are no new reachable states
     while (!reachable.empty())
     {
         auto current = reachable.front();
@@ -322,6 +328,7 @@ void Deterministic::equivalence_classes(set_type<state_set_type> & set) const
 {
     set_type<state_set_type> aux_set;
 
+    //! Algorithm seen in class, called recursively until there are no new classes of equivalence.
     for (auto equivalent_class : set)
     {
         state_set_type equal;
@@ -377,6 +384,7 @@ bool Deterministic::membership(const string_type &sentence) const
 
     auto current = machine.m_initial_state;
 
+    //! Scroll through the states using the input symbols.
     if (sentence != "&")
         for (auto symbol : sentence)
         {
@@ -384,12 +392,13 @@ bool Deterministic::membership(const string_type &sentence) const
             current = machine.m_transitions[current][caracter];
         }
 
+    //! If the last state reached is accepted end, if not rejected.
     return machine.m_final_states.find(current) != machine.m_final_states.end();
 }
 
 bool Deterministic::emptiness() const
 {
-    return minimization() == Deterministic(m_alphabet);
+    return minimization() == Deterministic(m_alphabet); //! Empty language
 }
 
 bool Deterministic::finiteness() const
@@ -440,6 +449,8 @@ bool Deterministic::is_complete() const
 {
     int symbol_amount = m_alphabet.size();
 
+    //! Checks whether all states have the number of transitions equal to
+    //! the number of alphabet symbols
     transition_map_type trans(m_transitions);
     for (auto state : m_states)
         if (trans[state].size() != symbol_amount)
@@ -568,7 +579,7 @@ NonDeterministic NonDeterministic::operator|(const NonDeterministic & machine) c
     state_type new_initial_state("q0");
     new_states.insert(new_initial_state);
 
-    /* ------ New alphabet ------ */
+    /* ------ New alphabet: union of the alphabets ------ */
 
     new_alphabet = m_alphabet;
 
@@ -576,7 +587,7 @@ NonDeterministic NonDeterministic::operator|(const NonDeterministic & machine) c
         new_alphabet.insert(symbol);
 
 
-    /* ------ New states ------ */
+    /* ------ New states: union of the states ------ */
 
     int i = 1;
     for (auto state : m_states) {
@@ -591,7 +602,7 @@ NonDeterministic NonDeterministic::operator|(const NonDeterministic & machine) c
         new_states.insert(q);
     }
 
-    /* ------ New transitions ------ */
+    /* ------ New transitions: union of old transitions ------ */
 
     bool contains_error = m_states.find(state_type()) != m_states.end();
 
@@ -691,7 +702,7 @@ NonDeterministic NonDeterministic::operator+(const NonDeterministic & machine) c
         new_states.insert(q);
     }
 
-    /* ------ New transitions ------ */
+    /* ------ New transitions: union of old transitions ------ */
 
     for (auto trans : transition_map_type(m_transitions))
         for (auto target : trans.second)
@@ -780,6 +791,7 @@ NonDeterministic NonDeterministic::reflexive() const
     state_type          new_initial_state = state_type("q0'");
 
     new_final_states.insert(new_initial_state);
+    new_states.insert(new_initial_state);
 
     /* ------ Copy of transitions from initial states to final states ------ */
 
@@ -878,7 +890,7 @@ NonDeterministic NonDeterministic::reverse() const
 
 Deterministic NonDeterministic::determination() const
 {
-    using map_of_states_set_type = std::unordered_map<state_set_type, state_type, Hasher>;
+    using map_of_states_set_type = std::map<state_set_type, state_type>;
     using deque_of_states_set_type = std::deque<state_set_type>;
     using vector_of_states_set_type = std::vector<state_set_type>;
 
@@ -967,8 +979,8 @@ Deterministic NonDeterministic::remove_epsilon() const
     if (!contains_epsilon_transition())
         return determination();
 
-    using map_of_states_set_type = std::unordered_map<state_set_type, state_type, Hasher>;
-    using state_to_states_set_type = std::unordered_map<state_type, state_set_type, Hasher>;
+    using map_of_states_set_type = std::map<state_set_type, state_type>;
+    using state_to_states_set_type = std::map<state_type, state_set_type>;
     using deque_of_states_set_type = std::deque<state_set_type>;
     using vector_of_states_set_type = std::vector<state_set_type>;
 

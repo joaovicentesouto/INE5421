@@ -105,8 +105,8 @@ TEST_CASE("Regular Expression: Empty", "[regular_expression][empty]")
     {
         RegularPointer empty(new Empty());
 
-        CHECK((empty ^ Operation::Star)     == empty);
-        CHECK((empty ^ Operation::Plus)     == empty);
+        CHECK((empty ^ Operation::Reflexive)     == empty);
+        CHECK((empty ^ Operation::Transitive)     == empty);
         CHECK((empty ^ Operation::Optional) == empty);
     }
 }
@@ -144,8 +144,8 @@ TEST_CASE("Regular Expression: Unit", "[regular_expression][unit]")
     {
         RegularPointer a(new Unit("a"));
 
-        CHECK((a ^ Operation::Star)     == new ReflexiveClosure(a));
-        CHECK((a ^ Operation::Plus)     == new TransitiveClosure(a));
+        CHECK((a ^ Operation::Reflexive)     == new ReflexiveClosure(a));
+        CHECK((a ^ Operation::Transitive)     == new TransitiveClosure(a));
         CHECK((a ^ Operation::Optional) == new Optional(a));
     }
 }
@@ -178,8 +178,8 @@ TEST_CASE("Regular Expression: Union", "[regular_expression][union]")
     {
         RegularPointer un(new Union(a, b));
 
-        CHECK((un ^ Operation::Star)     == new ReflexiveClosure(un));
-        CHECK((un ^ Operation::Plus)     == new TransitiveClosure(un));
+        CHECK((un ^ Operation::Reflexive)     == new ReflexiveClosure(un));
+        CHECK((un ^ Operation::Transitive)     == new TransitiveClosure(un));
         CHECK((un ^ Operation::Optional) == new Optional(un));
     }
 }
@@ -213,8 +213,8 @@ TEST_CASE("Regular Expression: Concatenation", "[regular_expression][concatenati
     {
         RegularPointer conc(new Concatenation(a, b));
 
-        CHECK((conc ^ Operation::Star)     == new ReflexiveClosure(conc));
-        CHECK((conc ^ Operation::Plus)     == new TransitiveClosure(conc));
+        CHECK((conc ^ Operation::Reflexive)     == new ReflexiveClosure(conc));
+        CHECK((conc ^ Operation::Transitive)     == new TransitiveClosure(conc));
         CHECK((conc ^ Operation::Optional) == new Optional(conc));
     }
 }
@@ -246,8 +246,8 @@ TEST_CASE("Regular Expression: ReflexiveClosure", "[regular_expression][reflexiv
     {
         RegularPointer reflex(new ReflexiveClosure(a));
 
-        CHECK((reflex ^ Operation::Star)     == reflex);
-        CHECK((reflex ^ Operation::Plus)     == reflex);
+        CHECK((reflex ^ Operation::Reflexive)     == reflex);
+        CHECK((reflex ^ Operation::Transitive)     == reflex);
         CHECK((reflex ^ Operation::Optional) == reflex);
     }
 }
@@ -279,8 +279,8 @@ TEST_CASE("Regular Expression: TransitiveClosure", "[regular_expression][transit
     {
         RegularPointer trans(new TransitiveClosure(a));
 
-        CHECK((trans ^ Operation::Star)     == new ReflexiveClosure(a));
-        CHECK((trans ^ Operation::Plus)     == trans);
+        CHECK((trans ^ Operation::Reflexive)     == new ReflexiveClosure(a));
+        CHECK((trans ^ Operation::Transitive)     == trans);
         CHECK((trans ^ Operation::Optional) == new ReflexiveClosure(a));
     }
 }
@@ -312,8 +312,8 @@ TEST_CASE("Regular Expression: Optional", "[regular_expression][optional]")
     {
         RegularPointer opt(new Optional(a));
 
-        CHECK((opt ^ Operation::Star)     == new ReflexiveClosure(a));
-        CHECK((opt ^ Operation::Plus)     == new ReflexiveClosure(a));
+        CHECK((opt ^ Operation::Reflexive)     == new ReflexiveClosure(a));
+        CHECK((opt ^ Operation::Transitive)     == new ReflexiveClosure(a));
         CHECK((opt ^ Operation::Optional) == opt);
     }
 }
