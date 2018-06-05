@@ -1,6 +1,8 @@
 ################################################################################
 # This is the main CMakeLists file for the pratical work for INE5421.
 #
+# Authors: João Vicente Souto e Bruno Izaias Bonotto
+#
 # Its main goals are:
 #   - Set up global variables.
 #   - Configure dependencies (find_package).

@@ -1,3 +1,5 @@
+//! João Vicente Souto e Bruno Izaias Bonotto
+
 #ifndef DEVICES_FINITEAUTOMATON_COMPONENTS_H
 #define DEVICES_FINITEAUTOMATON_COMPONENTS_H
 

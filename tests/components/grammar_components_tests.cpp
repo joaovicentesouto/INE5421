@@ -1,3 +1,5 @@
+//! João Vicente Souto e Bruno Izaias Bonotto
+
 #include "../catch.hpp"
 
 #include <unordered_set>

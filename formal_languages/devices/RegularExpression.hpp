@@ -1,3 +1,5 @@
+//! João Vicente Souto e Bruno Izaias Bonotto
+
 #ifndef DEVICES_REGULAREXPRESSION_COMPONENTS_HPP
 #define DEVICES_REGULAREXPRESSION_COMPONENTS_HPP
 

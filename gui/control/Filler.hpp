@@ -1,3 +1,5 @@
+//! João Vicente Souto e Bruno Izaias Bonotto
+
 #ifndef FILLER_HPP
 #define FILLER_HPP
 

@@ -1,3 +1,5 @@
+//! João Vicente Souto e Bruno Izaias Bonotto
+
 #ifndef DESIMONETREE_H
 #define DESIMONETREE_H
 

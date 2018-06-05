@@ -1,3 +1,5 @@
+//! João Vicente Souto e Bruno Izaias Bonotto
+
 #ifndef DEVICESCONVERTER_H
 #define DEVICESCONVERTER_H
 

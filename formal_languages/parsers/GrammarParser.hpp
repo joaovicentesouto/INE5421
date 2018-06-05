@@ -1,3 +1,5 @@
+//! João Vicente Souto e Bruno Izaias Bonotto
+
 #ifndef PARSER_REGULAR_GRAMMAR_HPP
 #define PARSER_REGULAR_GRAMMAR_HPP
 

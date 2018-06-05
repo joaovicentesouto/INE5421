@@ -1,3 +1,5 @@
+//! João Vicente Souto e Bruno Izaias Bonotto
+
 #ifndef DEVICES_FINITEAUTOMATON_HPP
 #define DEVICES_FINITEAUTOMATON_HPP
 

@@ -1,3 +1,5 @@
+//! João Vicente Souto e Bruno Izaias Bonotto
+
 #ifndef FINITEAUTOMATONPARSER_HPP
 #define FINITEAUTOMATONPARSER_HPP
 

@@ -1,3 +1,5 @@
+//! João Vicente Souto e Bruno Izaias Bonotto
+
 #ifndef DEVICES_DESIMONETREECOMPONENTES_HPP
 #define DEVICES_DESIMONETREECOMPONENTES_HPP
 
