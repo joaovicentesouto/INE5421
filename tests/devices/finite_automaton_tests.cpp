@@ -194,11 +194,11 @@ TEST_CASE("Finite Automaton: Operations", "[finite_automaton]")
     {
         symbol_type a("a");
         symbol_type b("b");
-        state_type q0("q0"), q1("q1"), q2("q2");
+        state_type q0_linha("q0'"), q0("q0"), q1("q1"), q2("q2");
 
         symbol_set_type alphabet{a, b};
 
-        state_set_type  states{q0, q1, q2};
+        state_set_type  states{q0_linha, q0, q1, q2};
         state_set_type  final_states{q2};
 
         det_transition_map_type transitions;
@@ -206,14 +206,15 @@ TEST_CASE("Finite Automaton: Operations", "[finite_automaton]")
         transitions[q1][b] = q2;
 
         Deterministic machine(alphabet, states, transitions, final_states, q0);
-        state_set_type  final_states_reflexive{q0, q2};
+        state_set_type  final_states_reflexive{q0_linha, q2};
 
         non_det_transition_map_type transitions_reflexive;
+        transitions_reflexive[q0_linha][a].insert(q1);
         transitions_reflexive[q0][a].insert(q1);
         transitions_reflexive[q1][b].insert(q2);
         transitions_reflexive[q2][a].insert(q1);
 
-        NonDeterministic reflexive(alphabet, states, transitions_reflexive, final_states_reflexive, q0);
+        NonDeterministic reflexive(alphabet, states, transitions_reflexive, final_states_reflexive, q0_linha);
 
          CHECK(((machine^Operation::Reflexive) == reflexive));
     }

@@ -788,11 +788,13 @@ NonDeterministic NonDeterministic::reflexive() const
     state_set_type      new_states = m_states;
     state_set_type      new_final_states = m_final_states;
     transition_map_type new_transitions = m_transitions;
-    state_type          new_initial_state = m_initial_state;
+    state_type          new_initial_state = state_type("q0'");
+
+    new_final_states.insert(new_initial_state);
 
     /* ------ Copy of transitions from initial states to final states ------ */
 
-    for (auto final_state : m_final_states)
+    for (auto final_state : new_final_states)
     {
         transition_map_type trans = new_transitions;
 
@@ -800,10 +802,6 @@ NonDeterministic NonDeterministic::reflexive() const
             for (auto target_state : target.second)
                 new_transitions[final_state][target.first].insert(target_state);
     }
-
-    /* ------ New final states ------ */
-
-    new_final_states.insert(new_initial_state);
 
     return NonDeterministic(std::move(new_alphabet),
                             std::move(new_states),
