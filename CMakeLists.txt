@@ -30,6 +30,10 @@ set(CMAKE_CXX_STANDARD 14)
 set(formal_languages_source_dir ${PROJECT_SOURCE_DIR})
 
 # Build graphic user interface of ophidian
+OPTION(RG OFF)
+OPTION(CFG OFF)
+
+# Build graphic user interface of ophidian
 OPTION(GUI OFF)
 
 ################################################################################
@@ -60,10 +64,10 @@ ENDIF(GUI)
 # Project logic 
 ################################################################################
 
-# Add subdirectories
-add_subdirectory(formal_languages)
-add_subdirectory(tests)
+IF(RG)
+    add_subdirectory(regular_languages)
+ENDIF(RG)
 
-IF(GUI)
-    add_subdirectory(gui)
-ENDIF(GUI)
+IF(CFG)
+    add_subdirectory(context_free_languages)
+ENDIF(CFG)
