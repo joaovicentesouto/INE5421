@@ -7,7 +7,7 @@
 #include <string>
 #include <regex>
 #include <set>
-#include <unordered_map>
+#include <vector>
 
 namespace formal_device
 {
@@ -17,40 +17,86 @@ namespace grammar
 class Symbol
 {
   public:
-    friend class SentencialForm;
-    friend class TerminalProduction;
-    friend class NonTerminalProduction;
-    friend class Hasher;
+    using string_type                       = std::string;
+    template <class T> using container_type = std::set<T>;
 
-    using string_type = std::string;
+    //! Destructor
+    ~Symbol() = default;
 
-    //! Default Construct Symbol
+    //! Get value
     /*!
-        \brief Constructs an epsilon symbol.
+        \brief Simple get.
+        \return The name of the symbol.
     */
-    Symbol() = default;
+    virtual string_type value() const = 0;
 
-    //! Copy constructor
-    Symbol(const Symbol &) = default;
-    Symbol &operator=(const Symbol &) = default;
-
-    //! Move Constructor
-    Symbol(Symbol &&) = default;
-    Symbol &operator=(Symbol &&) = default;
-
-    //! Construct Symbol
+    //! Terminal check
     /*!
-        \brief Constructs an symbol with a copy string value.
-        \param value Value name.
+        \brief Verifies whether a symbol is terminal or not (belongs to A-Z or &).
+        \return True if is a terminal symbol.
     */
-    Symbol(const string_type &value);
+    virtual bool is_terminal() const = 0;
 
-    //! Construct Symbol
+    virtual const symbol_ptr_containter_type& first() const = 0;
+
+    virtual const symbol_ptr_containter_type& follow() const = 0;
+
+    //! Equality operator (from another symbol)
     /*!
-        \brief Constructs an symbol with a moved string value.
-        \param value Value name.
+        \brief Verifies that symbols are the same.
+        \param symbol Another symbol.
+        \return True if contains the same value.
     */
-    Symbol(string_type &&value);
+    virtual bool operator==(const Symbol &symbol) const = 0;
+
+    //! Equality operator (from string value)
+    /*!
+        \brief Verifies that a symbol contains the same value.
+        \param symbol Another symbol.
+        \return True if contains the same value.
+    */
+    virtual bool operator==(const string_type &symbol) const = 0;
+
+    //! Less than operator
+    /*!
+        \brief It checks to see if one symbol is smaller than another.
+        \param symbol Another symbol.
+        \return True if is less than.
+    */
+    virtual bool operator<(const Symbol &symbol) const = 0;
+};
+
+class SymbolPointer : std::shared_ptr<Symbol>
+{
+public:
+    using symbol_type = Symbol;
+
+    // operator < and ==
+
+}
+
+class SymbolSet : public SymbolPointer::symbol_type::container_type<SymbolPointer>
+{
+public:
+
+    SymbolSet() = default;
+    ~SymbolSet() = default;
+
+    bool contains(SymbolPointer symbol);
+}
+
+class TerminalSymbol : public Symbol
+{
+  public:
+    friend class Production;
+
+    // using string_type                = Symbol::string;
+    // using symbol_ptr_containter_type = Symbol::symbol_ptr_containter_type;
+
+    TerminalSymbol() = default;
+
+    //! Destructor
+    ~TerminalSymbol() = default;
 
     //! Get value
     /*!
@@ -65,6 +111,10 @@ class Symbol
         \return True if is a terminal symbol.
     */
     bool is_terminal() const;
+
+    const symbol_ptr_containter_type& first() const;
+
+    const symbol_ptr_containter_type& follow() const;
 
     //! Equality operator (from another symbol)
     /*!
@@ -90,318 +140,85 @@ class Symbol
     */
     bool operator<(const Symbol &symbol) const;
 
-  private:
-    string_type m_value{"&"};   //!< Value of the symbol [a-z&]
+private:
+    string_type                m_value;
 };
 
-class SentencialForm
+class NonTerminalSymbol : public Symbol
 {
   public:
-    using symbol_type = Symbol;
-    using string_type = symbol_type::string_type;
+    friend class Production;
 
-    //! Default Construct SentencialForm
-    /*!
-        \brief There is no sentence form without symbols.
-    */
-    SentencialForm() = delete;
+    // using string_type                = Symbol::string;
+    // using symbol_ptr_containter_type = Symbol::symbol_ptr_containter_type;
 
-    //! Copy constructor
-    SentencialForm(const SentencialForm &) = default;
-    SentencialForm &operator=(const SentencialForm &) = default;
+    NonTerminalSymbol() = default;
 
-    //! Move constructor
-    SentencialForm(SentencialForm &&) = default;
-    SentencialForm &operator=(SentencialForm &&) = default;
+    //! Destructor
+    ~NonTerminalSymbol() = default;
 
-    //! Polymorphic Construct SentencialForm
-    /*!
-        \param non_terminal Non terminal symbol
-        \param terminal Terminal symbol
-        \brief Constructs a sentenced form with a sentence and a non-terminal symbol
-    */
-    template <class Arg1, class Arg2>
-    SentencialForm(Arg1 &&non_terminal, Arg2 &&sentence) :
-        m_sentence{std::forward<Arg2>(sentence)},
-        m_non_terminal{std::forward<Arg1>(non_terminal)}
-    {
-    }
-
-    //! Sentence check
-    /*!
-        \brief Verifies that a sentence has ' & ' as a non-terminal symbol.
-        \return True if is a sentence.
-    */
-    bool is_sentence() const;
-
-    //! Get non terminal symbol
+    //! Get value
     /*!
         \brief Simple get.
-        \return The non terminal symbol
+        \return The name of the symbol.
     */
-    symbol_type non_terminal();
+    string_type value() const;
 
-    //! Get sentence
+    //! Terminal check
     /*!
-        \brief Simple get.
-        \return The sentence on a string value
+        \brief Verifies whether a symbol is terminal or not (belongs to A-Z or &).
+        \return True if is a terminal symbol.
     */
-    string_type sentence();
+    bool is_terminal() const;
 
-    //! Concatenation operator
+    const symbol_ptr_containter_type& first() const;
+
+    const symbol_ptr_containter_type& follow() const;
+
+    //! Equality operator (from another symbol)
     /*!
-        \brief Receives a symbol and generates a new sentence form.
-        \param symbol Symbol to concat.
-        \return The new sentencial form.
+        \brief Verifies that symbols are the same.
+        \param symbol Another symbol.
+        \return True if contains the same value.
     */
-    SentencialForm operator+(const symbol_type &symbol) const;
+    bool operator==(const Symbol &symbol) const;
 
-    //! Equality operator
+    //! Equality operator (from string value)
     /*!
-        \brief Verifies the sentence and non terminal values are the same.
-        \param form Another sentencial form.
-        \return True if are the same.
+        \brief Verifies that a symbol contains the same value.
+        \param symbol Another symbol.
+        \return True if contains the same value.
     */
-    bool operator==(const SentencialForm &from) const;
-
-  private:
-    string_type m_sentence;     //!< Sentence value
-    symbol_type m_non_terminal; //!< Non terminal symbol
-};
-
-class Sentence : public SentencialForm
-{
-  public:
-    using string_type = SentencialForm::string_type;
-    using symbol_type = SentencialForm::symbol_type;
-
-    //! Default Construct Symbol
-    /*!
-        \brief There is no empty sentence.
-    */
-    Sentence() = delete;
-
-    //! Copy constructor
-    Sentence(const Sentence &) = default;
-    Sentence &operator=(const Sentence &) = default;
-
-    //! Move constructor
-    Sentence(Sentence &&) = default;
-    Sentence &operator=(Sentence &&) = default;
-
-    //! Construct Sentence from copy string
-    /*!
-        \brief A sentence is a sentenced form with the non-terminal symbol equal to &.
-        \param sentence String copy value.
-    */
-    Sentence(const string_type &sentence);
-
-    //! Construct Sentence from move string
-    /*!
-        \brief A sentence is a sentenced form with the non-terminal symbol equal to &.
-        \param sentence String move value.
-    */
-    Sentence(string_type &&sentence);
-
-    //! Sentence check
-    /*!
-        \brief Verifies that a sentence has ' & ' as a non-terminal symbol.
-        \return True.
-    */
-    bool is_sentence() const;
-
-    //! Get sentence
-    /*!
-        \brief Simple get.
-        \return The sentence on a string value.
-    */
-    string_type sentence();
-
-    //! Concatenation operator
-    /*!
-        \brief Receives a symbol and generates a new sentence form.
-        \param symbol Symbol to concat.
-        \return The new sentencial form.
-    */
-    SentencialForm operator+(const symbol_type &symbol) const;
-
-    //! Equality operator with a sentencial form.
-    /*!
-        \brief Verifies if the form is a sentence and the values are the same
-        \param form Another sentencial form.
-        \return True if are the same.
-    */
-    bool operator==(const SentencialForm &form) const;
-
-    //! Equality operator with a sentence.
-    /*!
-        \brief Verifies if the values are the same
-        \param form Another sentencial form.
-        \return True if are the same.
-    */
-    bool operator==(const Sentence &form) const;
-};
-
-class Production;
-class ProductionPointer : public std::shared_ptr<Production>
-{
-public:
-
-    //! Default Construct
-    /*!
-        \brief Save a nullptr.
-    */
-    ProductionPointer() = default;
-
-    //! Construct
-    /*!
-        \brief Save a Production pointer.
-        \param prod a Production pointer
-    */
-    ProductionPointer(Production * prod);
-
-    //! Copy constructor
-    ProductionPointer(const ProductionPointer &) = default;
-    ProductionPointer &operator=(const ProductionPointer &) = default;
-
-    //! Move constructor
-    ProductionPointer(ProductionPointer &&) = default;
-    ProductionPointer &operator=(ProductionPointer &&) = default;
-
-    //! << operator.
-    /*!
-        \brief Generates changes in a sentencing form.
-        \param form A sentencial form
-        \return The new changed sentencial form.
-    */
-    SentencialForm operator<<(const SentencialForm &form) const;
-
-    //! Equality operator.
-    /*!
-        \brief Verifies that they point to the same objects{values}.
-        \param prod Another ProductionPointer
-        \return True if are the same.
-    */
-    bool operator==(const ProductionPointer &prod) const;
+    bool operator==(const string_type &symbol) const;
 
     //! Less than operator
     /*!
-        \brief It checks to see if producitons is smaller than another.
-        \param prod Another ProductionPointer.
+        \brief It checks to see if one symbol is smaller than another.
+        \param symbol Another symbol.
         \return True if is less than.
     */
-    bool operator<(const ProductionPointer &prod) const;
+    bool operator<(const Symbol &symbol) const;
+
+private:
+    string_type                m_value;
+    symbol_ptr_containter_type m_first;
+    symbol_ptr_containter_type m_follow;
 };
 
 class Production
 {
   public:
-    using string_type = SentencialForm::string_type;
-    using symbol_type = SentencialForm::symbol_type;
+    using symbol_type                = Symbol;
+    using string_type                = symbol_type::string_type;
+    using symbol_ptr_containter_type = std::vector<symbol_type*>;
+
+    Production() = default;
 
     //! Default Destructor
     /*!
         \brief To implement a pure interface.
     */
-    virtual ~Production() = default;
-
-    //! Get nonterminal symbol
-    /*!
-        \brief Simple get.
-        \return The non terminal symbol on a string value.
-    */
-    virtual string_type non_terminal() const = 0;
-
-    //! Get terminal symbol
-    /*!
-        \brief Simple get.
-        \return The terminal symbol on a string value.
-    */
-    virtual string_type terminal() const = 0;
-
-    //! Terminal production check
-    /*!
-        \brief Verifies if is a terminal production.
-        \return True.
-    */
-    virtual bool is_terminal() const = 0;
-
-    //! << operator.
-    /*!
-        \brief Generates changes in a sentencing form.
-        \param form A sentencial form
-        \return The new changed sentencial form.
-    */
-    virtual SentencialForm operator<<(const SentencialForm &form) const = 0;
-
-    //! Equality operator.
-    /*!
-        \brief Check to see if they make the same changes.
-        \param prod Another Production.
-        \return True if are make the same changes.
-    */
-    virtual bool operator==(const Production &prod) const = 0;
-
-    //! Less than operator
-    /*!
-        \brief It checks to see if producitons is smaller than another.
-        \param prod Another Production.
-        \return True if is less than.
-    */
-    virtual bool operator<(const Production &prod) const = 0;
-
-    //! Transform Production to string
-    /*!
-        \brief Representation of the production in the form of a string.
-        \return The string representation.
-    */
-    virtual string_type to_string() const = 0;
-};
-
-class TerminalProduction : public Production
-{
-  public:
-    TerminalProduction() = delete;
-
-    //! Copy constructor
-    TerminalProduction(const TerminalProduction &) = default;
-    TerminalProduction &operator=(const TerminalProduction &) = default;
-
-    //! Move constructor
-    TerminalProduction(TerminalProduction &&) = default;
-    TerminalProduction &operator=(TerminalProduction &&) = default;
-
-    TerminalProduction(const symbol_type &terminal);
-    TerminalProduction(symbol_type &&terminal);
-
-    //! Get nonterminal symbol
-    /*!
-        \brief Simple get.
-        \return The non terminal symbol on a string value.
-    */
-    string_type non_terminal() const;
-
-    //! Get terminal symbol
-    /*!
-        \brief Simple get.
-        \return The terminal symbol on a string value.
-    */
-    string_type terminal() const;
-
-    //! Terminal production check
-    /*!
-        \brief Verifies if is a terminal production.
-        \return True.
-    */
-    bool is_terminal() const;
-
-    //! << operator.
-    /*!
-        \brief Generates changes in a sentencing form.
-        \param form A sentencial form
-        \return The new changed sentencial form.
-    */
-    SentencialForm operator<<(const SentencialForm &form) const;
+    ~Production() = default;
 
     //! Equality operator.
     /*!
@@ -426,86 +243,8 @@ class TerminalProduction : public Production
     */
     string_type to_string() const;
 
-  private:
-    symbol_type m_terminal; //!< Terminal symbol
-};
-
-class NonTerminalProduction : public Production
-{
-  public:
-    // using symbol_type = Production::symbol_type;
-
-    NonTerminalProduction() = delete;
-
-    //! Copy constructor
-    NonTerminalProduction(const NonTerminalProduction &) = default;
-    NonTerminalProduction &operator=(const NonTerminalProduction &) = default;
-
-    //! Move constructor
-    NonTerminalProduction(NonTerminalProduction &&) = default;
-    NonTerminalProduction &operator=(NonTerminalProduction &&) = default;
-
-    template <class Arg1, class Arg2>
-    NonTerminalProduction(Arg1 &&terminal, Arg2 &&non_terminal) :
-        m_terminal{std::forward<Arg1>(terminal)},
-        m_non_terminal{std::forward<Arg2>(non_terminal)}
-    {
-    }
-
-    //! Get nonterminal symbol
-    /*!
-        \brief Simple get.
-        \return The non terminal symbol on a string value.
-    */
-    string_type non_terminal() const;
-
-    //! Get terminal symbol
-    /*!
-        \brief Simple get.
-        \return The terminal symbol on a string value.
-    */
-    string_type terminal() const;
-
-    //! Terminal production check
-    /*!
-        \brief Verifies if is a terminal production.
-        \return True.
-    */
-    bool is_terminal() const;
-
-    //! << operator.
-    /*!
-        \brief Generates changes in a sentencing form.
-        \param form A sentencial form
-        \return The new changed sentencial form.
-    */
-    SentencialForm operator<<(const SentencialForm &form) const;
-
-    //! Equality operator.
-    /*!
-        \brief Check to see if they make the same changes.
-        \param prod Another Production.
-        \return True if are make the same changes.
-    */
-    bool operator==(const Production &prod) const;
-
-    //! Less than operator
-    /*!
-        \brief It checks to see if producitons is smaller than another.
-        \param prod Another Production.
-        \return True if is less than.
-    */
-    bool operator<(const Production &prod) const;
-
-    //! Transform Production to string
-    /*!
-        \brief Representation of the production in the form of a string.
-        \return The string representation.
-    */
-    string_type to_string() const;
-
-  private:
-    symbol_type m_terminal, m_non_terminal; //!< Non terminal and terminal symbols
+private:
+    symbol_ptr_containter_type m_production;
 };
 
 } // namespace grammar
