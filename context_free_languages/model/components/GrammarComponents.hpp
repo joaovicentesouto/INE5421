@@ -14,12 +14,16 @@ namespace formal_device
 namespace grammar
 {
 
+class TerminalSymbol;
+class NonTerminalSymbol;
 class Symbol
 {
   public:
     using string_type                    = std::string;
     template <class T> using set_type    = std::set<T>;
     template <class T> using vector_type = std::vector<T>;
+
+    using terminal_set_type = std::set<TerminalSymbol>;
 
     //! Destructor
     ~Symbol() = default;
@@ -29,7 +33,7 @@ class Symbol
         \brief Simple get.
         \return The name of the symbol.
     */
-    virtual string_type value() const = 0;
+    virtual const string_type& value() const = 0;
 
     //! Terminal check
     /*!
@@ -38,9 +42,9 @@ class Symbol
     */
     virtual bool is_terminal() const = 0;
 
-    virtual const symbol_ptr_containter_type& first() const = 0;
+    virtual const terminal_set_type& first() const = 0;
 
-    virtual const symbol_ptr_containter_type& follow() const = 0;
+    virtual const terminal_set_type& follow() const = 0;
 
     //! Equality operator (from another symbol)
     /*!
@@ -49,6 +53,8 @@ class Symbol
         \return True if contains the same value.
     */
     virtual bool operator==(const Symbol &symbol) const = 0;
+    virtual bool operator==(const TerminalSymbol &symbol) const = 0;
+    virtual bool operator==(const NonTerminalSymbol &symbol) const = 0;
 
     //! Equality operator (from string value)
     /*!
@@ -56,7 +62,7 @@ class Symbol
         \param symbol Another symbol.
         \return True if contains the same value.
     */
-    virtual bool operator==(const string_type &symbol) const = 0;
+    virtual bool operator==(const string_type &value) const = 0;
 
     //! Less than operator
     /*!
@@ -67,14 +73,14 @@ class Symbol
     virtual bool operator<(const Symbol &symbol) const = 0;
 };
 
-class SymbolPointer : std::shared_ptr<Symbol>
+class SymbolPointer : public std::shared_ptr<Symbol>
 {
 public:
     using symbol_type = Symbol;
 
     bool operator==(const SymbolPointer &another) const;
     bool operator<(const SymbolPointer &another) const;
-}
+};
 
 class SymbolSet : public Symbol::set_type<SymbolPointer>
 {
@@ -90,21 +96,28 @@ public:
     ~SymbolSet() = default;
 
     bool contains(const element_type & element);
-}
+};
 
 class TerminalSymbol : public Symbol
 {
   public:
     friend class Production;
 
-    using string_type                = Symbol::string;
-    using symbol_ptr_containter_type = Symbol::vector_type<SymbolPointer>;
+    using string_type       = Symbol::string_type;
+    using terminal_set_type = Symbol::terminal_set_type;
 
     TerminalSymbol() = default;
     TerminalSymbol(const TerminalSymbol &) = default;
     TerminalSymbol &operator=(const TerminalSymbol &) = default;
     TerminalSymbol(TerminalSymbol &&) = default;
     TerminalSymbol &operator=(TerminalSymbol &&) = default;
+
+    template<class Arg>
+    TerminalSymbol(Arg&& value) :
+        m_value(std::forward<Arg>(value))
+    {
+
+    }
 
     //! Destructor
     ~TerminalSymbol() = default;
@@ -114,7 +127,7 @@ class TerminalSymbol : public Symbol
         \brief Simple get.
         \return The name of the symbol.
     */
-    string_type value() const;
+    const string_type& value() const;
 
     //! Terminal check
     /*!
@@ -123,9 +136,9 @@ class TerminalSymbol : public Symbol
     */
     bool is_terminal() const;
 
-    const symbol_ptr_containter_type& first() const;
+    const terminal_set_type& first() const;
 
-    const symbol_ptr_containter_type& follow() const;
+    const terminal_set_type& follow() const;
 
     //! Equality operator (from another symbol)
     /*!
@@ -134,6 +147,8 @@ class TerminalSymbol : public Symbol
         \return True if contains the same value.
     */
     bool operator==(const Symbol &symbol) const;
+    bool operator==(const TerminalSymbol &symbol) const;
+    bool operator==(const NonTerminalSymbol &symbol) const;
 
     //! Equality operator (from string value)
     /*!
@@ -141,7 +156,7 @@ class TerminalSymbol : public Symbol
         \param symbol Another symbol.
         \return True if contains the same value.
     */
-    bool operator==(const string_type &symbol) const;
+    bool operator==(const string_type &value) const;
 
     //! Less than operator
     /*!
@@ -152,7 +167,9 @@ class TerminalSymbol : public Symbol
     bool operator<(const Symbol &symbol) const;
 
 private:
-    string_type m_value;
+    string_type       m_value{"&"};
+    terminal_set_type m_first;
+    terminal_set_type m_follow;
 };
 
 class NonTerminalSymbol : public Symbol
@@ -160,14 +177,21 @@ class NonTerminalSymbol : public Symbol
   public:
     friend class Production;
 
-    using string_type                = Symbol::string;
-    using symbol_ptr_containter_type = Symbol::vector_type<SymbolPointer>;
+    using string_type       = Symbol::string_type;
+    using terminal_set_type = Symbol::terminal_set_type;
 
     NonTerminalSymbol() = default;
     NonTerminalSymbol(const NonTerminalSymbol &) = default;
     NonTerminalSymbol &operator=(const NonTerminalSymbol &) = default;
     NonTerminalSymbol(NonTerminalSymbol &&) = default;
     NonTerminalSymbol &operator=(NonTerminalSymbol &&) = default;
+
+    template<class Arg>
+    NonTerminalSymbol(Arg&& value) :
+        m_value(std::forward<Arg>(value))
+    {
+
+    }
 
     //! Destructor
     ~NonTerminalSymbol() = default;
@@ -177,7 +201,7 @@ class NonTerminalSymbol : public Symbol
         \brief Simple get.
         \return The name of the symbol.
     */
-    string_type value() const;
+    const string_type& value() const;
 
     //! Terminal check
     /*!
@@ -186,9 +210,9 @@ class NonTerminalSymbol : public Symbol
     */
     bool is_terminal() const;
 
-    const symbol_ptr_containter_type& first() const;
+    const terminal_set_type& first() const;
 
-    const symbol_ptr_containter_type& follow() const;
+    const terminal_set_type& follow() const;
 
     //! Equality operator (from another symbol)
     /*!
@@ -197,6 +221,8 @@ class NonTerminalSymbol : public Symbol
         \return True if contains the same value.
     */
     bool operator==(const Symbol &symbol) const;
+    bool operator==(const TerminalSymbol &symbol) const;
+    bool operator==(const NonTerminalSymbol &symbol) const;
 
     //! Equality operator (from string value)
     /*!
@@ -204,7 +230,7 @@ class NonTerminalSymbol : public Symbol
         \param symbol Another symbol.
         \return True if contains the same value.
     */
-    bool operator==(const string_type &symbol) const;
+    bool operator==(const string_type &value) const;
 
     //! Less than operator
     /*!
@@ -215,17 +241,17 @@ class NonTerminalSymbol : public Symbol
     bool operator<(const Symbol &symbol) const;
 
 private:
-    string_type                m_value;
-    symbol_ptr_containter_type m_first;
-    symbol_ptr_containter_type m_follow;
+    string_type       m_value{"Error"};
+    terminal_set_type m_first;
+    terminal_set_type m_follow;
 };
 
-class Production
+class Production : public Symbol::vector_type<SymbolPointer>
 {
   public:
     using symbol_ptr_type            = SymbolPointer;
     using string_type                = symbol_ptr_type::symbol_type::string_type;
-    using symbol_ptr_containter_type = std::vector<symbol_ptr_type>;
+    using symbol_ptr_container_type  = Symbol::vector_type<SymbolPointer>;
 
     Production() = default;
     Production(const Production &) = default;
@@ -239,21 +265,21 @@ class Production
     */
     ~Production() = default;
 
-    //! Equality operator.
-    /*!
-        \brief Check to see if they make the same changes.
-        \param prod Another Production.
-        \return True if are make the same changes.
-    */
-    bool operator==(const Production &prod) const;
+    // //! Equality operator.
+    // /*!
+    //     \brief Check to see if they make the same changes.
+    //     \param prod Another Production.
+    //     \return True if are make the same changes.
+    // */
+    // bool operator==(const Production &prod) const;
 
-    //! Less than operator
-    /*!
-        \brief It checks to see if producitons is smaller than another.
-        \param prod Another Production.
-        \return True if is less than.
-    */
-    bool operator<(const Production &prod) const;
+    // //! Less than operator
+    // /*!
+    //     \brief It checks to see if producitons is smaller than another.
+    //     \param prod Another Production.
+    //     \return True if is less than.
+    // */
+    // bool operator<(const Production &prod) const;
 
     //! Transform Production to string
     /*!
@@ -262,8 +288,10 @@ class Production
     */
     string_type to_string() const;
 
-private:
-    symbol_ptr_containter_type m_production;
+    // symbol_ptr_type operator[](size_t pos); // ?
+    // size_t size() const;
+    // iterator begin() const;
+    // iterator end() const;
 };
 
 } // namespace grammar
