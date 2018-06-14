@@ -17,8 +17,9 @@ namespace grammar
 class Symbol
 {
   public:
-    using string_type                       = std::string;
-    template <class T> using container_type = std::set<T>;
+    using string_type                    = std::string;
+    template <class T> using set_type    = std::set<T>;
+    template <class T> using vector_type = std::vector<T>;
 
     //! Destructor
     ~Symbol() = default;
@@ -71,18 +72,24 @@ class SymbolPointer : std::shared_ptr<Symbol>
 public:
     using symbol_type = Symbol;
 
-    // operator < and ==
-
+    bool operator==(const SymbolPointer &another) const;
+    bool operator<(const SymbolPointer &another) const;
 }
 
-class SymbolSet : public SymbolPointer::symbol_type::container_type<SymbolPointer>
+class SymbolSet : public Symbol::set_type<SymbolPointer>
 {
 public:
+    using element_type = SymbolPointer;
 
     SymbolSet() = default;
+    SymbolSet(const SymbolSet &) = default;
+    SymbolSet &operator=(const SymbolSet &) = default;
+    SymbolSet(SymbolSet &&) = default;
+    SymbolSet &operator=(SymbolSet &&) = default;
+
     ~SymbolSet() = default;
 
-    bool contains(SymbolPointer symbol);
+    bool contains(const element_type & element);
 }
 
 class TerminalSymbol : public Symbol
@@ -90,10 +97,14 @@ class TerminalSymbol : public Symbol
   public:
     friend class Production;
 
-    // using string_type                = Symbol::string;
-    // using symbol_ptr_containter_type = Symbol::symbol_ptr_containter_type;
+    using string_type                = Symbol::string;
+    using symbol_ptr_containter_type = Symbol::vector_type<SymbolPointer>;
 
     TerminalSymbol() = default;
+    TerminalSymbol(const TerminalSymbol &) = default;
+    TerminalSymbol &operator=(const TerminalSymbol &) = default;
+    TerminalSymbol(TerminalSymbol &&) = default;
+    TerminalSymbol &operator=(TerminalSymbol &&) = default;
 
     //! Destructor
     ~TerminalSymbol() = default;
@@ -141,7 +152,7 @@ class TerminalSymbol : public Symbol
     bool operator<(const Symbol &symbol) const;
 
 private:
-    string_type                m_value;
+    string_type m_value;
 };
 
 class NonTerminalSymbol : public Symbol
@@ -149,10 +160,14 @@ class NonTerminalSymbol : public Symbol
   public:
     friend class Production;
 
-    // using string_type                = Symbol::string;
-    // using symbol_ptr_containter_type = Symbol::symbol_ptr_containter_type;
+    using string_type                = Symbol::string;
+    using symbol_ptr_containter_type = Symbol::vector_type<SymbolPointer>;
 
     NonTerminalSymbol() = default;
+    NonTerminalSymbol(const NonTerminalSymbol &) = default;
+    NonTerminalSymbol &operator=(const NonTerminalSymbol &) = default;
+    NonTerminalSymbol(NonTerminalSymbol &&) = default;
+    NonTerminalSymbol &operator=(NonTerminalSymbol &&) = default;
 
     //! Destructor
     ~NonTerminalSymbol() = default;
@@ -208,11 +223,15 @@ private:
 class Production
 {
   public:
-    using symbol_type                = Symbol;
-    using string_type                = symbol_type::string_type;
-    using symbol_ptr_containter_type = std::vector<symbol_type*>;
+    using symbol_ptr_type            = SymbolPointer;
+    using string_type                = symbol_ptr_type::symbol_type::string_type;
+    using symbol_ptr_containter_type = std::vector<symbol_ptr_type>;
 
     Production() = default;
+    Production(const Production &) = default;
+    Production &operator=(const Production &) = default;
+    Production(Production &&) = default;
+    Production &operator=(Production &&) = default;
 
     //! Default Destructor
     /*!
