@@ -19,11 +19,10 @@ class NonTerminalSymbol;
 class Symbol
 {
   public:
-    using string_type                    = std::string;
     template <class T> using set_type    = std::set<T>;
     template <class T> using vector_type = std::vector<T>;
-
-    using terminal_set_type = std::set<TerminalSymbol>;
+    using string_type                    = std::string;
+    using terminal_set_type              = set_type<TerminalSymbol>;
 
     //! Destructor
     ~Symbol() = default;
@@ -33,7 +32,7 @@ class Symbol
         \brief Simple get.
         \return The name of the symbol.
     */
-    virtual const string_type& value() const = 0;
+    virtual const string_type &value() const = 0;
 
     //! Terminal check
     /*!
@@ -42,9 +41,9 @@ class Symbol
     */
     virtual bool is_terminal() const = 0;
 
-    virtual const terminal_set_type& first() const = 0;
+    virtual const terminal_set_type &first() const = 0;
 
-    virtual const terminal_set_type& follow() const = 0;
+    virtual const terminal_set_type &follow() const = 0;
 
     //! Equality operator (from another symbol)
     /*!
@@ -75,7 +74,7 @@ class Symbol
 
 class SymbolPointer : public std::shared_ptr<Symbol>
 {
-public:
+  public:
     using symbol_type = Symbol;
 
     bool operator==(const SymbolPointer &another) const;
@@ -84,7 +83,7 @@ public:
 
 class SymbolSet : public Symbol::set_type<SymbolPointer>
 {
-public:
+  public:
     using element_type = SymbolPointer;
 
     SymbolSet() = default;
@@ -95,7 +94,7 @@ public:
 
     ~SymbolSet() = default;
 
-    bool contains(const element_type & element);
+    bool contains(const element_type &element);
 };
 
 class TerminalSymbol : public Symbol
@@ -112,11 +111,9 @@ class TerminalSymbol : public Symbol
     TerminalSymbol(TerminalSymbol &&) = default;
     TerminalSymbol &operator=(TerminalSymbol &&) = default;
 
-    template<class Arg>
-    TerminalSymbol(Arg&& value) :
-        m_value(std::forward<Arg>(value))
+    template <class Arg>
+    TerminalSymbol(Arg &&value) : m_value(std::forward<Arg>(value))
     {
-
     }
 
     //! Destructor
@@ -127,7 +124,7 @@ class TerminalSymbol : public Symbol
         \brief Simple get.
         \return The name of the symbol.
     */
-    const string_type& value() const;
+    const string_type &value() const;
 
     //! Terminal check
     /*!
@@ -136,9 +133,9 @@ class TerminalSymbol : public Symbol
     */
     bool is_terminal() const;
 
-    const terminal_set_type& first() const;
+    const terminal_set_type &first() const;
 
-    const terminal_set_type& follow() const;
+    const terminal_set_type &follow() const;
 
     //! Equality operator (from another symbol)
     /*!
@@ -166,8 +163,8 @@ class TerminalSymbol : public Symbol
     */
     bool operator<(const Symbol &symbol) const;
 
-private:
-    string_type       m_value{"&"};
+  private:
+    string_type m_value{"&"};
     terminal_set_type m_first;
     terminal_set_type m_follow;
 };
@@ -186,11 +183,10 @@ class NonTerminalSymbol : public Symbol
     NonTerminalSymbol(NonTerminalSymbol &&) = default;
     NonTerminalSymbol &operator=(NonTerminalSymbol &&) = default;
 
-    template<class Arg>
-    NonTerminalSymbol(Arg&& value) :
+    template <class Arg>
+    NonTerminalSymbol(Arg &&value) :
         m_value(std::forward<Arg>(value))
     {
-
     }
 
     //! Destructor
@@ -201,7 +197,7 @@ class NonTerminalSymbol : public Symbol
         \brief Simple get.
         \return The name of the symbol.
     */
-    const string_type& value() const;
+    const string_type &value() const;
 
     //! Terminal check
     /*!
@@ -210,9 +206,9 @@ class NonTerminalSymbol : public Symbol
     */
     bool is_terminal() const;
 
-    const terminal_set_type& first() const;
+    const terminal_set_type &first() const;
 
-    const terminal_set_type& follow() const;
+    const terminal_set_type &follow() const;
 
     //! Equality operator (from another symbol)
     /*!
@@ -240,8 +236,8 @@ class NonTerminalSymbol : public Symbol
     */
     bool operator<(const Symbol &symbol) const;
 
-private:
-    string_type       m_value{"Error"};
+  private:
+    string_type m_value{"Error"};
     terminal_set_type m_first;
     terminal_set_type m_follow;
 };
@@ -249,9 +245,10 @@ private:
 class Production : public Symbol::vector_type<SymbolPointer>
 {
   public:
-    using symbol_ptr_type            = SymbolPointer;
-    using string_type                = symbol_ptr_type::symbol_type::string_type;
-    using symbol_ptr_container_type  = Symbol::vector_type<SymbolPointer>;
+    using symbol_ptr_type           = SymbolPointer;
+    using symbol_type               = symbol_ptr_type::symbol_type;
+    using string_type               = symbol_type::string_type;
+    using symbol_ptr_container_type = symbol_type::vector_type<symbol_ptr_type>;
 
     Production() = default;
     Production(const Production &) = default;

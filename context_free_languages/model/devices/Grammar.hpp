@@ -7,7 +7,6 @@
 #include <map>
 #include <context_free_languages/model/components/GrammarComponents.hpp>
 
-
 namespace formal_device
 {
 namespace grammar
@@ -16,10 +15,16 @@ namespace grammar
 class ContextFree
 {
   public:
+    enum class Recursion
+    {
+        Direct,
+        Indirect
+    };
 
-    template <class T>
+    template<class T>
     using set_type                 = std::set<T>;
-    template <class Key, class Value>
+    
+    template<class Key, class Value>
     using map_type                 = std::map<Key, Value>;
 
     using string_type              = std::string;
@@ -31,7 +36,9 @@ class ContextFree
 
     using terminal_set_type        = set_type<terminal_symbol_type>;
     using non_terminal_set_type    = set_type<non_terminal_symbol_type>;
+    using symbol_ptr_set_type      = set_type<symbol_ptr_type>;
     using production_map_type      = map_type<non_terminal_symbol_type, set_type<production_type>>;
+    using resursion_map_type       = map_type<non_terminal_symbol_type, set_type<Recursion>>;
 
     // Class constructors
     ContextFree() = default;
@@ -51,22 +58,36 @@ class ContextFree
     {
     }
 
-    const non_terminal_set_type& vn() const;
-    const terminal_set_type& vt() const;
-    const production_map_type& productions() const;
-    const non_terminal_symbol_type& initial_symbol() const;
+    const non_terminal_set_type &vn() const;
+    const terminal_set_type &vt() const;
+    const production_map_type &productions() const;
+    const non_terminal_symbol_type &initial_symbol() const;
     string_type to_string() const;
+
+    ContextFree own(/*va ve vi ?*/) const;
+    ContextFree epsilon_free(non_terminal_set_type &ne) const;
+    ContextFree remove_simple_productions(non_terminal_set_type &vs) const;
+    ContextFree remove_useless_symbols(symbol_ptr_set_type &vi, non_terminal_set_type &na) const;
+    ContextFree remove_infertile_symbols(symbol_ptr_set_type &vi) const;
+    ContextFree remove_unreachable_symbols(non_terminal_set_type &na) const;
+    ContextFree factor(unsigned max_steps) const;
+    ContextFree remove_recursion(resursion_map_type &recursions) const;
+
+    bool emptiness() const;
+    bool finitude() const;
+    bool is_factored() const;
+    bool has_recursion() const;
 
     bool operator==(const ContextFree &ContextFree) const;
 
   public:
-    non_terminal_set_type    m_vn;
-    terminal_set_type        m_vt;
-    production_map_type      m_productions;
+    non_terminal_set_type m_vn;
+    terminal_set_type m_vt;
+    production_map_type m_productions;
     non_terminal_symbol_type m_initial_symbol{"S"};
 };
 
-}   // namespace grammar
-}   // namespace formal_device
+} // namespace grammar
+} // namespace formal_device
 
 #endif // DEVICES_GRAMMAR_HPP

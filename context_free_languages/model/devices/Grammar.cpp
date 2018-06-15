@@ -5,22 +5,22 @@ namespace formal_device
 namespace grammar
 {
 
-const ContextFree::non_terminal_set_type& ContextFree::vn() const
+const ContextFree::non_terminal_set_type &ContextFree::vn() const
 {
     return m_vn;
 }
 
-const ContextFree::terminal_set_type& ContextFree::vt() const
+const ContextFree::terminal_set_type &ContextFree::vt() const
 {
     return m_vt;
 }
 
-const ContextFree::production_map_type& ContextFree::productions() const
+const ContextFree::production_map_type &ContextFree::productions() const
 {
     return m_productions;
 }
 
-const ContextFree::non_terminal_symbol_type& ContextFree::initial_symbol() const
+const ContextFree::non_terminal_symbol_type &ContextFree::initial_symbol() const
 {
     return m_initial_symbol;
 }
@@ -31,6 +31,66 @@ bool ContextFree::operator==(const ContextFree &ContextFree) const
         && m_vt             == ContextFree.m_vt
         && m_productions    == ContextFree.m_productions
         && m_initial_symbol == ContextFree.m_initial_symbol;
+}
+
+ContextFree ContextFree::own(/*va ve vi ?*/) const
+{
+    return ContextFree();
+}
+
+ContextFree ContextFree::epsilon_free(non_terminal_set_type &ne) const
+{
+    return ContextFree();
+}
+
+ContextFree ContextFree::remove_simple_productions(non_terminal_set_type &vs) const
+{
+    return ContextFree();
+}
+
+ContextFree ContextFree::remove_useless_symbols(symbol_ptr_set_type &vi, non_terminal_set_type &na) const
+{
+    return ContextFree();
+}
+
+ContextFree ContextFree::remove_infertile_symbols(symbol_ptr_set_type &vi) const
+{
+    return ContextFree();
+}
+
+ContextFree ContextFree::remove_unreachable_symbols(non_terminal_set_type &na) const
+{
+    return ContextFree();
+}
+
+ContextFree ContextFree::factor(unsigned max_steps) const
+{
+    return ContextFree();
+}
+
+ContextFree ContextFree::remove_recursion(resursion_map_type &recursions) const
+{
+    return ContextFree();
+}
+
+bool ContextFree::emptiness() const
+{
+    return false;
+}
+
+bool ContextFree::finitude() const
+{
+    return false;
+}
+
+bool ContextFree::is_factored() const
+{
+    return false;
+}
+
+bool ContextFree::has_recursion() const
+{
+    return false;
 }
 
 ContextFree::string_type ContextFree::to_string() const
@@ -78,6 +138,5 @@ ContextFree::string_type ContextFree::to_string() const
     return string;
 }
 
-
-}   // namespace grammar
-}   // namespace formal_device
+} // namespace grammar
+} // namespace formal_device
