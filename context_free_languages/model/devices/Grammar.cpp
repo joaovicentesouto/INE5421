@@ -144,7 +144,44 @@ ContextFree ContextFree::epsilon_free(non_terminal_set_type &derives_epsilon) co
 
 ContextFree ContextFree::remove_simple_productions(simple_production_map_type &na) const
 {
-    return ContextFree();
+    for (const auto& non_terminal : m_vn)
+        na[non_terminal] = {non_terminal};
+
+    for (const auto& pair : m_productions)
+        for (const auto& prod : pair.second)
+            if (prod.size() == 1 && !prod[0]->is_terminal())
+                na[pair.first].insert(*dynamic_cast<const non_terminal_symbol_type*>(prod[0].get()));
+
+    simple_production_map_type na_previous;
+
+    while (na != na_previous)
+    {
+        na_previous = na;
+
+        for (const auto& pair : na_previous)
+            for (const auto& simple : pair.second)
+                for (const auto& another_simple : na_previous[simple])
+                    na[pair.first].insert(another_simple);
+    }
+
+    production_map_type new_productions;
+
+    for (const auto& pair : m_productions)
+        for (const auto& prod : pair.second)
+            if ((prod.size() > 1) || prod[0]->is_terminal())
+                new_productions[pair.first].insert(prod);
+
+    for (const auto& source : m_vn)
+        for (const auto& target : na[source])
+        {
+            if (source == target)
+                continue;
+
+            for (const auto& prod : new_productions[target])
+                new_productions[source].insert(prod);
+        }
+
+    return ContextFree(m_vn, m_vt, new_productions, m_initial_symbol);
 }
 
 ContextFree ContextFree::remove_infertile_symbols(non_terminal_set_type &fertile_symbols) const

@@ -378,8 +378,6 @@ TEST_CASE("Grammar: Remove useless symbols", "[grammar][function]")
     }
 }
 
-//ContextFree epsilon_free(non_terminal_set_type &derives_epsilon) const;
-
 TEST_CASE("Grammar: Turn on Epsilon Free", "[grammar][function]")
 {
     SECTION("Simple", "[grammar][inferile]")
@@ -469,21 +467,118 @@ TEST_CASE("Grammar: Turn on Epsilon Free", "[grammar][function]")
 
         REQUIRE(derives_epsilon.size() == 3);
         CHECK(derives_epsilon == derives_epsilon_test);
-        CHECK(new_grammar.vn() == new_vn);
-        CHECK(new_grammar.vt() == vt);
-        CHECK(new_grammar.initial_symbol() == S_linha);
-        CHECK(new_grammar.productions() == new_prods);
         CHECK(new_grammar == grammar_2);
     }
 }
 
+//ContextFree remove_simple_productions(simple_production_map_type &na) c
+
+TEST_CASE("Grammar: Remove simple productions", "[grammar][function]")
+{
+    SECTION("Simple", "[grammar][inferile]")
+    {
+        NonTerminalSymbol S{"S"}, A{"A"};
+        TerminalSymbol a{"a"}, b{"b"};
+
+        SymbolPointer pS{new NonTerminalSymbol(S)},
+                      pA{new NonTerminalSymbol(A)};
+        SymbolPointer pa{new TerminalSymbol(a)}, pb{new TerminalSymbol(b)};
+        Production prod0{pA}, prod1{pa, pA}, prod2{pa}, prod3{pb};
+
+        ContextFree::non_terminal_set_type vn{S, A};
+        ContextFree::terminal_set_type vt{a, b};
+        ContextFree::production_map_type prods;
+        prods[S] = {prod0, prod2};
+        prods[A] = {prod0, prod1, prod3};
+
+        ContextFree grammar{vn, vt, prods, S};
+
+        ContextFree::simple_production_map_type na;
+        auto new_grammar = grammar.remove_simple_productions(na);
+
+        REQUIRE(!na.empty());
+
+        ContextFree::production_map_type new_prods;
+        new_prods[S] = {prod2, prod1, prod3};
+        new_prods[A] = {prod1, prod3};
+
+        ContextFree grammar_2{vn, vt, new_prods, S};
+
+        ContextFree::simple_production_map_type na_test;
+        na_test[S] = {S, A};
+        na_test[A] = {A};
+
+        REQUIRE(na.size() == 2);
+        CHECK(na == na_test);
+        CHECK(new_grammar.vn() == vn);
+        CHECK(new_grammar.vt() == vt);
+        CHECK(new_grammar.initial_symbol() == S);
+        CHECK(new_grammar.productions() == new_prods);
+        CHECK(new_grammar == grammar_2);
+    }
+
+    SECTION("Complex", "[grammar][inferile]")
+    {
+        NonTerminalSymbol S{"S"}, A{"A"}, B{"B"}, C{"C"};
+        TerminalSymbol a{"a"}, b{"b"}, c{"c"}, epsilon{"&"};
+
+        SymbolPointer pS{new NonTerminalSymbol(S)},
+                      pA{new NonTerminalSymbol(A)},
+                      pB{new NonTerminalSymbol(B)},
+                      pC{new NonTerminalSymbol(C)};
+        SymbolPointer pa{new TerminalSymbol(a)},
+                      pb{new TerminalSymbol(b)},
+                      pc{new TerminalSymbol(c)},
+                      pEpsilon{new TerminalSymbol(epsilon)};
+        Production prod0{pA}, prod1{pC},
+                   prod2{pa, pA}, prod3{pEpsilon},
+                   prod4{pS}, prod5{pB, pa},
+                   prod6{pc, pC}, prod7{pB};
+
+        ContextFree::non_terminal_set_type vn{S, A, B, C};
+        ContextFree::terminal_set_type vt{a, b, c, epsilon};
+        ContextFree::production_map_type prods;
+        prods[S] = {prod0, prod1};
+        prods[A] = {prod2, prod3};
+        prods[B] = {prod4, prod5};
+        prods[C] = {prod6, prod7};
+
+        ContextFree grammar{vn, vt, prods, S};
+
+        ContextFree::simple_production_map_type na;
+        auto new_grammar = grammar.remove_simple_productions(na);
+
+        REQUIRE(!na.empty());
+
+        ContextFree::production_map_type new_prods;
+        new_prods[S] = {prod2, prod3, prod5, prod6};
+        new_prods[A] = {prod2, prod3};
+        new_prods[B] = {prod2, prod3, prod5, prod6};
+        new_prods[C] = {prod2, prod3, prod5, prod6};
+
+        ContextFree grammar_2{vn, vt, new_prods, S};
+
+        ContextFree::simple_production_map_type na_test;
+        na_test[S] = {S, A, B, C};
+        na_test[A] = {A};
+        na_test[B] = {S, A, B, C};
+        na_test[C] = {S, A, B, C};
+
+        REQUIRE(na.size() == 4);
+        CHECK(na == na_test);
+        CHECK(new_grammar.vn() == vn);
+        CHECK(new_grammar.vt() == vt);
+        CHECK(new_grammar.initial_symbol() == S);
+        CHECK(new_grammar.productions() == new_prods);
+        CHECK(new_grammar == grammar_2);
+    }
+}
 
 //ContextFree own(non_terminal_set_type &derives_epsilon,
 //                simple_production_map_type &na,
 //                non_terminal_set_type &fertile_symbols,
 //                symbol_ptr_set_type &reachable_symbols) const;
 
-//ContextFree epsilon_free(non_terminal_set_type &derives_epsilon) const;
 //ContextFree remove_simple_productions(simple_production_map_type &na) const;
 
 //ContextFree factor(unsigned max_steps) const;

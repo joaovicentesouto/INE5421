@@ -52,10 +52,10 @@ class ContextFree
 
     template <class Arg1, class Arg2, class Arg3, class Arg4>
     ContextFree(Arg1 &&vn, Arg2 &&vt, Arg3 &&productions, Arg4 &&initial_symbol) :
+        m_initial_symbol{std::forward<Arg4>(initial_symbol)},
         m_vn{std::forward<Arg1>(vn)},
         m_vt{std::forward<Arg2>(vt)},
-        m_productions{std::forward<Arg3>(productions)},
-        m_initial_symbol{std::forward<Arg4>(initial_symbol)}
+        m_productions{std::forward<Arg3>(productions)}
     {
     }
 
