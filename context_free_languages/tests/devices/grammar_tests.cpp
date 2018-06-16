@@ -183,7 +183,7 @@ TEST_CASE("Grammar: Remove infertile symbols", "[grammar][function]")
 
 TEST_CASE("Grammar: Removes unreachable symbols", "[grammar][function]")
 {
-    SECTION("Simple", "[grammar][inferile]")
+    SECTION("Simple", "[grammar][unreachable_symbols]")
     {
         NonTerminalSymbol S{"S"}, A{"A"};
         TerminalSymbol a{"a"}, b{"b"};
@@ -224,7 +224,7 @@ TEST_CASE("Grammar: Removes unreachable symbols", "[grammar][function]")
         CHECK(new_grammar == grammar_2);
     }
 
-    SECTION("Complex", "[grammar][inferile]")
+    SECTION("Complex", "[grammar][unreachable_symbols]")
     {
         NonTerminalSymbol S{"S"}, A{"A"}, B{"B"}, C{"C"};
         TerminalSymbol a{"a"}, b{"b"}, c{"c"};
@@ -277,7 +277,7 @@ TEST_CASE("Grammar: Removes unreachable symbols", "[grammar][function]")
 
 TEST_CASE("Grammar: Remove useless symbols", "[grammar][function]")
 {
-    SECTION("Simple", "[grammar][inferile]")
+    SECTION("Simple", "[grammar][useless_symbol]")
     {
         NonTerminalSymbol S{"S"}, A{"A"}, B{"B"};
         TerminalSymbol a{"a"}, b{"b"}, c{"c"};
@@ -327,7 +327,7 @@ TEST_CASE("Grammar: Remove useless symbols", "[grammar][function]")
         CHECK(new_grammar == grammar_2);
     }
 
-    SECTION("Complex", "[grammar][inferile]")
+    SECTION("Complex", "[grammar][useless_symbol]")
     {
         NonTerminalSymbol S{"S"}, A{"A"}, B{"B"}, C{"C"};
         TerminalSymbol a{"a"}, b{"b"}, c{"c"};
@@ -380,7 +380,7 @@ TEST_CASE("Grammar: Remove useless symbols", "[grammar][function]")
 
 TEST_CASE("Grammar: Turn on Epsilon Free", "[grammar][function]")
 {
-    SECTION("Simple", "[grammar][inferile]")
+    SECTION("Simple", "[grammar][epsilon_free]")
     {
         NonTerminalSymbol S{"S"}, A{"A"};
         TerminalSymbol a{"a"}, b{"b"}, epsilon{"&"};
@@ -416,7 +416,7 @@ TEST_CASE("Grammar: Turn on Epsilon Free", "[grammar][function]")
         CHECK(new_grammar == grammar_2);
     }
 
-    SECTION("Complex", "[grammar][inferile]")
+    SECTION("Complex", "[grammar][epsilon_free]")
     {
         NonTerminalSymbol S_linha{"S\'"}, S{"S"}, A{"A"}, B{"B"}, C{"C"};
         TerminalSymbol a{"a"}, b{"b"}, c{"c"}, epsilon{"&"};
@@ -471,11 +471,9 @@ TEST_CASE("Grammar: Turn on Epsilon Free", "[grammar][function]")
     }
 }
 
-//ContextFree remove_simple_productions(simple_production_map_type &na) c
-
 TEST_CASE("Grammar: Remove simple productions", "[grammar][function]")
 {
-    SECTION("Simple", "[grammar][inferile]")
+    SECTION("Simple", "[grammar][simple_productions]")
     {
         NonTerminalSymbol S{"S"}, A{"A"};
         TerminalSymbol a{"a"}, b{"b"};
@@ -517,7 +515,7 @@ TEST_CASE("Grammar: Remove simple productions", "[grammar][function]")
         CHECK(new_grammar == grammar_2);
     }
 
-    SECTION("Complex", "[grammar][inferile]")
+    SECTION("Complex", "[grammar][simple_productions]")
     {
         NonTerminalSymbol S{"S"}, A{"A"}, B{"B"}, C{"C"};
         TerminalSymbol a{"a"}, b{"b"}, c{"c"}, epsilon{"&"};
@@ -574,12 +572,82 @@ TEST_CASE("Grammar: Remove simple productions", "[grammar][function]")
     }
 }
 
-//ContextFree own(non_terminal_set_type &derives_epsilon,
-//                simple_production_map_type &na,
-//                non_terminal_set_type &fertile_symbols,
-//                symbol_ptr_set_type &reachable_symbols) const;
+TEST_CASE("Grammar: Transform a grammar on own grammar", "[grammar][function]")
+{
+    SECTION("Simple", "[grammar][own]")
+    {
 
-//ContextFree remove_simple_productions(simple_production_map_type &na) const;
+//        S -> AC | BD
+//        A -> aA | &
+//        B -> bB | B
+//        C -> cC | c
+//        D -> aD | a
+
+        NonTerminalSymbol S{"S"}, A{"A"}, B{"B"}, C{"C"}, D{"D"};
+        TerminalSymbol a{"a"}, b{"b"}, c{"c"}, epsilon{"&"};
+
+        SymbolPointer pS{new NonTerminalSymbol(S)},
+                      pA{new NonTerminalSymbol(A)},
+                      pB{new NonTerminalSymbol(B)},
+                      pC{new NonTerminalSymbol(C)},
+                      pD{new NonTerminalSymbol(D)};
+        SymbolPointer pa{new TerminalSymbol(a)},
+                      pb{new TerminalSymbol(b)},
+                      pc{new TerminalSymbol(c)},
+                      pEpsilon{new TerminalSymbol(epsilon)};
+        Production prod_AC{pA, pC}, prod_BD{pB, pD},
+                   prod_aA{pa, pA}, prod_ep{pEpsilon},
+                   prod_bB{pb, pB}, prod_B{pB},
+                   prod_cC{pc, pC}, prod_c{pc},
+                   prod_aD{pa, pD}, prod_a{pa};
+
+        ContextFree::non_terminal_set_type vn{S, A, B, C, D};
+        ContextFree::terminal_set_type vt{a, b, c, epsilon};
+        ContextFree::production_map_type prods;
+        prods[S] = {prod_AC, prod_BD};
+        prods[A] = {prod_aA, prod_ep};
+        prods[B] = {prod_bB, prod_B};
+        prods[C] = {prod_cC, prod_c};
+        prods[D] = {prod_aD, prod_a};
+
+        ContextFree grammar{vn, vt, prods, S};
+
+        ContextFree::non_terminal_set_type derives_epsilon;
+        ContextFree::simple_production_map_type na;
+        ContextFree::non_terminal_set_type fertible;
+        ContextFree::symbol_ptr_set_type reachable;
+
+        auto new_grammar = grammar.own(derives_epsilon, na, fertible, reachable);
+
+        REQUIRE((!derives_epsilon.empty() && !na.empty() && !fertible.empty() && !reachable.empty()));
+
+        ContextFree::non_terminal_set_type new_vn{S, A, C};
+        ContextFree::terminal_set_type new_vt{a, c};
+        ContextFree::production_map_type new_prods;
+        new_prods[S] = {prod_AC, prod_cC, prod_c};
+        new_prods[A] = {prod_aA, prod_a};
+        new_prods[C] = {prod_cC, prod_c};
+
+        ContextFree grammar_2{new_vn, new_vt, new_prods, S};
+
+        ContextFree::non_terminal_set_type derives_epsilon_test{A};
+        ContextFree::simple_production_map_type na_test;
+        na_test[S] = {S, C};
+        na_test[A] = {A};
+        na_test[B] = {B};
+        na_test[C] = {C};
+        na_test[D] = {D};
+
+        ContextFree::non_terminal_set_type fertible_test{S, A, C, D};
+        ContextFree::symbol_ptr_set_type reachable_test{pS, pA, pC, pa, pc};
+
+        CHECK(derives_epsilon == derives_epsilon_test);
+        CHECK(na == na_test);
+        CHECK(fertible == fertible_test);
+        CHECK(reachable == reachable_test);
+        CHECK(new_grammar == grammar_2);
+    }
+}
 
 //ContextFree factor(unsigned max_steps) const;
 //ContextFree remove_recursion(resursion_map_type &recursions) const;

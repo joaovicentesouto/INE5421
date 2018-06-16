@@ -57,7 +57,9 @@ ContextFree ContextFree::own(non_terminal_set_type &derives_epsilon,
                              non_terminal_set_type &fertile_symbols,
                              symbol_ptr_set_type &reachable_symbols) const
 {
-    return ContextFree();
+    return epsilon_free(derives_epsilon)
+           .remove_simple_productions(na)
+           .remove_useless_symbols(fertile_symbols, reachable_symbols);
 }
 
 ContextFree ContextFree::epsilon_free(non_terminal_set_type &derives_epsilon) const
