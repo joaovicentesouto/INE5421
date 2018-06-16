@@ -275,6 +275,109 @@ TEST_CASE("Grammar: Removes unreachable symbols", "[grammar][function]")
     }
 }
 
+TEST_CASE("Grammar: Remove useless symbols", "[grammar][function]")
+{
+    SECTION("Simple", "[grammar][inferile]")
+    {
+        NonTerminalSymbol S{"S"}, A{"A"}, B{"B"};
+        TerminalSymbol a{"a"}, b{"b"}, c{"c"};
+
+        SymbolPointer pS{new NonTerminalSymbol(S)},
+                      pA{new NonTerminalSymbol(A)},
+                      pB{new NonTerminalSymbol(B)};;
+        SymbolPointer pa{new TerminalSymbol(a)}, pb{new TerminalSymbol(b)}, pc{new TerminalSymbol(c)};
+        Production prod0{pa, pA}, prod1{pb, pS}, prod2{pb},
+                   prod3{pc, pA},
+                   prod4{pb, pB}, prod5{pb};
+
+        ContextFree::non_terminal_set_type vn{S, A, B};
+        ContextFree::terminal_set_type vt{a, b, c};
+        ContextFree::production_map_type prods;
+        prods[S] = {prod0, prod1, prod2};
+        prods[A] = {prod3};
+        prods[B] = {prod4, prod5};
+
+        ContextFree grammar{vn, vt, prods, S};
+
+        ContextFree::non_terminal_set_type fertible;
+        ContextFree::symbol_ptr_set_type reachable;
+        auto new_grammar = grammar.remove_useless_symbols(fertible, reachable);
+
+        REQUIRE((!fertible.empty() && !reachable.empty()));
+
+        ContextFree::non_terminal_set_type new_vn{S};
+        ContextFree::terminal_set_type new_vt{b};
+        ContextFree::production_map_type new_prods;
+        new_prods[S] = {prod1, prod2};
+
+        ContextFree grammar_2{new_vn, new_vt, new_prods, S};
+
+        ContextFree::non_terminal_set_type fertible_test{S, B};
+        ContextFree::symbol_ptr_set_type reachable_test{pS, pb};
+
+        REQUIRE(fertible.size() == 2);
+        REQUIRE(reachable.size() == 2);
+
+        CHECK(fertible == fertible_test);
+        CHECK(reachable == reachable_test);
+        CHECK(new_grammar.vn().size() == 1);
+        CHECK(new_grammar.vt().size() == 1);
+        CHECK(new_grammar.productions().size() == 1);
+        CHECK(new_grammar.initial_symbol() == S);
+        CHECK(new_grammar == grammar_2);
+    }
+
+    SECTION("Complex", "[grammar][inferile]")
+    {
+        NonTerminalSymbol S{"S"}, A{"A"}, B{"B"}, C{"C"};
+        TerminalSymbol a{"a"}, b{"b"}, c{"c"};
+
+        SymbolPointer pS{new NonTerminalSymbol(S)},
+                      pA{new NonTerminalSymbol(A)},
+                      pB{new NonTerminalSymbol(B)},
+                      pC{new NonTerminalSymbol(C)};
+        SymbolPointer pa{new TerminalSymbol(a)}, pb{new TerminalSymbol(b)}, pc{new TerminalSymbol(c)};
+        Production prod0{pa, pA}, prod1{pb, pC},
+                   prod2{pb, pS}, prod3{pb, pC},
+                   prod4{pc, pB},
+                   prod5{pC, pb};
+
+        ContextFree::non_terminal_set_type vn{S, A, B, C};
+        ContextFree::terminal_set_type vt{a, b, c};
+        ContextFree::production_map_type prods;
+        prods[S] = {prod0, prod1};
+        prods[A] = {prod2, prod3};
+        prods[B] = {prod4};
+        prods[C] = {prod5};
+
+        ContextFree grammar{vn, vt, prods, S};
+
+        ContextFree::symbol_ptr_set_type reachable;
+        auto new_grammar = grammar.remove_unreachable_symbols(reachable);
+
+        REQUIRE(!reachable.empty());
+
+        ContextFree::non_terminal_set_type new_vn{S, A, C};
+        ContextFree::terminal_set_type new_vt{a, b};
+        ContextFree::production_map_type new_prods;
+        new_prods[S] = {prod0, prod1};
+        new_prods[A] = {prod2, prod3};
+        new_prods[C] = {prod5};
+
+        ContextFree grammar_2{new_vn, new_vt, new_prods, S};
+
+        ContextFree::symbol_ptr_set_type reachable_test{pS, pA, pC, pa, pb};
+
+        REQUIRE(reachable.size() == 5);
+        CHECK(reachable == reachable_test);
+        CHECK(new_grammar.vn().size() == 3);
+        CHECK(new_grammar.vt().size() == 2);
+        CHECK(new_grammar.productions().size() == 3);
+        CHECK(new_grammar.initial_symbol() == S);
+        CHECK(new_grammar == grammar_2);
+    }
+}
+
 
 //ContextFree own(non_terminal_set_type &derives_epsilon,
 //                simple_production_map_type &na,

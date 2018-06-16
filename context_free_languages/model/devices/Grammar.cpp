@@ -179,7 +179,8 @@ ContextFree ContextFree::remove_unreachable_symbols(symbol_ptr_set_type &reachab
 ContextFree ContextFree::remove_useless_symbols(non_terminal_set_type &fertile_symbols,
                                                 symbol_ptr_set_type &reachable_symbols) const
 {
-    return ContextFree();
+    auto fertible = remove_infertile_symbols(fertile_symbols);
+    return fertible.remove_unreachable_symbols(reachable_symbols);
 }
 
 ContextFree ContextFree::factor(unsigned max_steps) const
