@@ -2,4 +2,4 @@
 
 #include "../catch.hpp"
 
-//#include <context_free_languages/model/devices/Grammar.hpp>
+#include <context_free_languages/model/devices/Grammar.hpp>

@@ -16,6 +16,7 @@ namespace grammar
 
 class TerminalSymbol;
 class NonTerminalSymbol;
+class SymbolPointer;
 class Symbol
 {
   public:
@@ -52,8 +53,9 @@ class Symbol
         \return True if contains the same value.
     */
     virtual bool operator==(const Symbol &symbol) const = 0;
-    virtual bool operator==(const TerminalSymbol &symbol) const = 0;
-    virtual bool operator==(const NonTerminalSymbol &symbol) const = 0;
+    virtual bool operator!=(const Symbol &symbol) const = 0;
+    virtual bool operator==(const SymbolPointer &symbol) const = 0;
+    virtual bool operator!=(const SymbolPointer &symbol) const = 0;
 
     //! Equality operator (from string value)
     /*!
@@ -62,6 +64,7 @@ class Symbol
         \return True if contains the same value.
     */
     virtual bool operator==(const string_type &value) const = 0;
+    virtual bool operator!=(const string_type &value) const = 0;
 
     //! Less than operator
     /*!
@@ -76,6 +79,7 @@ class SymbolPointer : public std::shared_ptr<Symbol>
 {
   public:
     using symbol_type = Symbol;
+    using string_type = symbol_type::string_type;
 
     SymbolPointer() = default;
     SymbolPointer(const SymbolPointer &) = default;
@@ -85,24 +89,14 @@ class SymbolPointer : public std::shared_ptr<Symbol>
 
     SymbolPointer(Symbol * symbol);
 
+    bool operator==(const Symbol *another) const;
+    bool operator!=(const Symbol *another) const;
     bool operator==(const SymbolPointer &another) const;
+    bool operator!=(const SymbolPointer &another) const;
+    bool operator==(const string_type &another) const;
+    bool operator!=(const string_type &another) const;
+
     bool operator<(const SymbolPointer &another) const;
-};
-
-class SymbolSet : public Symbol::set_type<SymbolPointer>
-{
-  public:
-    using element_type = SymbolPointer;
-
-    SymbolSet() = default;
-    SymbolSet(const SymbolSet &) = default;
-    SymbolSet &operator=(const SymbolSet &) = default;
-    SymbolSet(SymbolSet &&) = default;
-    SymbolSet &operator=(SymbolSet &&) = default;
-
-    ~SymbolSet() = default;
-
-    bool contains(const element_type &element);
 };
 
 class TerminalSymbol : public Symbol
@@ -119,10 +113,8 @@ class TerminalSymbol : public Symbol
     TerminalSymbol(TerminalSymbol &&) = default;
     TerminalSymbol &operator=(TerminalSymbol &&) = default;
 
-    template <class Arg>
-    TerminalSymbol(Arg &&value) : m_value(std::forward<Arg>(value))
-    {
-    }
+    TerminalSymbol(const string_type & value);
+    TerminalSymbol(string_type &&value);
 
     //! Destructor
     ~TerminalSymbol() = default;
@@ -152,8 +144,11 @@ class TerminalSymbol : public Symbol
         \return True if contains the same value.
     */
     bool operator==(const Symbol &symbol) const;
+    bool operator!=(const Symbol &symbol) const;
+    bool operator==(const SymbolPointer &symbol) const;
+    bool operator!=(const SymbolPointer &symbol) const;
     bool operator==(const TerminalSymbol &symbol) const;
-    bool operator==(const NonTerminalSymbol &symbol) const;
+    bool operator!=(const TerminalSymbol &symbol) const;
 
     //! Equality operator (from string value)
     /*!
@@ -162,6 +157,7 @@ class TerminalSymbol : public Symbol
         \return True if contains the same value.
     */
     bool operator==(const string_type &value) const;
+    bool operator!=(const string_type &value) const;
 
     //! Less than operator
     /*!
@@ -191,11 +187,8 @@ class NonTerminalSymbol : public Symbol
     NonTerminalSymbol(NonTerminalSymbol &&) = default;
     NonTerminalSymbol &operator=(NonTerminalSymbol &&) = default;
 
-    template <class Arg>
-    NonTerminalSymbol(Arg &&value) :
-        m_value(std::forward<Arg>(value))
-    {
-    }
+    NonTerminalSymbol(const string_type &value);
+    NonTerminalSymbol(string_type &&value);
 
     //! Destructor
     ~NonTerminalSymbol() = default;
@@ -225,8 +218,11 @@ class NonTerminalSymbol : public Symbol
         \return True if contains the same value.
     */
     bool operator==(const Symbol &symbol) const;
-    bool operator==(const TerminalSymbol &symbol) const;
+    bool operator!=(const Symbol &symbol) const;
+    bool operator==(const SymbolPointer &symbol) const;
+    bool operator!=(const SymbolPointer &symbol) const;
     bool operator==(const NonTerminalSymbol &symbol) const;
+    bool operator!=(const NonTerminalSymbol &symbol) const;
 
     //! Equality operator (from string value)
     /*!
@@ -235,6 +231,7 @@ class NonTerminalSymbol : public Symbol
         \return True if contains the same value.
     */
     bool operator==(const string_type &value) const;
+    bool operator!=(const string_type &value) const;
 
     //! Less than operator
     /*!

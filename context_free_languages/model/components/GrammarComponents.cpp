@@ -16,6 +16,31 @@ bool SymbolPointer::operator==(const SymbolPointer &another) const
     return *get() == *another;
 }
 
+bool SymbolPointer::operator!=(const SymbolPointer &another) const
+{
+    return *get() != *another;
+}
+
+bool SymbolPointer::operator==(const Symbol *another) const
+{
+    return *get() == *another;
+}
+
+bool SymbolPointer::operator!=(const Symbol *another) const
+{
+    return *get() != *another;
+}
+
+bool SymbolPointer::operator==(const string_type &another) const
+{
+    return *get() == another;
+}
+
+bool SymbolPointer::operator!=(const string_type &another) const
+{
+    return *get() != another;
+}
+
 bool SymbolPointer::operator<(const SymbolPointer &another) const
 {
     return *get() < *another;
@@ -23,12 +48,17 @@ bool SymbolPointer::operator<(const SymbolPointer &another) const
 
 /* --------------------------------------------------------------- */
 
-bool SymbolSet::contains(const element_type &element)
+TerminalSymbol::TerminalSymbol(const string_type & value) :
+    m_value(value)
 {
-    return find(element) != end();
+    m_first.insert(*this);
 }
 
-/* --------------------------------------------------------------- */
+TerminalSymbol::TerminalSymbol(string_type &&value) :
+    m_value(std::move(value))
+{
+    m_first.insert(*this);
+}
 
 const TerminalSymbol::string_type& TerminalSymbol::value() const
 {
@@ -58,19 +88,39 @@ bool TerminalSymbol::operator==(const Symbol &symbol) const
     return m_value == symbol.value();
 }
 
+bool TerminalSymbol::operator!=(const Symbol &symbol) const
+{
+    return !(*this == symbol);
+}
+
+bool TerminalSymbol::operator==(const SymbolPointer &symbol) const
+{
+    return *this == *symbol;
+}
+
+bool TerminalSymbol::operator!=(const SymbolPointer &symbol) const
+{
+    return *this != *symbol;
+}
+
 bool TerminalSymbol::operator==(const TerminalSymbol &symbol) const
 {
     return m_value == symbol.m_value;
 }
 
-bool TerminalSymbol::operator==(const NonTerminalSymbol &symbol) const
+bool TerminalSymbol::operator!=(const TerminalSymbol &symbol) const
 {
-    return false;
+    return m_value != symbol.m_value;
 }
 
 bool TerminalSymbol::operator==(const string_type &value) const
 {
     return m_value == value;
+}
+
+bool TerminalSymbol::operator!=(const string_type &value) const
+{
+    return m_value != value;
 }
 
 bool TerminalSymbol::operator<(const Symbol &symbol) const
@@ -82,6 +132,16 @@ bool TerminalSymbol::operator<(const Symbol &symbol) const
 }
 
 /* --------------------------------------------------------------- */
+
+NonTerminalSymbol::NonTerminalSymbol(const string_type &value) :
+    m_value(value)
+{
+}
+
+NonTerminalSymbol::NonTerminalSymbol(string_type &&value) :
+    m_value(std::move(value))
+{
+}
 
 const NonTerminalSymbol::string_type& NonTerminalSymbol::value() const
 {
@@ -111,9 +171,19 @@ bool NonTerminalSymbol::operator==(const Symbol &symbol) const
     return m_value == symbol.value();
 }
 
-bool NonTerminalSymbol::operator==(const TerminalSymbol &symbol) const
+bool NonTerminalSymbol::operator!=(const Symbol &symbol) const
 {
-    return false;
+    return !(*this == symbol);
+}
+
+bool NonTerminalSymbol::operator==(const SymbolPointer &symbol) const
+{
+    return *this == *symbol;
+}
+
+bool NonTerminalSymbol::operator!=(const SymbolPointer &symbol) const
+{
+    return *this != *symbol;
 }
 
 bool NonTerminalSymbol::operator==(const NonTerminalSymbol &symbol) const
@@ -121,9 +191,19 @@ bool NonTerminalSymbol::operator==(const NonTerminalSymbol &symbol) const
     return m_value == symbol.m_value;
 }
 
+bool NonTerminalSymbol::operator!=(const NonTerminalSymbol &symbol) const
+{
+    return m_value != symbol.m_value;
+}
+
 bool NonTerminalSymbol::operator==(const string_type &value) const
 {
     return m_value == value;
+}
+
+bool NonTerminalSymbol::operator!=(const string_type &value) const
+{
+    return m_value != value;
 }
 
 bool NonTerminalSymbol::operator<(const Symbol &symbol) const
