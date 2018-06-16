@@ -33,32 +33,116 @@ bool ContextFree::operator==(const ContextFree &ContextFree) const
         && m_initial_symbol == ContextFree.m_initial_symbol;
 }
 
-ContextFree ContextFree::own(/*va ve vi ?*/) const
+bool ContextFree::operator!=(const ContextFree &ContextFree) const
+{
+    return m_vn             != ContextFree.m_vn
+        || m_vt             != ContextFree.m_vt
+        || m_productions    != ContextFree.m_productions
+        || m_initial_symbol != ContextFree.m_initial_symbol;
+}
+
+ContextFree ContextFree::own(non_terminal_set_type &derives_epsilon,
+                             simple_production_map_type &na,
+                             non_terminal_set_type &fertile_symbols,
+                             symbol_ptr_set_type &reachable_symbols) const
 {
     return ContextFree();
 }
 
-ContextFree ContextFree::epsilon_free(non_terminal_set_type &ne) const
+ContextFree ContextFree::epsilon_free(non_terminal_set_type &derives_epsilon) const
 {
     return ContextFree();
 }
 
-ContextFree ContextFree::remove_simple_productions(non_terminal_set_type &vs) const
+ContextFree ContextFree::remove_simple_productions(simple_production_map_type &na) const
 {
     return ContextFree();
 }
 
-ContextFree ContextFree::remove_useless_symbols(symbol_ptr_set_type &vi, non_terminal_set_type &na) const
+template<class T, class V>
+bool contains(const ContextFree::set_type<T>& set, const V& value)
+{
+    auto value_cast = dynamic_cast<const T*>(&value);
+
+    if (!value_cast)
+        return false;
+
+    return set.find(*value_cast) != set.end();
+}
+
+ContextFree ContextFree::remove_infertile_symbols(non_terminal_set_type &fertile_symbols) const
+{
+    non_terminal_set_type previous;
+    production_map_type productions(m_productions);
+    non_terminal_set_type still_infertile(m_vn);
+
+    do
+    {
+        previous = fertile_symbols;
+
+        for (const auto& symbol : non_terminal_set_type{still_infertile})
+        {
+            bool fertile = false;
+
+            for (const auto& prod : productions[symbol])
+            {
+                fertile = true;
+
+                for (const auto& alfa : prod)
+                    fertile &= alfa->is_terminal() | contains(fertile_symbols, *alfa);
+
+                if (fertile)
+                    break;
+            }
+
+            if (fertile)
+            {
+                still_infertile.erase(symbol);
+                fertile_symbols.insert(symbol);
+            }
+        }
+
+
+    } while (fertile_symbols != previous);
+
+    non_terminal_set_type new_vn{fertile_symbols};
+    terminal_set_type new_vt;
+    production_map_type new_productions;
+    non_terminal_symbol_type new_initial_symbol{m_initial_symbol};
+
+    if (!contains(fertile_symbols, m_initial_symbol))
+        return ContextFree();
+
+    for (const auto& fertile : fertile_symbols)
+        for (const auto& prod : productions[fertile])
+        {
+            bool fertile_production = true;
+            for (const auto& symbol : prod)
+                fertile_production &= symbol->is_terminal() | contains(fertile_symbols, *symbol);
+
+            if (fertile_production)
+                new_productions[fertile].insert(prod);
+        }
+
+    for (const auto& pair : new_productions)
+        for (const auto& prod : pair.second)
+            for (const auto& symbol : prod)
+                if (symbol->is_terminal())
+                {
+                    terminal_symbol_type term = *dynamic_cast<const terminal_symbol_type*>(symbol.get());
+                    new_vt.insert(term);
+                }
+
+    return ContextFree(new_vn, new_vt, new_productions, new_initial_symbol);
+}
+
+ContextFree ContextFree::remove_unreachable_symbols(symbol_ptr_set_type &reachable_symbols) const
 {
     return ContextFree();
 }
 
-ContextFree ContextFree::remove_infertile_symbols(symbol_ptr_set_type &vi) const
-{
-    return ContextFree();
-}
-
-ContextFree ContextFree::remove_unreachable_symbols(non_terminal_set_type &na) const
+ContextFree ContextFree::remove_useless_symbols(non_terminal_set_type &fertile_symbols,
+                                                symbol_ptr_set_type &reachable_symbols) const
 {
     return ContextFree();
 }

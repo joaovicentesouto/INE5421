@@ -70,4 +70,14 @@ TEST_CASE("Productions", "[grammar][symbol]")
 
     CHECK(prod.front() == "a");
     CHECK(prod.back() == "B");
+
+    Production prod2;
+    prod2.push_back(new TerminalSymbol("a"));
+    prod2.push_back(new NonTerminalSymbol("B"));
+    CHECK(prod == prod2);
+
+    Production prod3;
+    prod.push_back(new TerminalSymbol("b"));
+    prod.push_back(new NonTerminalSymbol("A"));
+    CHECK(prod != prod3);
 }

@@ -255,6 +255,9 @@ class Production : public Symbol::vector_type<SymbolPointer>
     using string_type               = symbol_type::string_type;
     using symbol_ptr_container_type = symbol_type::vector_type<symbol_ptr_type>;
 
+    //! Inherit constructors
+    using symbol_type::vector_type<SymbolPointer>::vector;
+
     Production() = default;
     Production(const Production &) = default;
     Production &operator=(const Production &) = default;

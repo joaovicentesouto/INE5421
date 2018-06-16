@@ -39,6 +39,7 @@ class ContextFree
     using symbol_ptr_set_type      = set_type<symbol_ptr_type>;
     using production_map_type      = map_type<non_terminal_symbol_type, set_type<production_type>>;
     using resursion_map_type       = map_type<non_terminal_symbol_type, set_type<Recursion>>;
+    using simple_production_map_type = map_type<non_terminal_symbol_type, set_type<non_terminal_symbol_type>>;
 
     // Class constructors
     ContextFree() = default;
@@ -64,12 +65,19 @@ class ContextFree
     const non_terminal_symbol_type &initial_symbol() const;
     string_type to_string() const;
 
-    ContextFree own(/*va ve vi ?*/) const;
-    ContextFree epsilon_free(non_terminal_set_type &ne) const;
-    ContextFree remove_simple_productions(non_terminal_set_type &vs) const;
-    ContextFree remove_useless_symbols(symbol_ptr_set_type &vi, non_terminal_set_type &na) const;
-    ContextFree remove_infertile_symbols(symbol_ptr_set_type &vi) const;
-    ContextFree remove_unreachable_symbols(non_terminal_set_type &na) const;
+    ContextFree own(non_terminal_set_type &derives_epsilon,
+                    simple_production_map_type &na,
+                    non_terminal_set_type &fertile_symbols,
+                    symbol_ptr_set_type &reachable_symbols) const;
+
+    ContextFree epsilon_free(non_terminal_set_type &derives_epsilon) const;
+    ContextFree remove_simple_productions(simple_production_map_type &na) const;
+
+    ContextFree remove_infertile_symbols(non_terminal_set_type &fertile_symbols) const;
+    ContextFree remove_unreachable_symbols(symbol_ptr_set_type &reachable_symbols) const;
+    ContextFree remove_useless_symbols(non_terminal_set_type &fertile_symbols,
+                                       symbol_ptr_set_type &reachable_symbols) const;
+
     ContextFree factor(unsigned max_steps) const;
     ContextFree remove_recursion(resursion_map_type &recursions) const;
 
@@ -79,12 +87,13 @@ class ContextFree
     bool has_recursion() const;
 
     bool operator==(const ContextFree &ContextFree) const;
+    bool operator!=(const ContextFree &ContextFree) const;
 
   public:
-    non_terminal_set_type m_vn;
+    non_terminal_symbol_type m_initial_symbol{"S"};
+    non_terminal_set_type m_vn{m_initial_symbol};
     terminal_set_type m_vt;
     production_map_type m_productions;
-    non_terminal_symbol_type m_initial_symbol{"S"};
 };
 
 } // namespace grammar
