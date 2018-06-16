@@ -310,7 +310,10 @@ ContextFree ContextFree::remove_recursion(resursion_map_type &recursions) const
 
 bool ContextFree::emptiness() const
 {
-    return false;
+    non_terminal_set_type fertile;
+    auto g = remove_infertile_symbols(fertile);
+
+    return !contains(fertile, g.initial_symbol());
 }
 
 bool ContextFree::finitude() const

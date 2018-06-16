@@ -649,6 +649,37 @@ TEST_CASE("Grammar: Transform a grammar on own grammar", "[grammar][function]")
     }
 }
 
+TEST_CASE("Grammar: Emptiness", "[grammar][function]")
+{
+    ContextFree grammar;
+
+    CHECK(grammar.emptiness());
+
+    NonTerminalSymbol S{"S"}, A{"A"}, B{"B"};
+    TerminalSymbol a{"a"}, b{"b"};
+
+    SymbolPointer pS{new NonTerminalSymbol(S)}, pA{new NonTerminalSymbol(A)}, pB{new NonTerminalSymbol(B)};
+    SymbolPointer pa{new TerminalSymbol(a)}, pb{new TerminalSymbol(b)};
+    Production prod_SA{pS, pA}, prod_aAB{pa, pA, pB}, prod_BBa{pB, pB, pa}, prod_ba{pb, pa};
+
+    ContextFree::non_terminal_set_type vn{S, A, B};
+    ContextFree::terminal_set_type vt{a, b};
+    ContextFree::production_map_type prods;
+    prods[S] = {prod_SA, prod_ba};
+    prods[A] = {prod_ba};
+    prods[B] = {prod_aAB, prod_BBa};
+
+    grammar = ContextFree{vn, vt, prods, S};
+
+    CHECK(!grammar.emptiness());
+
+    prods[S] = {prod_SA, prod_BBa};
+    prods[A] = {prod_SA, prod_aAB};
+
+    grammar = ContextFree{vn, vt, prods, S};
+    CHECK(grammar.emptiness());
+}
+
 //ContextFree factor(unsigned max_steps) const;
 //ContextFree remove_recursion(resursion_map_type &recursions) const;
 
