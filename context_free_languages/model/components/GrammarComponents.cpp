@@ -5,6 +5,12 @@ namespace formal_device
 namespace grammar
 {
 
+SymbolPointer::SymbolPointer(Symbol * symbol) :
+    std::shared_ptr<Symbol>(symbol)
+{
+
+}
+
 bool SymbolPointer::operator==(const SymbolPointer &another) const
 {
     return *get() == *another;

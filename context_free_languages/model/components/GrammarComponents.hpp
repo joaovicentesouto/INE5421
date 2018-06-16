@@ -77,6 +77,14 @@ class SymbolPointer : public std::shared_ptr<Symbol>
   public:
     using symbol_type = Symbol;
 
+    SymbolPointer() = default;
+    SymbolPointer(const SymbolPointer &) = default;
+    SymbolPointer &operator=(const SymbolPointer &) = default;
+    SymbolPointer(SymbolPointer &&) = default;
+    SymbolPointer &operator=(SymbolPointer &&) = default;
+
+    SymbolPointer(Symbol * symbol);
+
     bool operator==(const SymbolPointer &another) const;
     bool operator<(const SymbolPointer &another) const;
 };
