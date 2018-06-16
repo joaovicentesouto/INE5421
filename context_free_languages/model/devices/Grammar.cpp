@@ -110,9 +110,6 @@ ContextFree ContextFree::remove_infertile_symbols(non_terminal_set_type &fertile
     production_map_type new_productions;
     non_terminal_symbol_type new_initial_symbol{m_initial_symbol};
 
-    if (!contains(fertile_symbols, m_initial_symbol))
-        return ContextFree();
-
     for (const auto& fertile : fertile_symbols)
         for (const auto& prod : productions[fertile])
         {
@@ -138,7 +135,45 @@ ContextFree ContextFree::remove_infertile_symbols(non_terminal_set_type &fertile
 
 ContextFree ContextFree::remove_unreachable_symbols(symbol_ptr_set_type &reachable_symbols) const
 {
-    return ContextFree();
+    non_terminal_set_type new_vn;
+    terminal_set_type new_vt;
+    production_map_type new_productions;
+    non_terminal_symbol_type new_initial_symbol{m_initial_symbol};
+
+    production_map_type productions(m_productions);
+
+    size_t i = 0;
+    symbol_type::vector_type<symbol_ptr_type> to_process{new non_terminal_symbol_type{m_initial_symbol}};
+    reachable_symbols.insert(to_process.front());
+
+    do
+    {
+        const auto * symbol = dynamic_cast<const non_terminal_symbol_type*>(to_process[i].get());
+
+        if (!symbol) //! Terminal Symbol -> continue
+        {
+            new_vt.insert(*dynamic_cast<const terminal_symbol_type*>(to_process[i].get()));
+            continue;
+        }
+        else
+            new_vn.insert(*symbol);
+
+        if (productions[*symbol].empty())
+            continue;
+
+        new_productions[*symbol] = productions[*symbol];
+
+        for (const auto& prod : productions[*symbol])
+            for (const auto& alfa : prod)
+                if (!contains(reachable_symbols, alfa))
+                {
+                    reachable_symbols.insert(alfa);
+                    to_process.push_back(alfa);
+                }
+
+    } while (++i < to_process.size());
+
+    return ContextFree(new_vn, new_vt, new_productions, new_initial_symbol);
 }
 
 ContextFree ContextFree::remove_useless_symbols(non_terminal_set_type &fertile_symbols,
