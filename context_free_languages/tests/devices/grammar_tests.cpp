@@ -284,7 +284,7 @@ TEST_CASE("Grammar: Remove useless symbols", "[grammar][function]")
 
         SymbolPointer pS{new NonTerminalSymbol(S)},
                       pA{new NonTerminalSymbol(A)},
-                      pB{new NonTerminalSymbol(B)};;
+                      pB{new NonTerminalSymbol(B)};
         SymbolPointer pa{new TerminalSymbol(a)}, pb{new TerminalSymbol(b)}, pc{new TerminalSymbol(c)};
         Production prod0{pa, pA}, prod1{pb, pS}, prod2{pb},
                    prod3{pc, pA},
@@ -378,6 +378,105 @@ TEST_CASE("Grammar: Remove useless symbols", "[grammar][function]")
     }
 }
 
+//ContextFree epsilon_free(non_terminal_set_type &derives_epsilon) const;
+
+TEST_CASE("Grammar: Turn on Epsilon Free", "[grammar][function]")
+{
+    SECTION("Simple", "[grammar][inferile]")
+    {
+        NonTerminalSymbol S{"S"}, A{"A"};
+        TerminalSymbol a{"a"}, b{"b"}, epsilon{"&"};
+
+        SymbolPointer pS{new NonTerminalSymbol(S)},
+                      pA{new NonTerminalSymbol(A)};
+        SymbolPointer pa{new TerminalSymbol(a)}, pb{new TerminalSymbol(b)}, pEpsilon{new TerminalSymbol(epsilon)};
+        Production prod0{pa, pA}, prod1{pb}, prod2{pEpsilon}, prod3{pa};
+
+        ContextFree::non_terminal_set_type vn{S, A};
+        ContextFree::terminal_set_type vt{a, b, epsilon};
+        ContextFree::production_map_type prods;
+        prods[S] = {prod0};
+        prods[A] = {prod1, prod2};
+
+        ContextFree grammar{vn, vt, prods, S};
+
+        ContextFree::non_terminal_set_type derives_epsilon;
+        auto new_grammar = grammar.epsilon_free(derives_epsilon);
+
+        REQUIRE(!derives_epsilon.empty());
+
+        ContextFree::production_map_type new_prods;
+        new_prods[S] = {prod0, prod3};
+        new_prods[A] = {prod1};
+
+        ContextFree grammar_2{vn, vt, new_prods, S};
+
+        ContextFree::non_terminal_set_type derives_epsilon_test{A};
+
+        REQUIRE(derives_epsilon.size() == 1);
+        CHECK(derives_epsilon == derives_epsilon_test);
+        CHECK(new_grammar == grammar_2);
+    }
+
+    SECTION("Complex", "[grammar][inferile]")
+    {
+        NonTerminalSymbol S_linha{"S\'"}, S{"S"}, A{"A"}, B{"B"}, C{"C"};
+        TerminalSymbol a{"a"}, b{"b"}, c{"c"}, epsilon{"&"};
+
+        SymbolPointer pS{new NonTerminalSymbol(S)},
+                      pA{new NonTerminalSymbol(A)},
+                      pB{new NonTerminalSymbol(B)},
+                      pC{new NonTerminalSymbol(C)};
+        SymbolPointer pa{new TerminalSymbol(a)},
+                      pb{new TerminalSymbol(b)},
+                      pc{new TerminalSymbol(c)},
+                      pEpsilon{new TerminalSymbol(epsilon)};
+        Production prod0{pA, pB}, prod1{pA, pC},
+                   prod2{pa, pA}, prod3{pEpsilon},
+                   prod4{pb, pB}, prod5{pEpsilon},
+                   prod6{pc, pC}, prod7{pc};
+
+        ContextFree::non_terminal_set_type vn{S, A, B, C};
+        ContextFree::terminal_set_type vt{a, b, c, epsilon};
+        ContextFree::production_map_type prods;
+        prods[S] = {prod0, prod1};
+        prods[A] = {prod2, prod3};
+        prods[B] = {prod4, prod5};
+        prods[C] = {prod6, prod7};
+
+        ContextFree grammar{vn, vt, prods, S};
+
+        ContextFree::non_terminal_set_type derives_epsilon;
+        auto new_grammar = grammar.epsilon_free(derives_epsilon);
+
+        REQUIRE(!derives_epsilon.empty());
+
+        SymbolPointer pS_linha(new NonTerminalSymbol(S_linha));
+        Production prod_a{pa}, prod_b{pb}, prod_A{pA}, prod_B{pB}, prod_C{pC}, prodEp{pEpsilon};
+
+
+        ContextFree::non_terminal_set_type new_vn{S_linha, S, A, B, C};
+        ContextFree::production_map_type new_prods;
+        new_prods[S_linha] = {prod0, prod1, prod_A, prod_B, prod_C, prodEp};
+        new_prods[S] = {prod0, prod1, prod_A, prod_B, prod_C};
+        new_prods[A] = {prod2, prod_a};
+        new_prods[B] = {prod4, prod_b};
+        new_prods[C] = {prod6, prod7};
+
+        ContextFree grammar_2{new_vn, vt, new_prods, S_linha};
+
+        ContextFree::non_terminal_set_type derives_epsilon_test{S, A, B};
+
+        REQUIRE(derives_epsilon.size() == 3);
+        CHECK(derives_epsilon == derives_epsilon_test);
+        CHECK(new_grammar.vn() == new_vn);
+        CHECK(new_grammar.vt() == vt);
+        CHECK(new_grammar.initial_symbol() == S_linha);
+        CHECK(new_grammar.productions() == new_prods);
+        CHECK(new_grammar == grammar_2);
+    }
+}
+
 
 //ContextFree own(non_terminal_set_type &derives_epsilon,
 //                simple_production_map_type &na,
@@ -386,10 +485,6 @@ TEST_CASE("Grammar: Remove useless symbols", "[grammar][function]")
 
 //ContextFree epsilon_free(non_terminal_set_type &derives_epsilon) const;
 //ContextFree remove_simple_productions(simple_production_map_type &na) const;
-
-//ContextFree remove_unreachable_symbols(symbol_ptr_set_type &reachable_symbols) const;
-//ContextFree remove_useless_symbols(non_terminal_set_type &fertile_symbols,
-//                                   symbol_ptr_set_type &reachable_symbols) const;
 
 //ContextFree factor(unsigned max_steps) const;
 //ContextFree remove_recursion(resursion_map_type &recursions) const;

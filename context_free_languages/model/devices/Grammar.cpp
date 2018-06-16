@@ -28,17 +28,28 @@ const ContextFree::non_terminal_symbol_type &ContextFree::initial_symbol() const
 bool ContextFree::operator==(const ContextFree &ContextFree) const
 {
     return m_vn             == ContextFree.m_vn
-        && m_vt             == ContextFree.m_vt
-        && m_productions    == ContextFree.m_productions
-        && m_initial_symbol == ContextFree.m_initial_symbol;
+            && m_vt             == ContextFree.m_vt
+            && m_productions    == ContextFree.m_productions
+            && m_initial_symbol == ContextFree.m_initial_symbol;
 }
 
 bool ContextFree::operator!=(const ContextFree &ContextFree) const
 {
     return m_vn             != ContextFree.m_vn
-        || m_vt             != ContextFree.m_vt
-        || m_productions    != ContextFree.m_productions
-        || m_initial_symbol != ContextFree.m_initial_symbol;
+            || m_vt             != ContextFree.m_vt
+            || m_productions    != ContextFree.m_productions
+            || m_initial_symbol != ContextFree.m_initial_symbol;
+}
+
+template<class T, class V>
+bool contains(const ContextFree::set_type<T>& set, const V& value)
+{
+    auto value_cast = dynamic_cast<const T*>(&value);
+
+    if (!value_cast)
+        return false;
+
+    return set.find(*value_cast) != set.end();
 }
 
 ContextFree ContextFree::own(non_terminal_set_type &derives_epsilon,
@@ -51,23 +62,89 @@ ContextFree ContextFree::own(non_terminal_set_type &derives_epsilon,
 
 ContextFree ContextFree::epsilon_free(non_terminal_set_type &derives_epsilon) const
 {
-    return ContextFree();
+    non_terminal_set_type previous;
+    production_map_type productions(m_productions);
+    non_terminal_set_type does_not_derives_epsilon(m_vn);
+
+    do
+    {
+        previous = derives_epsilon;
+
+        for (const auto& symbol : non_terminal_set_type{does_not_derives_epsilon})
+        {
+            bool generate_epsilon = false;
+
+            for (const auto& prod : productions[symbol])
+            {
+                generate_epsilon = true;
+
+                for (const auto& alfa : prod)
+                    generate_epsilon &= (*alfa == "&") | contains(derives_epsilon, *alfa);
+
+                if (generate_epsilon)
+                    break;
+            }
+
+            if (generate_epsilon)
+            {
+                does_not_derives_epsilon.erase(symbol);
+                derives_epsilon.insert(symbol);
+            }
+        }
+
+    } while (derives_epsilon != previous);
+
+    non_terminal_set_type new_vn{m_vn};
+    terminal_set_type new_vt{m_vt};
+    production_map_type new_productions;
+    non_terminal_symbol_type new_initial_symbol{m_initial_symbol};
+    production_type epsilon_production{new terminal_symbol_type("&")};
+
+    for (const auto& pair : m_productions)
+        for (const auto& prod : pair.second)
+            if (prod != epsilon_production)
+                new_productions[pair.first].insert(prod);
+
+    production_map_type copy(new_productions);
+    for (const auto& pair : copy)
+    {
+        for (const auto& prod : pair.second)
+        {
+            symbol_type::vector_type<production_type> intermediate{production_type()};
+
+            for (const auto& symbol : prod)
+            {
+                if (symbol->is_terminal() || !contains(derives_epsilon, *symbol))
+                    for (auto & new_prod : intermediate)
+                        new_prod.push_back(symbol);
+                else
+                    for (auto new_prod : symbol_type::vector_type<production_type>(intermediate))
+                    {
+                        new_prod.push_back(symbol);
+                        intermediate.push_back(new_prod);
+                    }
+            }
+
+            for (const auto& new_prod : intermediate)
+                if (!new_prod.empty())
+                    new_productions[pair.first].insert(new_prod);
+        }
+    }
+
+    if (contains(derives_epsilon, m_initial_symbol))
+    {
+        new_initial_symbol = m_initial_symbol.value() + "\'";
+        new_productions[new_initial_symbol] = new_productions[m_initial_symbol];
+        new_productions[new_initial_symbol].insert(epsilon_production);
+        new_vn.insert(new_initial_symbol);
+    }
+
+    return ContextFree(new_vn, new_vt, new_productions, new_initial_symbol);
 }
 
 ContextFree ContextFree::remove_simple_productions(simple_production_map_type &na) const
 {
     return ContextFree();
-}
-
-template<class T, class V>
-bool contains(const ContextFree::set_type<T>& set, const V& value)
-{
-    auto value_cast = dynamic_cast<const T*>(&value);
-
-    if (!value_cast)
-        return false;
-
-    return set.find(*value_cast) != set.end();
 }
 
 ContextFree ContextFree::remove_infertile_symbols(non_terminal_set_type &fertile_symbols) const
@@ -101,7 +178,6 @@ ContextFree ContextFree::remove_infertile_symbols(non_terminal_set_type &fertile
                 fertile_symbols.insert(symbol);
             }
         }
-
 
     } while (fertile_symbols != previous);
 
