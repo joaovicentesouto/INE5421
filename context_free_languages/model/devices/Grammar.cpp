@@ -8,6 +8,7 @@ namespace grammar
 ContextFree::ContextFree()
 {
     calculate_first();
+    calculate_follow();
 }
 
 const ContextFree::non_terminal_set_type &ContextFree::vn() const
@@ -117,7 +118,58 @@ void ContextFree::calculate_first()
 
 void ContextFree::calculate_follow()
 {
+    m_follow[m_initial_symbol] = {terminal_symbol_type("$")};
 
+    for (const auto& pair : m_productions)
+        for (const auto& prod : pair.second)
+            for (int i = 0; i < prod.size(); ++i)
+            {
+                if (!prod[i]->is_terminal())
+                {
+                    auto non_term = *dynamic_cast<const non_terminal_symbol_type*>(prod[i].get());
+
+                    for (int j = i + 1; j < prod.size(); ++j)
+                    {
+                        for (const auto& symbol : m_first[prod[j]])
+                            if (symbol != terminal_symbol_type("&"))
+                                m_follow[non_term].insert(symbol);
+
+                        if (prod[j]->is_terminal())
+                            break;
+                    }
+                }
+            }
+
+    follow_map_type previous;
+
+    while (m_follow != previous)
+    {
+        previous = m_follow;
+
+        for (const auto& pair : m_productions)
+            for (const auto& prod : pair.second)
+                for (auto it = prod.rbegin(); it != prod.rend(); ++it)
+                {
+                    if (!(*it)->is_terminal())
+                    {
+                        auto non_term = *dynamic_cast<const non_terminal_symbol_type*>(it->get());
+                        symbol_ptr_type source(new non_terminal_symbol_type(pair.first));
+
+                        bool contains_epsilon = false;
+
+                        for (const auto& symbol : m_first[source])
+                            if (symbol != terminal_symbol_type("&"))
+                                m_follow[non_term].insert(symbol);
+                            else
+                                contains_epsilon = true;
+
+                        if (!contains_epsilon)
+                            break;
+                    }
+                    else
+                        break;
+                }
+    }
 }
 
 ContextFree ContextFree::own(non_terminal_set_type &derives_epsilon,

@@ -38,7 +38,7 @@ class ContextFree
     using non_terminal_set_type    = set_type<non_terminal_symbol_type>;
     using symbol_ptr_set_type      = set_type<symbol_ptr_type>;
     using first_map_type           = map_type<symbol_ptr_type, terminal_set_type>;
-    using follow_map_type          = first_map_type;
+    using follow_map_type          = map_type<non_terminal_symbol_type, terminal_set_type>;
     using production_map_type      = map_type<non_terminal_symbol_type, set_type<production_type>>;
     using resursion_map_type       = map_type<non_terminal_symbol_type, set_type<Recursion>>;
     using simple_production_map_type = map_type<non_terminal_symbol_type, set_type<non_terminal_symbol_type>>;
@@ -60,6 +60,7 @@ class ContextFree
         m_productions{std::forward<Arg3>(productions)}
     {
         calculate_first();
+        calculate_follow();
     }
 
     const non_terminal_set_type &vn() const;
@@ -94,7 +95,7 @@ class ContextFree
     bool operator==(const ContextFree &ContextFree) const;
     bool operator!=(const ContextFree &ContextFree) const;
 
-  public:
+  private:
     void calculate_first();
     void calculate_follow();
     bool contains_cycle(non_terminal_symbol_type state,

@@ -17,6 +17,8 @@ TEST_CASE("Grammar init", "[grammar]")
     SymbolPointer pS(new NonTerminalSymbol("S"));
 
     CHECK(grammar.first()[pS].empty());
+    CHECK(*grammar.follow()[grammar.initial_symbol()].begin() == "$");
+    CHECK(grammar.follow()[grammar.initial_symbol()].size() == 1);
 
     SECTION("Compare", "[grammar][==]")
     {
