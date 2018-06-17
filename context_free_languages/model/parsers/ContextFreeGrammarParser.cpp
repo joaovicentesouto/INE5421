@@ -16,7 +16,7 @@ grammar_type grammar_parser(string_type grammar)
 
     for (auto line: productions_line) {
 
-        production_type production;
+        production_type production;  // vector
         non_terminal_symbol_type generator;
         int i = 0;
 
