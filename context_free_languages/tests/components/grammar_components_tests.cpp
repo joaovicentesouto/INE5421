@@ -3,8 +3,10 @@
 #include "../catch.hpp"
 
 #include <context_free_languages/model/components/GrammarComponents.hpp>
+#include <context_free_languages/model/parsers/ContextFreeGrammarParser.hpp>
 
 using namespace formal_device::grammar;
+using namespace formal_device::parser;
 
 TEST_CASE("Symbols", "[grammar][symbol]")
 {
@@ -70,4 +72,53 @@ TEST_CASE("Productions", "[grammar][symbol]")
 
     CHECK(prod.front() == "a");
     CHECK(prod.back() == "B");
+}
+
+TEST_CASE("Parser", "[parser][grammar]")
+{
+    non_terminal_symbol_type E("E123");
+    non_terminal_symbol_type T("T");
+    non_terminal_symbol_type F("F");
+
+    terminal_symbol_type plus("+");
+    terminal_symbol_type subtraction("-");
+    terminal_symbol_type multiplier("*");
+    terminal_symbol_type divisor("/");
+    terminal_symbol_type open("(");
+    terminal_symbol_type close(")");
+    terminal_symbol_type id("id");
+
+    non_terminal_set_type vn{E, T, F};
+    terminal_set_type vt{plus, subtraction, multiplier, divisor, open, close, id};
+
+    production_type p1(symbol_ptr_type(E),
+                       symbol_ptr_type(plus),
+                       symbol_ptr_type(T));
+    production_type p2(symbol_ptr_type(E),
+                       symbol_ptr_type(subtraction),
+                       symbol_ptr_type(T));
+    production_type p3(symbol_ptr_type(T));
+
+    production_type p4(symbol_ptr_type(T),
+                       symbol_ptr_type(multiplier),
+                       symbol_ptr_type(F));
+    production_type p5(symbol_ptr_type(T),
+                       symbol_ptr_type(divisor),
+                       symbol_ptr_type(F));
+    production_type p6(symbol_ptr_type(F));
+
+    production_type p7(symbol_ptr_type(open),
+                       symbol_ptr_type(E),
+                       symbol_ptr_type(close));
+    production_type p8(symbol_ptr_type(id));
+
+    production_map_type p = {{E, set_type<production_type>{p1, p2, p3}},
+                             {T, set_type<production_type>{p4, p5, p6}},
+                             {F, set_type<production_type>{p7, p8}}};
+
+    grammar_type grammar(vn, vt, p, E);
+
+    grammar_type parser_grammar = grammar_parser("E123 -> E123 + T | E123 - T | T \n T -> T * F | T / F | F\n F -> ( E123 ) | id");
+
+    CHECK(parser_grammar == grammar);
 }
