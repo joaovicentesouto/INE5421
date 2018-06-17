@@ -43,7 +43,7 @@ target_link_libraries(context_free_languages_gui PUBLIC
     PRIVATE context_free_languages_components
     PRIVATE context_free_languages_devices
     PRIVATE context_free_languages_parsers
-    PRIVATE context_free_languages_manipulators
+    #PRIVATE context_free_languages_manipulators
 )
 #    PRIVATE Qt5::Widgets
 #)

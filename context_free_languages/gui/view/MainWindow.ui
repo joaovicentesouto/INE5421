@@ -19,212 +19,205 @@
    </property>
    <layout class="QHBoxLayout" name="horizontalLayout_3">
     <item>
-     <layout class="QVBoxLayout" name="m_machine_1_box">
+     <layout class="QVBoxLayout" name="GrammarDataBox">
       <item>
-       <widget class="DynamicAutomatonWidget" name="m_machine_1" native="true">
+       <widget class="QWidget" name="GrammarData" native="true">
         <property name="minimumSize">
          <size>
           <width>300</width>
           <height>0</height>
          </size>
         </property>
+        <layout class="QVBoxLayout" name="verticalLayout">
+         <item alignment="Qt::AlignHCenter">
+          <widget class="QLabel" name="Title1">
+           <property name="text">
+            <string>Grammar Data</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QTextEdit" name="Data"/>
+         </item>
+        </layout>
        </widget>
       </item>
      </layout>
     </item>
     <item>
-     <layout class="QVBoxLayout" name="m_op_box">
+     <layout class="QVBoxLayout" name="GrammarBox">
       <item>
-       <spacer name="verticalSpacer_2">
-        <property name="orientation">
-         <enum>Qt::Vertical</enum>
+       <widget class="QWidget" name="Grammar" native="true">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Expanding" vsizetype="Ignored">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
         </property>
-        <property name="sizeType">
-         <enum>QSizePolicy::Maximum</enum>
-        </property>
-        <property name="sizeHint" stdset="0">
-         <size>
-          <width>20</width>
-          <height>30</height>
-         </size>
-        </property>
-       </spacer>
-      </item>
-      <item>
-       <layout class="QVBoxLayout" name="m_inner_op_box">
-        <item>
-         <widget class="QPushButton" name="m_swap">
-          <property name="maximumSize">
-           <size>
-            <width>45</width>
-            <height>45</height>
-           </size>
-          </property>
-          <property name="text">
-           <string>Swap</string>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <spacer name="verticalSpacer">
-          <property name="orientation">
-           <enum>Qt::Vertical</enum>
-          </property>
-          <property name="sizeType">
-           <enum>QSizePolicy::Maximum</enum>
-          </property>
-          <property name="sizeHint" stdset="0">
-           <size>
-            <width>20</width>
-            <height>20</height>
-           </size>
-          </property>
-         </spacer>
-        </item>
-        <item>
-         <widget class="QPushButton" name="m_or_btn">
-          <property name="sizePolicy">
-           <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
-            <horstretch>0</horstretch>
-            <verstretch>0</verstretch>
-           </sizepolicy>
-          </property>
-          <property name="maximumSize">
-           <size>
-            <width>45</width>
-            <height>45</height>
-           </size>
-          </property>
-          <property name="text">
-           <string>|</string>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QPushButton" name="m_concat_btn">
-          <property name="sizePolicy">
-           <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
-            <horstretch>0</horstretch>
-            <verstretch>0</verstretch>
-           </sizepolicy>
-          </property>
-          <property name="maximumSize">
-           <size>
-            <width>45</width>
-            <height>45</height>
-           </size>
-          </property>
-          <property name="text">
-           <string>+</string>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QPushButton" name="m_and_btn">
-          <property name="sizePolicy">
-           <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
-            <horstretch>0</horstretch>
-            <verstretch>0</verstretch>
-           </sizepolicy>
-          </property>
-          <property name="maximumSize">
-           <size>
-            <width>45</width>
-            <height>45</height>
-           </size>
-          </property>
-          <property name="text">
-           <string>^</string>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QPushButton" name="m_diff_btn">
-          <property name="sizePolicy">
-           <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
-            <horstretch>0</horstretch>
-            <verstretch>0</verstretch>
-           </sizepolicy>
-          </property>
-          <property name="maximumSize">
-           <size>
-            <width>45</width>
-            <height>45</height>
-           </size>
-          </property>
-          <property name="text">
-           <string>-</string>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QPushButton" name="m_contains_btn">
-          <property name="maximumSize">
-           <size>
-            <width>45</width>
-            <height>45</height>
-           </size>
-          </property>
-          <property name="text">
-           <string>⊆</string>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QPushButton" name="m_equality_btn">
-          <property name="sizePolicy">
-           <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
-            <horstretch>0</horstretch>
-            <verstretch>0</verstretch>
-           </sizepolicy>
-          </property>
-          <property name="maximumSize">
-           <size>
-            <width>45</width>
-            <height>45</height>
-           </size>
-          </property>
-          <property name="text">
-           <string>=</string>
-          </property>
-         </widget>
-        </item>
-       </layout>
-      </item>
-      <item>
-       <spacer name="verticalSpacer_5">
-        <property name="orientation">
-         <enum>Qt::Vertical</enum>
-        </property>
-        <property name="sizeType">
-         <enum>QSizePolicy::Maximum</enum>
-        </property>
-        <property name="sizeHint" stdset="0">
-         <size>
-          <width>20</width>
-          <height>100</height>
-         </size>
-        </property>
-       </spacer>
-      </item>
-     </layout>
-    </item>
-    <item>
-     <layout class="QVBoxLayout" name="m_machine_2_box">
-      <item>
-       <widget class="DynamicAutomatonWidget" name="m_machine_2" native="true">
         <property name="minimumSize">
          <size>
           <width>300</width>
           <height>0</height>
          </size>
         </property>
+        <layout class="QVBoxLayout" name="verticalLayout_2">
+         <item alignment="Qt::AlignHCenter">
+          <widget class="QLabel" name="Title2">
+           <property name="maximumSize">
+            <size>
+             <width>50</width>
+             <height>20</height>
+            </size>
+           </property>
+           <property name="text">
+            <string>Grammar</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="DynamicGrammarWidget" name="DynamicGrammar" native="true"/>
+         </item>
+        </layout>
        </widget>
       </item>
      </layout>
     </item>
     <item>
      <layout class="QVBoxLayout" name="m_equal_box">
+      <property name="spacing">
+       <number>1</number>
+      </property>
+      <property name="sizeConstraint">
+       <enum>QLayout::SetMinimumSize</enum>
+      </property>
+      <item>
+       <widget class="QPushButton" name="m_equal_btn_2">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>100</width>
+          <height>60</height>
+         </size>
+        </property>
+        <property name="text">
+         <string>Own</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="m_equal_btn_7">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>100</width>
+          <height>60</height>
+         </size>
+        </property>
+        <property name="text">
+         <string>Remove
+Simple
+Productions</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="m_equal_btn_6">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>100</width>
+          <height>60</height>
+         </size>
+        </property>
+        <property name="text">
+         <string>Epsilon-Free</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="m_equal_btn_8">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>100</width>
+          <height>60</height>
+         </size>
+        </property>
+        <property name="text">
+         <string>Remove
+Inutile
+Symbols</string>
+        </property>
+       </widget>
+      </item>
+      <item alignment="Qt::AlignHCenter">
+       <widget class="QPushButton" name="m_equal_btn_3">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>100</width>
+          <height>60</height>
+         </size>
+        </property>
+        <property name="font">
+         <font>
+          <strikeout>false</strikeout>
+          <kerning>true</kerning>
+         </font>
+        </property>
+        <property name="text">
+         <string>Remove
+Dead
+Symbols</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="m_equal_btn_4">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>100</width>
+          <height>60</height>
+         </size>
+        </property>
+        <property name="text">
+         <string>Remove
+Unreachable
+Symbols</string>
+        </property>
+       </widget>
+      </item>
       <item>
        <widget class="QPushButton" name="m_equal_btn">
         <property name="sizePolicy">
@@ -235,12 +228,33 @@
         </property>
         <property name="maximumSize">
          <size>
-          <width>45</width>
-          <height>45</height>
+          <width>100</width>
+          <height>60</height>
          </size>
         </property>
         <property name="text">
-         <string>:=</string>
+         <string>N-Step
+Factoring</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="m_equal_btn_9">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>100</width>
+          <height>60</height>
+         </size>
+        </property>
+        <property name="text">
+         <string>Remove Left
+Recursion</string>
         </property>
        </widget>
       </item>
@@ -248,14 +262,26 @@
     </item>
     <item>
      <layout class="QVBoxLayout" name="m_result_machine_box">
-      <item>
-       <widget class="StaticAutomatonWidget" name="m_result_machine" native="true">
+      <item alignment="Qt::AlignHCenter">
+       <widget class="QWidget" name="m_result_machine" native="true">
         <property name="minimumSize">
          <size>
           <width>350</width>
           <height>0</height>
          </size>
         </property>
+        <layout class="QVBoxLayout" name="verticalLayout_3">
+         <item alignment="Qt::AlignHCenter">
+          <widget class="QLabel" name="label_3">
+           <property name="text">
+            <string>Operation Result</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QTextEdit" name="textEdit_3"/>
+         </item>
+        </layout>
        </widget>
       </item>
      </layout>
@@ -294,15 +320,9 @@
  <layoutdefault spacing="6" margin="11"/>
  <customwidgets>
   <customwidget>
-   <class>DynamicAutomatonWidget</class>
+   <class>DynamicGrammarWidget</class>
    <extends>QWidget</extends>
-   <header location="global">view/DynamicAutomatonWidget.hpp</header>
-   <container>1</container>
-  </customwidget>
-  <customwidget>
-   <class>StaticAutomatonWidget</class>
-   <extends>QWidget</extends>
-   <header location="global">view/StaticAutomatonWidget.hpp</header>
+   <header>/home/bonotto/Dropbox/Faculdade/2018-01/Formais/INE5421/context_free_languages/gui/view/DynamicGrammarWidget.hpp</header>
    <container>1</container>
   </customwidget>
  </customwidgets>
