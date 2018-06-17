@@ -848,13 +848,14 @@ TEST_CASE("Grammar: Remove recursion", "[grammar][function]")
         prod_SAaAl{pS, pA, pa, pA_linha}, prod_bAl{pb, pA_linha};
 
     ContextFree::non_terminal_set_type new_vn{S, A, S_linha, A_linha};
+    ContextFree::terminal_set_type new_vt{a, b, epsilon};
     ContextFree::production_map_type new_prods;
     new_prods[S] = {prod_bSl};
     new_prods[S_linha] = {prod_aSl, prod_AaSl, prod_ep};
     new_prods[A] = {prod_SAaAl, prod_bAl};
     new_prods[A_linha] = {prod_bAl, prod_ep};
 
-    ContextFree grammar_2{new_vn, vt, new_prods, S};
+    ContextFree grammar_2{new_vn, new_vt, new_prods, S};
 
     ContextFree::recursion_map_type rec;
     rec[S][ContextFree::Recursion::Direct] = {S};
@@ -864,6 +865,49 @@ TEST_CASE("Grammar: Remove recursion", "[grammar][function]")
 
     CHECK(!new_grammar.has_recursion());
     CHECK(recursion == rec);
+    CHECK(new_grammar == grammar_2);
+}
+
+TEST_CASE("Grammar: Fator a grammar", "[grammar][function]")
+{
+    NonTerminalSymbol S{"S"}, A{"A"}, B{"B"}, S_linha{"S0"}, B_linha{"B0"};
+    TerminalSymbol a{"a"}, b{"b"}, c{"c"}, epsilon{"&"};
+
+    SymbolPointer pS{new NonTerminalSymbol(S)}, pA{new NonTerminalSymbol(A)}, pB{new NonTerminalSymbol(B)},
+                  pS_linha{new NonTerminalSymbol(S_linha)}, pB_linha{new NonTerminalSymbol(B_linha)};
+
+    SymbolPointer pa{new TerminalSymbol(a)}, pb{new TerminalSymbol(b)}, pc{new TerminalSymbol(c)}, pE{new TerminalSymbol(epsilon)};
+
+    Production prod_aA{pa, pA}, prod_aB{pa, pB},
+                prod_bA{pb, pA}, prod_ep{pE},
+                prod_cS{pc, pS}, prod_c{pc};
+
+    ContextFree::non_terminal_set_type vn{S, A, B};
+    ContextFree::terminal_set_type vt{a, b, c, epsilon};
+    ContextFree::production_map_type prods;
+    prods[S] = {prod_aA, prod_aB};
+    prods[A] = {prod_bA, prod_ep};
+    prods[B] = {prod_cS, prod_c};
+
+    ContextFree grammar = ContextFree{vn, vt, prods, S};
+
+    REQUIRE(!grammar.is_factored());
+
+    auto new_grammar = grammar.factor(10);
+
+    Production prod_cB_l{pc, pB_linha}, prod_aS_l{pa, pS_linha}, prod_A{pA}, prod_B{pB}, prod_S{pS};
+
+    ContextFree::non_terminal_set_type new_vn{S, A, B, S_linha, B_linha};
+    ContextFree::production_map_type new_prods;
+    new_prods[S] = {prod_aS_l};
+    new_prods[S_linha] = {prod_A, prod_S, prod_ep};
+    new_prods[A] = {prod_bA, prod_ep};
+    new_prods[B] = {prod_cB_l};
+    new_prods[B_linha] = {prod_S, prod_ep};
+
+    ContextFree grammar_2{new_vn, vt, new_prods, S};
+
+    CHECK(new_grammar.is_factored());
     CHECK(new_grammar == grammar_2);
 }
 

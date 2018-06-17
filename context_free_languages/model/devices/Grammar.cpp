@@ -252,6 +252,7 @@ ContextFree ContextFree::epsilon_free(non_terminal_set_type &derives_epsilon) co
         new_initial_symbol = m_initial_symbol.value() + "\'";
         new_productions[new_initial_symbol] = new_productions[m_initial_symbol];
         new_productions[new_initial_symbol].insert(epsilon_production);
+        new_vt.insert(terminal_symbol_type("&"));
         new_vn.insert(new_initial_symbol);
     }
 
@@ -414,7 +415,115 @@ ContextFree ContextFree::remove_useless_symbols(non_terminal_set_type &fertile_s
 
 ContextFree ContextFree::factor(unsigned max_steps) const
 {
-    return ContextFree();
+    symbol_type::vector_type<non_terminal_symbol_type> to_factor(m_vn.begin(), m_vn.end());
+    first_map_type first{m_first};
+
+    non_terminal_set_type new_vn{m_vn};
+    terminal_set_type new_vt{m_vt};
+    production_map_type new_productions{m_productions};
+    non_terminal_symbol_type new_initial_symbol{m_initial_symbol};
+
+    size_t i = 0;
+    size_t steps = 0;
+
+    while (i < to_factor.size() && steps < max_steps)
+    {
+        auto non_term = to_factor[i];
+        symbol_type::vector_type<terminal_symbol_type> symbols_to_factor;
+
+        //! Deriva produção na forma S -> Ab.. para S-> Xb.. se A->X
+        production_map_type previous_productions;
+        while (new_productions != previous_productions)
+        {
+            previous_productions = new_productions;
+            terminal_set_type visited;
+
+            for (const auto& prod : previous_productions[non_term])
+            {
+                if (prod[0]->is_terminal())
+                {
+                    if (contains(visited, *prod[0]))
+                        symbols_to_factor.push_back(terminal_symbol_type(prod[0]->value()));
+
+                    visited.insert(terminal_symbol_type(prod[0]->value()));
+                }
+                else if (non_term != prod[0])
+                {
+                    bool derive = false;
+                    non_terminal_symbol_type target(prod[0]->value());
+
+                    for (const auto& my_first : first[new non_terminal_symbol_type(non_term)])
+                    {
+                        if (my_first != terminal_symbol_type("&") && contains(first[prod[0]], my_first))
+                        {
+                            derive = true;
+                            break;
+                        }
+                    }
+
+                    if (derive || contains(first[prod[0]], terminal_symbol_type("&")))
+                    {
+                        for (const auto& prod_target : previous_productions[target])
+                        {
+                            auto p = prod_target;
+
+                            for (int x = 1; x < prod.size(); ++x)
+                                p.push_back(prod[x]);
+
+                            new_productions[non_term].insert(p);
+                        }
+
+                        new_productions[non_term].erase(prod);
+                    }
+                }
+            }
+        }
+
+        //! Passo de fatoramento
+        for (int f = 0; f < symbols_to_factor.size(); ++f)
+        {
+            non_terminal_symbol_type new_non_term(non_term.value() + std::to_string(f));
+            new_vn.insert(new_non_term);
+            to_factor.push_back(new_non_term);
+
+            terminal_symbol_type terminal = symbols_to_factor[f];
+
+            for (const auto& prod : previous_productions[non_term])
+            {
+                if (terminal == prod[0])
+                {
+                    //! new_non_term productions
+                    if (prod.size() > 1)
+                    {
+                        production_type p((++prod.begin()), prod.end());
+                        new_productions[new_non_term].insert(p);
+                    }
+                    else
+                    {
+                        new_productions[new_non_term].insert({new terminal_symbol_type("&")});
+                        new_vt.insert(terminal_symbol_type("&"));
+                    }
+                    
+                    new_productions[non_term].erase(prod);
+                }
+            }
+
+            production_type new_prod_factored{new terminal_symbol_type(terminal),
+                                              new non_terminal_symbol_type(new_non_term)};
+            new_productions[non_term].insert(new_prod_factored);
+        }
+
+        if (!symbols_to_factor.empty())
+            steps++;
+
+        i++;
+
+        ContextFree update_first(new_vn, new_vt, new_productions, new_initial_symbol);
+        update_first.calculate_first();
+        first = update_first.first();
+    }
+
+    return ContextFree(new_vn, new_vt, new_productions, new_initial_symbol);
 }
 
 ContextFree ContextFree::remove_recursion(recursion_map_type &recursions) const
@@ -500,6 +609,7 @@ ContextFree ContextFree::remove_recursion(recursion_map_type &recursions) const
 
         production_type epsilon_prod = {new terminal_symbol_type("&")};
         new_productions[symbol_line].insert(epsilon_prod);
+        new_vt.insert(terminal_symbol_type("&"));
     }
 
     return ContextFree(new_vn, new_vt, new_productions, new_initial_symbol);
