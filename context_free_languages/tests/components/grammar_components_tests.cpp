@@ -35,7 +35,6 @@ TEST_CASE("Symbols", "[grammar][symbol]")
         SymbolPointer a_ptr(new TerminalSymbol("a"));
         CHECK(a_ptr->is_terminal());
         CHECK(a_ptr->value() == "a");
-        CHECK((*(a_ptr->first().begin())) == *a_ptr);
 
         Symbol * base_a = a_ptr.get();
         CHECK(a_ptr == base_a);
@@ -46,8 +45,6 @@ TEST_CASE("Symbols", "[grammar][symbol]")
         SymbolPointer B_ptr(new NonTerminalSymbol("B"));
         CHECK(!B_ptr->is_terminal());
         CHECK(B_ptr->value() == "B");
-        CHECK(!B_ptr->first().size());
-        CHECK(!B_ptr->follow().size());
 
         Symbol * base_B = B_ptr.get();
         CHECK(B_ptr == base_B);

@@ -42,10 +42,6 @@ class Symbol
     */
     virtual bool is_terminal() const = 0;
 
-    virtual const terminal_set_type &first() const = 0;
-
-    virtual const terminal_set_type &follow() const = 0;
-
     //! Equality operator (from another symbol)
     /*!
         \brief Verifies that symbols are the same.
@@ -133,10 +129,6 @@ class TerminalSymbol : public Symbol
     */
     bool is_terminal() const;
 
-    const terminal_set_type &first() const;
-
-    const terminal_set_type &follow() const;
-
     //! Equality operator (from another symbol)
     /*!
         \brief Verifies that symbols are the same.
@@ -169,8 +161,6 @@ class TerminalSymbol : public Symbol
 
   private:
     string_type m_value{"&"};
-    terminal_set_type m_first;
-    terminal_set_type m_follow;
 };
 
 class NonTerminalSymbol : public Symbol
@@ -207,10 +197,6 @@ class NonTerminalSymbol : public Symbol
     */
     bool is_terminal() const;
 
-    const terminal_set_type &first() const;
-
-    const terminal_set_type &follow() const;
-
     //! Equality operator (from another symbol)
     /*!
         \brief Verifies that symbols are the same.
@@ -243,8 +229,6 @@ class NonTerminalSymbol : public Symbol
 
   private:
     string_type m_value{"Error"};
-    terminal_set_type m_first;
-    terminal_set_type m_follow;
 };
 
 class Production : public Symbol::vector_type<SymbolPointer>
@@ -270,33 +254,12 @@ class Production : public Symbol::vector_type<SymbolPointer>
     */
     ~Production() = default;
 
-    // //! Equality operator.
-    // /*!
-    //     \brief Check to see if they make the same changes.
-    //     \param prod Another Production.
-    //     \return True if are make the same changes.
-    // */
-    // bool operator==(const Production &prod) const;
-
-    // //! Less than operator
-    // /*!
-    //     \brief It checks to see if producitons is smaller than another.
-    //     \param prod Another Production.
-    //     \return True if is less than.
-    // */
-    // bool operator<(const Production &prod) const;
-
     //! Transform Production to string
     /*!
         \brief Representation of the production in the form of a string.
         \return The string representation.
     */
     string_type to_string() const;
-
-    // symbol_ptr_type operator[](size_t pos); // ?
-    // size_t size() const;
-    // iterator begin() const;
-    // iterator end() const;
 };
 
 } // namespace grammar

@@ -37,12 +37,14 @@ class ContextFree
     using terminal_set_type        = set_type<terminal_symbol_type>;
     using non_terminal_set_type    = set_type<non_terminal_symbol_type>;
     using symbol_ptr_set_type      = set_type<symbol_ptr_type>;
+    using first_map_type           = map_type<symbol_ptr_type, terminal_set_type>;
+    using follow_map_type          = first_map_type;
     using production_map_type      = map_type<non_terminal_symbol_type, set_type<production_type>>;
     using resursion_map_type       = map_type<non_terminal_symbol_type, set_type<Recursion>>;
     using simple_production_map_type = map_type<non_terminal_symbol_type, set_type<non_terminal_symbol_type>>;
 
     // Class constructors
-    ContextFree() = default;
+    ContextFree();
 
     ContextFree(const ContextFree &) = default;
     ContextFree &operator=(const ContextFree &) = default;
@@ -57,12 +59,15 @@ class ContextFree
         m_vt{std::forward<Arg2>(vt)},
         m_productions{std::forward<Arg3>(productions)}
     {
+        calculate_first();
     }
 
     const non_terminal_set_type &vn() const;
     const terminal_set_type &vt() const;
     const production_map_type &productions() const;
     const non_terminal_symbol_type &initial_symbol() const;
+    first_map_type first() const;
+    follow_map_type follow() const;
     string_type to_string() const;
 
     ContextFree own(non_terminal_set_type &derives_epsilon,
@@ -90,14 +95,18 @@ class ContextFree
     bool operator!=(const ContextFree &ContextFree) const;
 
   public:
+    void calculate_first();
+    void calculate_follow();
     bool contains_cycle(non_terminal_symbol_type state,
                         non_terminal_set_type & temporary,
                         non_terminal_set_type & permanent) const;
 
     non_terminal_symbol_type m_initial_symbol{"S"};
-    non_terminal_set_type m_vn{m_initial_symbol};
-    terminal_set_type m_vt;
-    production_map_type m_productions;
+    non_terminal_set_type    m_vn{m_initial_symbol};
+    terminal_set_type        m_vt;
+    production_map_type      m_productions;
+    first_map_type           m_first;
+    follow_map_type          m_follow;
 };
 
 } // namespace grammar

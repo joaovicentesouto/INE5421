@@ -5,6 +5,11 @@ namespace formal_device
 namespace grammar
 {
 
+ContextFree::ContextFree()
+{
+    calculate_first();
+}
+
 const ContextFree::non_terminal_set_type &ContextFree::vn() const
 {
     return m_vn;
@@ -25,20 +30,30 @@ const ContextFree::non_terminal_symbol_type &ContextFree::initial_symbol() const
     return m_initial_symbol;
 }
 
+ContextFree::first_map_type ContextFree::first() const
+{
+    return m_first;
+}
+
+ContextFree::follow_map_type ContextFree::follow() const
+{
+    return m_follow;
+}
+
 bool ContextFree::operator==(const ContextFree &ContextFree) const
 {
     return m_vn             == ContextFree.m_vn
-            && m_vt             == ContextFree.m_vt
-            && m_productions    == ContextFree.m_productions
-            && m_initial_symbol == ContextFree.m_initial_symbol;
+        && m_vt             == ContextFree.m_vt
+        && m_productions    == ContextFree.m_productions
+        && m_initial_symbol == ContextFree.m_initial_symbol;
 }
 
 bool ContextFree::operator!=(const ContextFree &ContextFree) const
 {
     return m_vn             != ContextFree.m_vn
-            || m_vt             != ContextFree.m_vt
-            || m_productions    != ContextFree.m_productions
-            || m_initial_symbol != ContextFree.m_initial_symbol;
+        || m_vt             != ContextFree.m_vt
+        || m_productions    != ContextFree.m_productions
+        || m_initial_symbol != ContextFree.m_initial_symbol;
 }
 
 template<class T, class V>
@@ -50,6 +65,59 @@ bool contains(const ContextFree::set_type<T>& set, const V& value)
         return false;
 
     return set.find(*value_cast) != set.end();
+}
+
+void ContextFree::calculate_first()
+{
+    for (const auto& symbol : m_vt)
+    {
+        symbol_ptr_type ptr{new terminal_symbol_type(symbol)};
+        m_first[ptr] = {symbol};
+    }
+
+    for (const auto& symbol : m_vn)
+    {
+        symbol_ptr_type ptr{new non_terminal_symbol_type(symbol)};
+
+        production_map_type copy(m_productions);
+        for (const auto& prod : copy[symbol])
+            if (prod[0]->is_terminal())
+                m_first[ptr].insert(terminal_symbol_type(prod[0]->value()));
+    }
+
+    first_map_type previous;
+
+    while (m_first != previous)
+    {
+        previous = m_first;
+
+        for (const auto& symbol : m_vn)
+        {
+            symbol_ptr_type source{new non_terminal_symbol_type(symbol)};
+
+            production_map_type copy(m_productions);
+            for (const auto& prod : copy[symbol])
+                for (const auto& target : prod)
+                    if (target->is_terminal())
+                    {
+                        m_first[source].insert(terminal_symbol_type(target->value()));
+                        break;
+                    }
+                    else
+                    {
+                        for (const auto& first_target : m_first[target])
+                            m_first[source].insert(first_target);
+
+                        if (!contains(m_first[target], terminal_symbol_type("&")))
+                            break;
+                    }
+        }
+    }
+}
+
+void ContextFree::calculate_follow()
+{
+
 }
 
 ContextFree ContextFree::own(non_terminal_set_type &derives_epsilon,

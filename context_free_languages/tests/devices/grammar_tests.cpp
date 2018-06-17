@@ -14,6 +14,10 @@ TEST_CASE("Grammar init", "[grammar]")
     CHECK(grammar.productions().empty());
     CHECK(grammar.initial_symbol() == "S");
 
+    SymbolPointer pS(new NonTerminalSymbol("S"));
+
+    CHECK(grammar.first()[pS].empty());
+
     SECTION("Compare", "[grammar][==]")
     {
         NonTerminalSymbol S{"S"}, A{"A"}, B{"B"};
@@ -44,6 +48,14 @@ TEST_CASE("Grammar init", "[grammar]")
 
         ContextFree gmove(std::move(gcopy));
         CHECK(gmove == ga);
+
+        ContextFree::first_map_type first_test;
+        first_test[pS] = {a};
+        first_test[pA] = {a, b};
+        first_test[pB] = {a, b};
+        first_test[pa] = {a};
+        first_test[pb] = {b};
+        CHECK(ga.first() == first_test);
     }
 }
 
@@ -85,6 +97,14 @@ TEST_CASE("Grammar: Remove infertile symbols", "[grammar][function]")
         CHECK(new_grammar.productions().size() == 1);
         CHECK(new_grammar.initial_symbol() == S);
         CHECK(new_grammar == grammar_2);
+
+        ContextFree::first_map_type first_test;
+        first_test[pS] = {a, b};
+        first_test[pA] = {};
+        first_test[pa] = {a};
+        first_test[pb] = {b};
+        first_test[pc] = {c};
+        CHECK(grammar.first() == first_test);
     }
 
     SECTION("Complex", "[grammar][inferile]")
@@ -444,6 +464,17 @@ TEST_CASE("Grammar: Turn on Epsilon Free", "[grammar][function]")
 
         ContextFree grammar{vn, vt, prods, S};
 
+        ContextFree::first_map_type first_test;
+        first_test[pS] = {a, b, c, epsilon};
+        first_test[pA] = {a, epsilon};
+        first_test[pB] = {b, epsilon};
+        first_test[pC] = {c};
+        first_test[pa] = {a};
+        first_test[pb] = {b};
+        first_test[pc] = {c};
+        first_test[pEpsilon] = {epsilon};
+        CHECK(grammar.first() == first_test);
+
         ContextFree::non_terminal_set_type derives_epsilon;
         auto new_grammar = grammar.epsilon_free(derives_epsilon);
 
@@ -708,7 +739,7 @@ TEST_CASE("Grammar: Finitiness", "[grammar][function]")
     CHECK(!grammar.finitiness());
 }
 
-TEST_CASE("Grammar: has_recursion", "[grammar][function]")
+TEST_CASE("Grammar: G has recursion?", "[grammar][function]")
 {
     ContextFree grammar;
 
@@ -741,4 +772,3 @@ TEST_CASE("Grammar: has_recursion", "[grammar][function]")
 //ContextFree remove_recursion(resursion_map_type &recursions) const;
 
 //bool is_factored() const;
-//bool has_recursion() const;

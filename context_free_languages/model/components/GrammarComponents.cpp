@@ -51,13 +51,11 @@ bool SymbolPointer::operator<(const SymbolPointer &another) const
 TerminalSymbol::TerminalSymbol(const string_type & value) :
     m_value(value)
 {
-    m_first.insert(*this);
 }
 
 TerminalSymbol::TerminalSymbol(string_type &&value) :
     m_value(std::move(value))
 {
-    m_first.insert(*this);
 }
 
 const TerminalSymbol::string_type& TerminalSymbol::value() const
@@ -68,16 +66,6 @@ const TerminalSymbol::string_type& TerminalSymbol::value() const
 bool TerminalSymbol::is_terminal() const
 {
     return true;
-}
-
-const TerminalSymbol::terminal_set_type & TerminalSymbol::first() const
-{
-    return m_first;
-}
-
-const TerminalSymbol::terminal_set_type & TerminalSymbol::follow() const
-{
-    return m_follow;
 }
 
 bool TerminalSymbol::operator==(const Symbol &symbol) const
@@ -151,16 +139,6 @@ const NonTerminalSymbol::string_type& NonTerminalSymbol::value() const
 bool NonTerminalSymbol::is_terminal() const
 {
     return false;
-}
-
-const NonTerminalSymbol::terminal_set_type &NonTerminalSymbol::first() const
-{
-    return m_first;
-}
-
-const NonTerminalSymbol::terminal_set_type &NonTerminalSymbol::follow() const
-{
-    return m_follow;
 }
 
 bool NonTerminalSymbol::operator==(const Symbol &symbol) const
