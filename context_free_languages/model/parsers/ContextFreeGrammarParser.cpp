@@ -1,5 +1,4 @@
 #include "ContextFreeGrammarParser.hpp"
-#include <iostream>
 
 namespace formal_device
 {

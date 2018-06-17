@@ -2,6 +2,8 @@
 #define CONTEXTFREEGRAMMARPARSER_HPP
 
 #include <context_free_languages/model/devices/Grammar.hpp>
+#include <iostream>
+#include <sstream>
 
 namespace formal_device
 {

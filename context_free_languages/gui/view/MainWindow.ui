@@ -322,7 +322,7 @@ Recursion</string>
   <customwidget>
    <class>DynamicGrammarWidget</class>
    <extends>QWidget</extends>
-   <header>/home/bonotto/Dropbox/Faculdade/2018-01/Formais/INE5421/context_free_languages/gui/view/DynamicGrammarWidget.hpp</header>
+   <header>view/DynamicGrammarWidget.hpp</header>
    <container>1</container>
   </customwidget>
  </customwidgets>
