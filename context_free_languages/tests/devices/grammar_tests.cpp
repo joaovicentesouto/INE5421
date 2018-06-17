@@ -760,14 +760,32 @@ TEST_CASE("Grammar: G has recursion?", "[grammar][function]")
     prods[S] = {prod_bA, prod_b};
     prods[A] = {prod_a, prod_b};
 
+    ContextFree::first_map_type first;
+    first[pS] = {b};
+    first[pA] = {a, b};
+    first[pa] = {a};
+    first[pb] = {b};
+    ContextFree::follow_map_type follow;
+    follow[S] = {TerminalSymbol("$")};
+    follow[A] = {TerminalSymbol("$")};
+
     grammar = ContextFree{vn, vt, prods, S};
     CHECK(!grammar.has_recursion());
+    CHECK(grammar.first() == first);
+    CHECK(grammar.follow() == follow);
 
     prods[S] = {prod_bA, prod_b, prod_Sa};
     prods[A] = {prod_a, prod_aS, prod_AS};
 
+    first[pS] = {b};
+    first[pA] = {a};
+    follow[S] = {TerminalSymbol("$"), a, b};
+    follow[A] = {TerminalSymbol("$"), a, b};
+
     grammar = ContextFree{vn, vt, prods, S};
     CHECK(grammar.has_recursion());
+    CHECK(grammar.first() == first);
+    CHECK(grammar.follow() == follow);
 }
 
 //ContextFree factor(unsigned max_steps) const;

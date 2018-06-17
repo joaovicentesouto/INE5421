@@ -153,17 +153,11 @@ void ContextFree::calculate_follow()
                     if (!(*it)->is_terminal())
                     {
                         auto non_term = *dynamic_cast<const non_terminal_symbol_type*>(it->get());
-                        symbol_ptr_type source(new non_terminal_symbol_type(pair.first));
 
-                        bool contains_epsilon = false;
+                        for (const auto& symbol : m_follow[pair.first])
+                            m_follow[non_term].insert(symbol);
 
-                        for (const auto& symbol : m_first[source])
-                            if (symbol != terminal_symbol_type("&"))
-                                m_follow[non_term].insert(symbol);
-                            else
-                                contains_epsilon = true;
-
-                        if (!contains_epsilon)
+                        if (!contains(m_first[*it], terminal_symbol_type("&")))
                             break;
                     }
                     else
