@@ -417,9 +417,92 @@ ContextFree ContextFree::factor(unsigned max_steps) const
     return ContextFree();
 }
 
-ContextFree ContextFree::remove_recursion(resursion_map_type &recursions) const
+ContextFree ContextFree::remove_recursion(recursion_map_type &recursions) const
 {
-    return ContextFree();
+    non_terminal_set_type derives_epsilon;
+    simple_production_map_type na;
+    non_terminal_set_type fertile_symbols;
+    symbol_ptr_set_type reachable_symbols;
+
+    auto own_grammar = own(derives_epsilon, na, fertile_symbols, reachable_symbols);
+
+    non_terminal_set_type new_vn{own_grammar.m_vn};
+    terminal_set_type new_vt{own_grammar.m_vt};
+    production_map_type new_productions;
+    non_terminal_symbol_type new_initial_symbol{own_grammar.m_initial_symbol};
+
+    symbol_type::vector_type<non_terminal_symbol_type> order(new_vn.begin(), new_vn.end());
+
+    for (auto i = 0; i < order.size(); ++i)
+    {
+        auto Ai = order[i];
+
+        recursions[Ai][Recursion::Direct];
+        recursions[Ai][Recursion::Indirect];
+        set_type<production_type> new_prod_Ai;
+
+        for (auto j = 0; j < i; ++j)
+        {
+            auto Aj = order[j];
+
+            for (const auto& prod_Ai : own_grammar.m_productions[Ai])
+                if (Aj == prod_Ai[0])
+                {
+                    for (const auto& prod_Aj : new_productions[Aj])
+                    {
+                        if (Ai == prod_Aj[0])
+                            recursions[Ai][Recursion::Indirect].insert(Aj);
+
+                        auto new_prod = prod_Aj;
+
+                        for (int x = 1; x < prod_Ai.size(); ++x)
+                            new_prod.push_back(prod_Ai[x]);
+
+                        new_prod_Ai.insert(new_prod);
+                    }
+                }
+                else
+                    new_prod_Ai.insert(prod_Ai);
+        }
+
+        if (i == 0)
+            new_prod_Ai = own_grammar.m_productions[Ai];
+
+        symbol_type::vector_type<production_type> recursion, no_recursion;
+        for (const auto& prod : new_prod_Ai)
+            if (Ai == prod[0])
+                recursion.push_back(prod);
+            else
+                no_recursion.push_back(prod);
+
+        if (recursion.empty())
+            continue;
+
+        recursions[Ai][Recursion::Direct].insert(Ai);
+
+        non_terminal_symbol_type symbol_line{Ai.value() + "\'"};
+        symbol_ptr_type symbol_line_ptr(new non_terminal_symbol_type(symbol_line));
+        new_vn.insert(symbol_line);
+
+        for (const auto& prod : no_recursion)
+        {
+            auto new_prod = prod;
+            new_prod.push_back(symbol_line_ptr);
+            new_productions[Ai].insert(new_prod);
+        }
+
+        for (const auto& prod : recursion)
+        {
+            production_type new_prod((++prod.begin()), prod.end());
+            new_prod.push_back(symbol_line_ptr);
+            new_productions[symbol_line].insert(new_prod);
+        }
+
+        production_type epsilon_prod = {new terminal_symbol_type("&")};
+        new_productions[symbol_line].insert(epsilon_prod);
+    }
+
+    return ContextFree(new_vn, new_vt, new_productions, new_initial_symbol);
 }
 
 bool ContextFree::emptiness() const

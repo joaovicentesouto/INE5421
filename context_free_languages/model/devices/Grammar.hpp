@@ -41,7 +41,7 @@ class ContextFree
     using first_map_type           = map_type<symbol_ptr_type, terminal_set_type>;
     using follow_map_type          = map_type<non_terminal_symbol_type, terminal_set_type>;
     using production_map_type      = map_type<non_terminal_symbol_type, set_type<production_type>>;
-    using resursion_map_type       = map_type<non_terminal_symbol_type, set_type<Recursion>>;
+    using recursion_map_type       = map_type<non_terminal_symbol_type, map_type<Recursion, non_terminal_set_type>>;
     using simple_production_map_type = map_type<non_terminal_symbol_type, set_type<non_terminal_symbol_type>>;
 
     // Class constructors
@@ -86,7 +86,7 @@ class ContextFree
                                        symbol_ptr_set_type &reachable_symbols) const;
 
     ContextFree factor(unsigned max_steps) const;
-    ContextFree remove_recursion(resursion_map_type &recursions) const;
+    ContextFree remove_recursion(recursion_map_type &recursions) const;
 
     bool emptiness() const;
     bool finitiness() const;

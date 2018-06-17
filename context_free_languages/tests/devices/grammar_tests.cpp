@@ -817,7 +817,57 @@ TEST_CASE("Grammar: G is fatored?", "[grammar][function]")
     CHECK(grammar.is_factored());
 }
 
+TEST_CASE("Grammar: Remove recursion", "[grammar][function]")
+{
+    NonTerminalSymbol S{"S"}, A{"A"}, S_linha{"S\'"}, A_linha{"A\'"};
+    TerminalSymbol a{"a"}, b{"b"}, epsilon{"&"};
+
+    SymbolPointer pS{new NonTerminalSymbol(S)}, pA{new NonTerminalSymbol(A)},
+                  pS_linha{new NonTerminalSymbol(S_linha)}, pA_linha{new NonTerminalSymbol(A_linha)};
+
+    SymbolPointer pa{new TerminalSymbol(a)}, pb{new TerminalSymbol(b)}, pE{new TerminalSymbol(epsilon)};
+
+    Production prod_Sa{pS, pa}, prod_SAa{pS, pA, pa}, prod_b{pb}, prod_Ab{pA, pb};
+
+    ContextFree::non_terminal_set_type vn{S, A};
+    ContextFree::terminal_set_type vt{a, b};
+    ContextFree::production_map_type prods;
+    prods[S] = {prod_Sa, prod_SAa, prod_b};
+    prods[A] = {prod_Ab, prod_SAa, prod_b};
+
+    ContextFree grammar = ContextFree{vn, vt, prods, S};
+
+    ContextFree::recursion_map_type recursion;
+    auto new_grammar = grammar.remove_recursion(recursion);
+
+    CHECK(grammar.has_recursion());
+    REQUIRE(!recursion.empty());
+
+    Production prod_bSl{pb, pS_linha}, prod_ep{pE},
+        prod_aSl{pa, pS_linha}, prod_AaSl{pA, pa, pS_linha},
+        prod_SAaAl{pS, pA, pa, pA_linha}, prod_bAl{pb, pA_linha};
+
+    ContextFree::non_terminal_set_type new_vn{S, A, S_linha, A_linha};
+    ContextFree::production_map_type new_prods;
+    new_prods[S] = {prod_bSl};
+    new_prods[S_linha] = {prod_aSl, prod_AaSl, prod_ep};
+    new_prods[A] = {prod_SAaAl, prod_bAl};
+    new_prods[A_linha] = {prod_bAl, prod_ep};
+
+    ContextFree grammar_2{new_vn, vt, new_prods, S};
+
+    ContextFree::recursion_map_type rec;
+    rec[S][ContextFree::Recursion::Direct] = {S};
+    rec[S][ContextFree::Recursion::Indirect] = {};
+    rec[A][ContextFree::Recursion::Direct] = {A};
+    rec[A][ContextFree::Recursion::Indirect] = {};
+
+    CHECK(!new_grammar.has_recursion());
+    CHECK(recursion == rec);
+    CHECK(new_grammar == grammar_2);
+}
+
 //ContextFree factor(unsigned max_steps) const;
-//ContextFree remove_recursion(resursion_map_type &recursions) const;
+//ContextFree remove_recursion(recursion_map_type &recursions) const;
 
 //bool is_factored() const;
