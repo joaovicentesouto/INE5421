@@ -3,56 +3,69 @@
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
-    ui(new Ui::MainWindow)
-//    m_facade(new Facade())
+    ui(new Ui::MainWindow),
+    m_facade(new Facade())
 {
     ui->setupUi(this);
-//    ui->m_machine_1->name(1);
-//    ui->m_machine_2->name(2);
 
-//    ui->m_machine_1->set_facade(m_facade);
-//    ui->m_machine_2->set_facade(m_facade);
-//    ui->m_result_machine->set_facade(m_facade);
+    ui->data->setReadOnly(true);
+    ui->result->setReadOnly(true);
 
-//    QObject::connect(m_facade, SIGNAL(update_automaton_to_m1(const dfa_type&, QString)),
-//                     ui->m_machine_1, SLOT (update_automaton(const dfa_type&, QString)));
-//    QObject::connect(m_facade, SIGNAL(update_automaton_to_m1(const ndfa_type&, QString)),
-//                     ui->m_machine_1, SLOT (update_automaton(const ndfa_type&, QString)));
+    // ***** New Grammar ***** //
 
-//    QObject::connect(m_facade, SIGNAL(update_automaton_to_m2(const dfa_type&, QString)),
-//                     ui->m_machine_2, SLOT (update_automaton(const dfa_type&, QString)));
-//    QObject::connect(m_facade, SIGNAL(update_automaton_to_m2(const ndfa_type&, QString)),
-//                     ui->m_machine_2, SLOT (update_automaton(const ndfa_type&, QString)));
+    QObject::connect(ui->dynamicGrammar, SIGNAL(new_grammar(std::string)),
+                     m_facade, SLOT(new_grammar(std::string)));
 
-//    QObject::connect(m_facade, SIGNAL(update_result(Facade::automaton_ptr_container_type&)),
-//                     ui->m_result_machine, SLOT (update_result(Facade::automaton_ptr_container_type&)));
+    QObject::connect(m_facade, SIGNAL(grammar_construction(bool)),
+                     ui->dynamicGrammar, SLOT(grammar_construction(bool)));
 
-//    QObject::connect(ui->m_result_machine, SIGNAL(new_automaton(unsigned, dfa_type)),
-//                                  m_facade, SLOT (new_automaton(unsigned, dfa_type)));
+    // ***** Grammar Changed ***** //
 
-//    QObject::connect(ui->m_result_machine, SIGNAL(new_automaton(unsigned, ndfa_type)),
-//                                  m_facade, SLOT (new_automaton(unsigned, ndfa_type)));
+    QObject::connect(ui->dynamicGrammar, SIGNAL(grammar_changed()),
+                     m_facade, SLOT(grammar_changed()));
 
-//    QObject::connect(this, SIGNAL(new_automaton(unsigned, dfa_type)),
-//                  m_facade, SLOT (new_automaton(unsigned, dfa_type)));
+    // ***** Grammar Not Validated ***** //
 
-//    QObject::connect(this, SIGNAL(new_automaton(unsigned, ndfa_type)),
-//                  m_facade, SLOT (new_automaton(unsigned, ndfa_type)));
+    QObject::connect(m_facade, SIGNAL(not_validated()),
+                     ui->dynamicGrammar, SLOT(grammar_not_validated()));
 
-//    QObject::connect(this, SIGNAL(clean_up()),
-//                  m_facade, SLOT (clean_up()));
-//    QObject::connect(this, SIGNAL(clean_up()),
-//                  ui->m_machine_1, SLOT (clean_up()));
-//    QObject::connect(this, SIGNAL(clean_up()),
-//                  ui->m_machine_2, SLOT (clean_up()));
-//    QObject::connect(this, SIGNAL(clean_up()),
-//                  ui->m_result_machine, SLOT (clean_up()));
+    // ***** Factored ***** //
+
+    QObject::connect(ui->dynamicGrammar, SIGNAL(factored()),
+                     m_facade, SLOT(factored()));
+
+    QObject::connect(m_facade, SIGNAL(factored_result(bool)),
+                     ui->dynamicGrammar, SLOT(factored_result(bool)));
+
+    // ***** Emptiness ***** //
+
+    QObject::connect(ui->dynamicGrammar, SIGNAL(emptiness()),
+                     m_facade, SLOT(emptiness()));
+
+    QObject::connect(m_facade, SIGNAL(emptiness_result(bool)),
+                     ui->dynamicGrammar, SLOT(emptiness_result(bool)));
+
+    // ***** Finiteness ***** //
+
+    QObject::connect(ui->dynamicGrammar, SIGNAL(finiteness()),
+                     m_facade, SLOT(finiteness()));
+
+    QObject::connect(m_facade, SIGNAL(finiteness_result(bool)),
+                     ui->dynamicGrammar, SLOT(finiteness_result(bool)));
+
+    // ***** Factorizable ***** //
+
+    QObject::connect(ui->dynamicGrammar, SIGNAL(factorizable()),
+                     m_facade, SLOT(factorizable()));
+
+    QObject::connect(m_facade, SIGNAL(factorizable_result(bool)),
+                     ui->dynamicGrammar, SLOT(factorizable_result(bool)));
 }
 
 MainWindow::~MainWindow()
 {
     delete ui;
-//    delete m_facade;
+    delete m_facade;
 }
 
 //void MainWindow::on_m_or_btn_clicked()

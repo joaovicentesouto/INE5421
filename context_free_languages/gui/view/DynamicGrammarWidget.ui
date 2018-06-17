@@ -18,14 +18,14 @@
     <widget class="QWidget" name="widget" native="true">
      <layout class="QHBoxLayout" name="horizontalLayout">
       <item>
-       <widget class="QPushButton" name="pushButton_2">
+       <widget class="QPushButton" name="cleanButton">
         <property name="text">
          <string>Clean Grammar</string>
         </property>
        </widget>
       </item>
       <item>
-       <widget class="QPushButton" name="pushButton">
+       <widget class="QPushButton" name="validateButton">
         <property name="text">
          <string>Validate Grammar</string>
         </property>
@@ -35,13 +35,23 @@
     </widget>
    </item>
    <item>
-    <widget class="QTextEdit" name="textEdit"/>
+    <widget class="QTextEdit" name="grammar"/>
+   </item>
+   <item alignment="Qt::AlignHCenter">
+    <widget class="QLabel" name="msg">
+     <property name="styleSheet">
+      <string notr="true">color: red</string>
+     </property>
+     <property name="text">
+      <string>Gramatica Invalida!</string>
+     </property>
+    </widget>
    </item>
    <item>
     <widget class="QWidget" name="widget_2" native="true">
      <layout class="QHBoxLayout" name="horizontalLayout_2">
       <item>
-       <widget class="QPushButton" name="pushButton_5">
+       <widget class="QPushButton" name="emptinessButton">
         <property name="maximumSize">
          <size>
           <width>100</width>
@@ -54,7 +64,7 @@
        </widget>
       </item>
       <item>
-       <widget class="QPushButton" name="pushButton_6">
+       <widget class="QPushButton" name="finitenessButton">
         <property name="maximumSize">
          <size>
           <width>100</width>
@@ -67,7 +77,7 @@
        </widget>
       </item>
       <item>
-       <widget class="QPushButton" name="pushButton_7">
+       <widget class="QPushButton" name="isFactoredButton">
         <property name="maximumSize">
          <size>
           <width>100</width>
@@ -76,15 +86,6 @@
         </property>
         <property name="text">
          <string>Is Factored?</string>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QPushButton" name="pushButton_8">
-        <property name="text">
-         <string>Is G
-Factorizable
-In n steps?</string>
         </property>
        </widget>
       </item>

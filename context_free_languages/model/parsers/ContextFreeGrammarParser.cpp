@@ -6,6 +6,9 @@ namespace parser {
 
 grammar_type grammar_parser(string_type grammar)
 {
+    if (grammar.length() < 4)
+        throw std::out_of_range("Gramatica Invalida!");
+
     non_terminal_set_type vn;
     terminal_set_type vt;
     production_map_type p;
