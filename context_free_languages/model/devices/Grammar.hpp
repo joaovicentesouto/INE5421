@@ -82,7 +82,7 @@ class ContextFree
     ContextFree remove_recursion(resursion_map_type &recursions) const;
 
     bool emptiness() const;
-    bool finitude() const;
+    bool finitiness() const;
     bool is_factored() const;
     bool has_recursion() const;
 
@@ -90,6 +90,10 @@ class ContextFree
     bool operator!=(const ContextFree &ContextFree) const;
 
   public:
+    bool contains_cycle(non_terminal_symbol_type state,
+                        non_terminal_set_type & temporary,
+                        non_terminal_set_type & permanent) const;
+
     non_terminal_symbol_type m_initial_symbol{"S"};
     non_terminal_set_type m_vn{m_initial_symbol};
     terminal_set_type m_vt;

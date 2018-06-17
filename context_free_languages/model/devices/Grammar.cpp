@@ -316,8 +316,39 @@ bool ContextFree::emptiness() const
     return !contains(fertile, g.initial_symbol());
 }
 
-bool ContextFree::finitude() const
+bool ContextFree::finitiness() const
 {
+    non_terminal_set_type temporary;
+    non_terminal_set_type permanent;
+
+    return !contains_cycle(m_initial_symbol, temporary, permanent);
+}
+
+bool ContextFree::contains_cycle(non_terminal_symbol_type state,
+                                 non_terminal_set_type & temporary,
+                                 non_terminal_set_type & permanent) const
+{
+    if (contains(permanent, state))
+        return false;
+
+    if (contains(temporary, state))
+        return true;
+
+    temporary.insert(state);
+
+    production_map_type copy(m_productions);
+    for (const auto& prod : copy[state])
+        for (const auto& symbol : prod)
+            if (!symbol->is_terminal())
+            {
+                non_terminal_symbol_type target = *dynamic_cast<const non_terminal_symbol_type*>(symbol.get());
+                if (contains_cycle(target, temporary, permanent))
+                    return true;
+            }
+
+    temporary.erase(state);
+    permanent.insert(state);
+
     return false;
 }
 

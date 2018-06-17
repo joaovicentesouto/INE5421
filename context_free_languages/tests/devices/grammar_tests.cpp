@@ -670,7 +670,6 @@ TEST_CASE("Grammar: Emptiness", "[grammar][function]")
     prods[B] = {prod_aAB, prod_BBa};
 
     grammar = ContextFree{vn, vt, prods, S};
-
     CHECK(!grammar.emptiness());
 
     prods[S] = {prod_SA, prod_BBa};
@@ -680,10 +679,38 @@ TEST_CASE("Grammar: Emptiness", "[grammar][function]")
     CHECK(grammar.emptiness());
 }
 
+TEST_CASE("Grammar: Finitiness", "[grammar][function]")
+{
+    ContextFree grammar;
+
+    CHECK(grammar.finitiness());
+
+    NonTerminalSymbol S{"S"}, A{"A"};
+    TerminalSymbol a{"a"}, b{"b"};
+
+    SymbolPointer pS{new NonTerminalSymbol(S)}, pA{new NonTerminalSymbol(A)};
+    SymbolPointer pa{new TerminalSymbol(a)}, pb{new TerminalSymbol(b)};
+    Production prod_a{pa}, prod_b{pb}, prod_bA{pb, pA}, prod_aS{pa, pS};
+
+    ContextFree::non_terminal_set_type vn{S, A};
+    ContextFree::terminal_set_type vt{a, b};
+    ContextFree::production_map_type prods;
+    prods[S] = {prod_bA, prod_b};
+    prods[A] = {prod_a, prod_b};
+
+    grammar = ContextFree{vn, vt, prods, S};
+    CHECK(grammar.finitiness());
+
+    prods[S] = {prod_bA, prod_b};
+    prods[A] = {prod_a, prod_aS};
+
+    grammar = ContextFree{vn, vt, prods, S};
+    CHECK(!grammar.finitiness());
+}
+
 //ContextFree factor(unsigned max_steps) const;
 //ContextFree remove_recursion(resursion_map_type &recursions) const;
 
-//bool emptiness() const;
 //bool finitude() const;
 //bool is_factored() const;
 //bool has_recursion() const;
