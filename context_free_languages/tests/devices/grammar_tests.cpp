@@ -708,9 +708,37 @@ TEST_CASE("Grammar: Finitiness", "[grammar][function]")
     CHECK(!grammar.finitiness());
 }
 
+TEST_CASE("Grammar: has_recursion", "[grammar][function]")
+{
+    ContextFree grammar;
+
+    CHECK(!grammar.has_recursion());
+
+    NonTerminalSymbol S{"S"}, A{"A"};
+    TerminalSymbol a{"a"}, b{"b"};
+
+    SymbolPointer pS{new NonTerminalSymbol(S)}, pA{new NonTerminalSymbol(A)};
+    SymbolPointer pa{new TerminalSymbol(a)}, pb{new TerminalSymbol(b)};
+    Production prod_a{pa}, prod_b{pb}, prod_bA{pb, pA}, prod_aS{pa, pS}, prod_Sa{pS, pa}, prod_AS{pA, pS};
+
+    ContextFree::non_terminal_set_type vn{S, A};
+    ContextFree::terminal_set_type vt{a, b};
+    ContextFree::production_map_type prods;
+    prods[S] = {prod_bA, prod_b};
+    prods[A] = {prod_a, prod_b};
+
+    grammar = ContextFree{vn, vt, prods, S};
+    CHECK(!grammar.has_recursion());
+
+    prods[S] = {prod_bA, prod_b, prod_Sa};
+    prods[A] = {prod_a, prod_aS, prod_AS};
+
+    grammar = ContextFree{vn, vt, prods, S};
+    CHECK(grammar.has_recursion());
+}
+
 //ContextFree factor(unsigned max_steps) const;
 //ContextFree remove_recursion(resursion_map_type &recursions) const;
 
-//bool finitude() const;
 //bool is_factored() const;
 //bool has_recursion() const;

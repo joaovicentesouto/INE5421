@@ -359,6 +359,23 @@ bool ContextFree::is_factored() const
 
 bool ContextFree::has_recursion() const
 {
+    non_terminal_set_type derives_epsilon;
+    epsilon_free(derives_epsilon);
+
+    for (const auto & pair_prod : m_productions)
+    {
+        auto source = pair_prod.first;
+        for (const auto & prod : pair_prod.second)
+            for (const auto & symbol : prod)
+            {
+                if (source == symbol)
+                    return true;
+
+                if (!contains(derives_epsilon, *symbol))
+                    break;
+            }
+    }
+
     return false;
 }
 
