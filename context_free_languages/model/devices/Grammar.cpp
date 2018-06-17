@@ -468,7 +468,35 @@ bool ContextFree::contains_cycle(non_terminal_symbol_type state,
 
 bool ContextFree::is_factored() const
 {
-    return false;
+    production_map_type copy{m_productions};
+    first_map_type first{m_first};
+
+    for (const auto& non_ter : m_vn)
+    {
+        terminal_set_type visited;
+
+        for (const auto& prod : copy[non_ter])
+            for (const auto& symbol : prod)
+                if (symbol->is_terminal())
+                {
+                    if (contains(visited, *symbol))
+                        return false;
+
+                    visited.insert(terminal_symbol_type(symbol->value()));
+                    break;
+                }
+                else
+                {
+                    for (const auto& my_first : first[new non_terminal_symbol_type(non_ter)])
+                        if (my_first != terminal_symbol_type("&") && contains(first[symbol], my_first))
+                            return false;
+
+                    if (!contains(first[symbol], terminal_symbol_type("&")))
+                        break;
+                }
+    }
+
+    return true;
 }
 
 bool ContextFree::has_recursion() const

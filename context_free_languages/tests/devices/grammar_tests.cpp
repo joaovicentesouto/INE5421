@@ -788,6 +788,35 @@ TEST_CASE("Grammar: G has recursion?", "[grammar][function]")
     CHECK(grammar.follow() == follow);
 }
 
+TEST_CASE("Grammar: G is fatored?", "[grammar][function]")
+{
+    ContextFree grammar;
+
+    CHECK(grammar.is_factored());
+
+    NonTerminalSymbol S{"S"}, A{"A"};
+    TerminalSymbol a{"a"}, b{"b"};
+
+    SymbolPointer pS{new NonTerminalSymbol(S)}, pA{new NonTerminalSymbol(A)};
+    SymbolPointer pa{new TerminalSymbol(a)}, pb{new TerminalSymbol(b)};
+    Production prod_a{pa}, prod_b{pb}, prod_bA{pb, pA}, prod_aS{pa, pS}, prod_Sa{pS, pa}, prod_AS{pA, pS};
+
+    ContextFree::non_terminal_set_type vn{S, A};
+    ContextFree::terminal_set_type vt{a, b};
+    ContextFree::production_map_type prods;
+    prods[S] = {prod_bA, prod_b};
+    prods[A] = {prod_a, prod_b};
+
+    grammar = ContextFree{vn, vt, prods, S};
+    CHECK(!grammar.is_factored());
+
+    prods[S] = {prod_aS, prod_bA};
+    prods[A] = {prod_a, prod_b};
+
+    grammar = ContextFree{vn, vt, prods, S};
+    CHECK(grammar.is_factored());
+}
+
 //ContextFree factor(unsigned max_steps) const;
 //ContextFree remove_recursion(resursion_map_type &recursions) const;
 

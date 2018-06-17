@@ -5,6 +5,7 @@
 
 #include <set>
 #include <map>
+#include <functional>
 #include <context_free_languages/model/components/GrammarComponents.hpp>
 
 namespace formal_device
