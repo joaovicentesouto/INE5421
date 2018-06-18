@@ -465,10 +465,13 @@ ContextFree ContextFree::factor(unsigned max_steps) const
                     {
                         for (const auto& prod_target : previous_productions[target])
                         {
-                            auto p = prod_target;
+                            auto p = terminal_symbol_type("&") != prod_target[0]? prod_target : production_type();
 
                             for (int x = 1; x < prod.size(); ++x)
                                 p.push_back(prod[x]);
+
+                            if (p.empty())
+                                p = {new terminal_symbol_type("&")};
 
                             new_productions[non_term].insert(p);
                         }
@@ -478,6 +481,8 @@ ContextFree ContextFree::factor(unsigned max_steps) const
                 }
             }
         }
+
+        previous_productions = new_productions;
 
         //! Passo de fatoramento
         for (int f = 0; f < symbols_to_factor.size(); ++f)
@@ -519,7 +524,6 @@ ContextFree ContextFree::factor(unsigned max_steps) const
         i++;
 
         ContextFree update_first(new_vn, new_vt, new_productions, new_initial_symbol);
-        update_first.calculate_first();
         first = update_first.first();
     }
 

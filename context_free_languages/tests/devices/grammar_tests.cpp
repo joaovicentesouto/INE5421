@@ -3,8 +3,10 @@
 #include "../catch.hpp"
 
 #include <context_free_languages/model/devices/Grammar.hpp>
+#include <context_free_languages/model/parsers/ContextFreeGrammarParser.hpp>
 
 using namespace formal_device::grammar;
+using namespace formal_device::parser;
 
 TEST_CASE("Grammar init", "[grammar]")
 {
@@ -905,7 +907,7 @@ TEST_CASE("Grammar: Factor a grammar", "[grammar][function]")
         ContextFree::terminal_set_type new_vt{a, b, epsilon};
         ContextFree::production_map_type new_prods;
         new_prods[S] = {prod_aS0};
-        new_prods[S0] = {prod_A, prod_ep};
+        new_prods[S0] = {prod_b, prod_ep};
         new_prods[A] = {prod_b};
 
 
@@ -914,12 +916,6 @@ TEST_CASE("Grammar: Factor a grammar", "[grammar][function]")
         auto new_grammar = grammar.factor(10);
 
         CHECK(new_grammar == grammar_2);
-
-        CHECK(new_grammar.vn() == new_vn);
-
-        CHECK(new_grammar.vt() == new_vt);
-
-        CHECK(new_grammar.productions() == new_prods);
     }
 
     SECTION("Complex", "[grammar][factor]")
@@ -964,6 +960,46 @@ TEST_CASE("Grammar: Factor a grammar", "[grammar][function]")
         CHECK(new_grammar.is_factored());
         CHECK(new_grammar == grammar_2);
     }
+}
+
+TEST_CASE("Grammar: Parser", "[grammar][parser]")
+{
+    NonTerminalSymbol E{"E123"}, T{"T"}, F{"F"};
+    TerminalSymbol plus{"+"}, sub{"-"}, mult{"*"}, div{"/"}, open{"("}, close{")"}, id{"id"};
+
+    Production p1{new NonTerminalSymbol(E),
+                  new TerminalSymbol(plus),
+                  new NonTerminalSymbol(T)};
+    Production p2{new NonTerminalSymbol(E),
+                  new TerminalSymbol(sub),
+                  new NonTerminalSymbol(T)};
+    Production p3{new NonTerminalSymbol(T)};
+
+    Production p4{new NonTerminalSymbol(T),
+                  new TerminalSymbol(mult),
+                  new NonTerminalSymbol(F)};
+    Production p5{new NonTerminalSymbol(T),
+                  new TerminalSymbol(div),
+                  new NonTerminalSymbol(F)};
+    Production p6{new NonTerminalSymbol(F)};
+
+    Production p7{new TerminalSymbol(open),
+                  new NonTerminalSymbol(E),
+                  new TerminalSymbol(close)};
+    Production p8{new TerminalSymbol(id)};
+
+    ContextFree::non_terminal_set_type vn{E, T, F};
+    ContextFree::terminal_set_type vt{plus, sub, mult, div, open, close, id};
+    ContextFree::production_map_type prods;
+
+    prods[E] = {p1, p2, p3};
+    prods[T] = {p4, p5, p6};
+    prods[F] = {p7, p8};
+
+    ContextFree grammar{vn, vt, prods, E};
+    ContextFree parse(grammar_parser("E123 -> E123 + T | E123 - T | T \n T -> T * F | T / F | F \n F -> ( E123 ) | id"));
+
+    CHECK(grammar == parse);
 }
 
 //ContextFree factor(unsigned max_steps) const;

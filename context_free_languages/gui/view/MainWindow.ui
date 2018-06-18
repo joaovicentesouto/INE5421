@@ -19,9 +19,9 @@
    </property>
    <layout class="QHBoxLayout" name="horizontalLayout_3">
     <item>
-     <layout class="QVBoxLayout" name="GrammarDataBox">
+     <layout class="QVBoxLayout" name="grammarDataBox">
       <item>
-       <widget class="QWidget" name="GrammarData" native="true">
+       <widget class="QWidget" name="grammarData" native="true">
         <property name="minimumSize">
          <size>
           <width>300</width>
@@ -30,14 +30,14 @@
         </property>
         <layout class="QVBoxLayout" name="verticalLayout">
          <item alignment="Qt::AlignHCenter">
-          <widget class="QLabel" name="Title1">
+          <widget class="QLabel" name="title1">
            <property name="text">
             <string>Grammar Data</string>
            </property>
           </widget>
          </item>
          <item>
-          <widget class="QTextEdit" name="Data"/>
+          <widget class="QTextEdit" name="data"/>
          </item>
         </layout>
        </widget>
@@ -45,9 +45,9 @@
      </layout>
     </item>
     <item>
-     <layout class="QVBoxLayout" name="GrammarBox">
+     <layout class="QVBoxLayout" name="grammarBox">
       <item>
-       <widget class="QWidget" name="Grammar" native="true">
+       <widget class="QWidget" name="grammar" native="true">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Expanding" vsizetype="Ignored">
           <horstretch>0</horstretch>
@@ -62,10 +62,10 @@
         </property>
         <layout class="QVBoxLayout" name="verticalLayout_2">
          <item alignment="Qt::AlignHCenter">
-          <widget class="QLabel" name="Title2">
+          <widget class="QLabel" name="title2">
            <property name="maximumSize">
             <size>
-             <width>50</width>
+             <width>70</width>
              <height>20</height>
             </size>
            </property>
@@ -75,7 +75,7 @@
           </widget>
          </item>
          <item>
-          <widget class="DynamicGrammarWidget" name="DynamicGrammar" native="true"/>
+          <widget class="DynamicGrammarWidget" name="dynamicGrammar" native="true"/>
          </item>
         </layout>
        </widget>
@@ -83,7 +83,7 @@
      </layout>
     </item>
     <item>
-     <layout class="QVBoxLayout" name="m_equal_box">
+     <layout class="QVBoxLayout" name="operationsBox">
       <property name="spacing">
        <number>1</number>
       </property>
@@ -91,7 +91,7 @@
        <enum>QLayout::SetMinimumSize</enum>
       </property>
       <item>
-       <widget class="QPushButton" name="m_equal_btn_2">
+       <widget class="QPushButton" name="ownButton">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
           <horstretch>0</horstretch>
@@ -110,7 +110,7 @@
        </widget>
       </item>
       <item>
-       <widget class="QPushButton" name="m_equal_btn_7">
+       <widget class="QPushButton" name="simpleProductionButton">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
           <horstretch>0</horstretch>
@@ -131,7 +131,7 @@ Productions</string>
        </widget>
       </item>
       <item>
-       <widget class="QPushButton" name="m_equal_btn_6">
+       <widget class="QPushButton" name="epsilonFreeButton">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
           <horstretch>0</horstretch>
@@ -150,7 +150,7 @@ Productions</string>
        </widget>
       </item>
       <item>
-       <widget class="QPushButton" name="m_equal_btn_8">
+       <widget class="QPushButton" name="inutileSymbolsButton">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
           <horstretch>0</horstretch>
@@ -171,7 +171,7 @@ Symbols</string>
        </widget>
       </item>
       <item alignment="Qt::AlignHCenter">
-       <widget class="QPushButton" name="m_equal_btn_3">
+       <widget class="QPushButton" name="deadSymbolsButton">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
           <horstretch>0</horstretch>
@@ -198,7 +198,7 @@ Symbols</string>
        </widget>
       </item>
       <item>
-       <widget class="QPushButton" name="m_equal_btn_4">
+       <widget class="QPushButton" name="unreachableSymbolsButton">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
           <horstretch>0</horstretch>
@@ -219,7 +219,7 @@ Symbols</string>
        </widget>
       </item>
       <item>
-       <widget class="QPushButton" name="m_equal_btn">
+       <widget class="QPushButton" name="factoringButton">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
           <horstretch>0</horstretch>
@@ -239,7 +239,7 @@ Factoring</string>
        </widget>
       </item>
       <item>
-       <widget class="QPushButton" name="m_equal_btn_9">
+       <widget class="QPushButton" name="leftRecursionButton">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
           <horstretch>0</horstretch>
@@ -261,9 +261,9 @@ Recursion</string>
      </layout>
     </item>
     <item>
-     <layout class="QVBoxLayout" name="m_result_machine_box">
+     <layout class="QVBoxLayout" name="operationResultBox">
       <item alignment="Qt::AlignHCenter">
-       <widget class="QWidget" name="m_result_machine" native="true">
+       <widget class="QWidget" name="operationResult" native="true">
         <property name="minimumSize">
          <size>
           <width>350</width>
@@ -272,14 +272,26 @@ Recursion</string>
         </property>
         <layout class="QVBoxLayout" name="verticalLayout_3">
          <item alignment="Qt::AlignHCenter">
-          <widget class="QLabel" name="label_3">
+          <widget class="QLabel" name="title3">
+           <property name="maximumSize">
+            <size>
+             <width>16777215</width>
+             <height>20</height>
+            </size>
+           </property>
+           <property name="baseSize">
+            <size>
+             <width>0</width>
+             <height>20</height>
+            </size>
+           </property>
            <property name="text">
             <string>Operation Result</string>
            </property>
           </widget>
          </item>
          <item>
-          <widget class="QTextEdit" name="textEdit_3"/>
+          <widget class="StaticGrammarWidget" name="staticGrammar" native="true"/>
          </item>
         </layout>
        </widget>
@@ -322,7 +334,13 @@ Recursion</string>
   <customwidget>
    <class>DynamicGrammarWidget</class>
    <extends>QWidget</extends>
-   <header>view/DynamicGrammarWidget.hpp</header>
+   <header location="global">view/DynamicGrammarWidget.hpp</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>StaticGrammarWidget</class>
+   <extends>QWidget</extends>
+   <header location="global">view/StaticGrammarWidget.hpp</header>
    <container>1</container>
   </customwidget>
  </customwidgets>

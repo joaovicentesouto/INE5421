@@ -6,6 +6,9 @@ namespace parser {
 
 grammar_type grammar_parser(string_type grammar)
 {
+    if (grammar.length() < 4)
+        throw std::out_of_range("Gramatica Invalida!");
+
     non_terminal_set_type vn;
     terminal_set_type vt;
     production_map_type p;
@@ -47,8 +50,8 @@ grammar_type grammar_parser(string_type grammar)
                     terminal_symbol_type *symbol = new terminal_symbol_type(sequence);
                     vt.insert(*symbol);
                     production.push_back(symbol_ptr_type(symbol));
-                } else
-                    throw std::out_of_range("Simbolo Terminal invalido!");
+                } else if (sequence != "|")
+                    throw std::out_of_range("Gramatica Invalida!");
                 i++;
                 break;
 
