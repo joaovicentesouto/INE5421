@@ -249,7 +249,7 @@ ContextFree ContextFree::epsilon_free(non_terminal_set_type &derives_epsilon) co
 
     if (contains(derives_epsilon, m_initial_symbol))
     {
-        new_initial_symbol = m_initial_symbol.value() + "\'";
+        new_initial_symbol = m_initial_symbol.value() + "0";
         new_productions[new_initial_symbol] = new_productions[m_initial_symbol];
         new_productions[new_initial_symbol].insert(epsilon_production);
         new_vt.insert(terminal_symbol_type("&"));
@@ -589,7 +589,7 @@ ContextFree ContextFree::remove_recursion(recursion_map_type &recursions) const
 
         recursions[Ai][Recursion::Direct].insert(Ai);
 
-        non_terminal_symbol_type symbol_line{Ai.value() + "\'"};
+        non_terminal_symbol_type symbol_line{Ai.value() + "0"};
         symbol_ptr_type symbol_line_ptr(new non_terminal_symbol_type(symbol_line));
         new_vn.insert(symbol_line);
 
