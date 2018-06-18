@@ -9,7 +9,6 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->setupUi(this);
 
     ui->data->setReadOnly(true);
-    ui->result->setReadOnly(true);
 
     // ***** New Grammar ***** //
 
@@ -52,14 +51,6 @@ MainWindow::MainWindow(QWidget *parent) :
 
     QObject::connect(m_facade, SIGNAL(finiteness_result(bool)),
                      ui->dynamicGrammar, SLOT(finiteness_result(bool)));
-
-    // ***** Factorizable ***** //
-
-    QObject::connect(ui->dynamicGrammar, SIGNAL(factorizable()),
-                     m_facade, SLOT(factorizable()));
-
-    QObject::connect(m_facade, SIGNAL(factorizable_result(bool)),
-                     ui->dynamicGrammar, SLOT(factorizable_result(bool)));
 }
 
 MainWindow::~MainWindow()
@@ -68,98 +59,43 @@ MainWindow::~MainWindow()
     delete m_facade;
 }
 
-//void MainWindow::on_m_or_btn_clicked()
-//{
-//    Facade::automaton_type_ptr m1 = ui->m_machine_1->current_machine();
-//    Facade::automaton_type_ptr m2 = ui->m_machine_2->current_machine();
+void MainWindow::on_ownButton_clicked()
+{
+    emit make_own();
+}
 
-//    if (m1.get() && m2.get())
-//        m_facade->union_(m1, m2);
-//}
+void MainWindow::on_simpleProductionButton_clicked()
+{
+    emit remove_simple_production();
+}
 
-//void MainWindow::on_m_concat_btn_clicked()
-//{
-//    Facade::automaton_type_ptr m1 = ui->m_machine_1->current_machine();
-//    Facade::automaton_type_ptr m2 = ui->m_machine_2->current_machine();
+void MainWindow::on_epsilonFreeButton_clicked()
+{
+    emit epsilon_free();
+}
 
-//    if (m1.get() && m2.get())
-//        m_facade->concatenation(m1, m2);
-//}
+void MainWindow::on_inutileSymbolsButton_clicked()
+{
+    emit remove_inutile_symbols();
+}
 
-//void MainWindow::on_m_and_btn_clicked()
-//{
-//    Facade::automaton_type_ptr m1 = ui->m_machine_1->current_machine();
-//    Facade::automaton_type_ptr m2 = ui->m_machine_2->current_machine();
+void MainWindow::on_deadSymbolsButton_clicked()
+{
+    emit remove_dead_symbols();
+}
 
-//    if (m1.get() && m2.get())
-//        m_facade->intersection(m1, m2);
-//}
+void MainWindow::on_unreachableSymbolsButton_clicked()
+{
+    emit remove_unreachable_Symbols();
+}
 
-//void MainWindow::on_m_diff_btn_clicked()
-//{
-//    Facade::automaton_type_ptr m1 = ui->m_machine_1->current_machine();
-//    Facade::automaton_type_ptr m2 = ui->m_machine_2->current_machine();
+void MainWindow::on_factoringButton_clicked()
+{
+    NumberDialog dialog(this);
+    dialog.exec();
+}
 
-//    if (m1.get() && m2.get())
-//        m_facade->difference(m1, m2);
-//}
-
-//void MainWindow::on_m_contains_btn_clicked()
-//{
-//    Facade::automaton_type_ptr m1 = ui->m_machine_1->current_machine();
-//    Facade::automaton_type_ptr m2 = ui->m_machine_2->current_machine();
-
-//    QString answer("T(M1) não está contida em T(M2)");
-
-//    if (m1.get() && m2.get())
-//    {
-//        if (m_facade->is_contained(m1, m2))
-//            answer = "T(M1) está contida em T(M2)";
-
-//        BooleanDialog dialog(answer, this);
-//        dialog.exec();
-//    }
-//}
-
-//void MainWindow::on_m_equality_btn_clicked()
-//{
-//    Facade::automaton_type_ptr m1 = ui->m_machine_1->current_machine();
-//    Facade::automaton_type_ptr m2 = ui->m_machine_2->current_machine();
-
-//    QString answer("T(M1) != T(M2)");
-
-//    if (m1.get() && m2.get())
-//    {
-//        if (m_facade->equivalence(m1, m2))
-//            answer = "T(M1) = T(M2)";
-
-//        BooleanDialog dialog(answer, this);
-//        dialog.exec();
-//    }
-//}
-
-//void MainWindow::on_m_swap_clicked()
-//{
-//    Facade::automaton_type_ptr m1 = ui->m_machine_1->current_machine();
-//    Facade::automaton_type_ptr m2 = ui->m_machine_2->current_machine();
-
-//    const dfa_type*   dfa_m1 = m1->derived_ptr<dfa_type>();
-//    const ndfa_type* ndfa_m1 = m1->derived_ptr<ndfa_type>();
-//    const dfa_type*   dfa_m2 = m2->derived_ptr<dfa_type>();
-//    const ndfa_type* ndfa_m2 = m2->derived_ptr<ndfa_type>();
-
-//    if (dfa_m2)
-//        emit new_automaton(11, *dfa_m2);
-//    else if (ndfa_m2)
-//        emit new_automaton(11, *ndfa_m2);
-
-//    if (dfa_m1)
-//        emit new_automaton(12, *dfa_m1);
-//    else if (ndfa_m1)
-//        emit new_automaton(12, *ndfa_m1);
-//}
-
-//void MainWindow::on_actionLimpar_tudo_triggered()
-//{
-//    emit clean_up();
-//}
+void MainWindow::on_leftRecursionButton_clicked()
+{
+    emit remove_left_recursion();
+}

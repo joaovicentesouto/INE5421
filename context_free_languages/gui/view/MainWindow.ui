@@ -273,13 +273,25 @@ Recursion</string>
         <layout class="QVBoxLayout" name="verticalLayout_3">
          <item alignment="Qt::AlignHCenter">
           <widget class="QLabel" name="title3">
+           <property name="maximumSize">
+            <size>
+             <width>16777215</width>
+             <height>20</height>
+            </size>
+           </property>
+           <property name="baseSize">
+            <size>
+             <width>0</width>
+             <height>20</height>
+            </size>
+           </property>
            <property name="text">
             <string>Operation Result</string>
            </property>
           </widget>
          </item>
          <item>
-          <widget class="QTextEdit" name="result"/>
+          <widget class="StaticGrammarWidget" name="result" native="true"/>
          </item>
         </layout>
        </widget>
@@ -322,7 +334,13 @@ Recursion</string>
   <customwidget>
    <class>DynamicGrammarWidget</class>
    <extends>QWidget</extends>
-   <header>/home/bonotto/Dropbox/Faculdade/2018-01/Formais/INE5421/context_free_languages/gui/view/DynamicGrammarWidget.hpp</header>
+   <header location="global">view/DynamicGrammarWidget.hpp</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>StaticGrammarWidget</class>
+   <extends>QWidget</extends>
+   <header location="global">view/StaticGrammarWidget.hpp</header>
    <container>1</container>
   </customwidget>
  </customwidgets>

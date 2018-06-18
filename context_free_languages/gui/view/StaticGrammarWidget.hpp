@@ -15,6 +15,9 @@ public:
     explicit StaticGrammarWidget(QWidget *parent = 0);
     ~StaticGrammarWidget();
 
+private slots:
+    void on_updateButton_clicked();
+
 private:
     Ui::StaticGrammarWidget *ui;
 };
