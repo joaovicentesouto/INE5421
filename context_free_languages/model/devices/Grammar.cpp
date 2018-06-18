@@ -719,42 +719,34 @@ ContextFree::string_type ContextFree::to_string() const
     string_type string;
     string = m_initial_symbol.value() + " -> ";
 
-    // auto productions(m_productions);
+     auto productions(m_productions);
 
-    // int i = productions[m_initial_symbol].size();
-    // for (auto production : productions[m_initial_symbol])
-    // {
-    //     if (production->is_terminal())
-    //         string += " " + production->to_string() + " ";
-    //     else
-    //         string += production->to_string();
+     int i = productions[m_initial_symbol].size();
+     for (auto production : productions[m_initial_symbol])
+     {
+         string += production.to_string();
 
-    //     if (--i > 0)
-    //         string += " | ";
-    // }
+         if (--i > 0)
+             string += " | ";
+     }
 
-    // string += "\n";
+     for (auto non_terminal : m_vn)
+     {
+         if (non_terminal == m_initial_symbol)
+             continue;
 
-    // for (auto non_terminal : m_vn)
-    // {
-    //     if (non_terminal == m_initial_symbol)
-    //         continue;
+         string += "\n" + non_terminal.value() + " -> ";
 
-    //     string += non_terminal.value() + " -> ";
+         i = productions[non_terminal].size();
+         for (auto production : productions[non_terminal])
+         {
+             string += production.to_string();
 
-    //     i = productions[non_terminal].size();
-    //     for (auto production : productions[non_terminal])
-    //     {
-    //         if (production->is_terminal())
-    //             string += " " + production->to_string() + " ";
-    //         else
-    //             string += production->to_string();
+             if (--i > 0)
+                 string += " | ";
+         }
 
-    //         if (--i > 0)
-    //             string += " | ";
-    //     }
-    //     string += "\n";
-    // }
+     }
 
     return string;
 }
