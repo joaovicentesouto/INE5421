@@ -20,18 +20,24 @@ public:
 
 public slots:
     void grammar_changed();
-    void new_grammar(std::string grammar_text);
+    bool new_grammar(std::string grammar_text);
 
-    void factored();
-    void emptiness();
-    void finiteness();
+    bool factored();
+    bool emptiness();
+    bool finiteness();
+    bool grammar_validated();
+
+    void make_own();
+    void epsilon_free();
+    void factoring(uint n);
+    void remove_dead_symbols();
+    void remove_left_recursion();
+    void remove_inutile_symbols();
+    void remove_simple_production();
+    void remove_unreachable_symbols();
 
 signals:
-    void grammar_construction(bool);
-    void factored_result(bool);
-    void emptiness_result(bool);
-    void finiteness_result(bool);
-    void not_validated();
+    void set_static_grammar(std::string grammar);
 
 private:
      ContextFree m_grammar;

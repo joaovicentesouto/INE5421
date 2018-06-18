@@ -6,7 +6,7 @@ NumberDialog::NumberDialog(QWidget *parent) :
     ui(new Ui::NumberDialog)
 {
     ui->setupUi(this);
-    ui->numberBox;
+    ui->numberBox->setMinimum(1);
 }
 
 NumberDialog::~NumberDialog()
@@ -21,5 +21,7 @@ void NumberDialog::on_cancelButton_clicked()
 
 void NumberDialog::on_confirmButton_clicked()
 {
-    //emit factoring(ui->numberBox->);
+    emit factoring(ui->numberBox->text().toUInt());
+    emit set_msg_text("Tentativa de Fatoraçao em 'n' Passos Realizada!");
+    close();
 }

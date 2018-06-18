@@ -2,6 +2,7 @@
 #define STATICGRAMMARWIDGET_HPP
 
 #include <QWidget>
+#include <string>
 
 namespace Ui {
 class StaticGrammarWidget;
@@ -17,6 +18,7 @@ public:
 
 private slots:
     void on_updateButton_clicked();
+    void set_grammar(std::string grammar);
 
 private:
     Ui::StaticGrammarWidget *ui;

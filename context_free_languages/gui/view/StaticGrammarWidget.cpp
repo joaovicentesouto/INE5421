@@ -18,3 +18,8 @@ void StaticGrammarWidget::on_updateButton_clicked()
 {
 //    emit update_grammaer(ui->grammar->)
 }
+
+void StaticGrammarWidget::set_grammar(std::string grammar)
+{
+    ui->grammar->setText(QString::fromStdString(grammar));
+}

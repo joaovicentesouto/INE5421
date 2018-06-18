@@ -20,7 +20,8 @@ private slots:
     void on_confirmButton_clicked();
 
 signals:
-    void factoring(int n);
+    void factoring(uint n);
+    void set_msg_text(QString);
 
 private:
     Ui::NumberDialog *ui;

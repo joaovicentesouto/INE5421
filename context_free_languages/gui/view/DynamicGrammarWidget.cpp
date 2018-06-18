@@ -8,6 +8,7 @@ DynamicGrammarWidget::DynamicGrammarWidget(QWidget *parent) :
 {
     ui->setupUi(this);
     ui->msg->setVisible(false);
+    ui->grammarData->setReadOnly(true);
 }
 
 DynamicGrammarWidget::~DynamicGrammarWidget()
@@ -24,32 +25,7 @@ void DynamicGrammarWidget::on_cleanButton_clicked()
 
 void DynamicGrammarWidget::on_validateButton_clicked()
 {
-    emit new_grammar(ui->grammar->toPlainText().toStdString());
-}
-
-void DynamicGrammarWidget::on_emptinessButton_clicked()
-{
-    emit emptiness();
-}
-
-void DynamicGrammarWidget::on_finitenessButton_clicked()
-{
-    emit finiteness();
-}
-
-void DynamicGrammarWidget::on_isFactoredButton_clicked()
-{
-    emit factored();
-}
-
-void DynamicGrammarWidget::on_grammar_textChanged()
-{
-    emit grammar_changed();
-}
-
-void DynamicGrammarWidget::grammar_construction(bool contructed)
-{
-    if (contructed) {
+    if (emit new_grammar(ui->grammar->toPlainText().toStdString())) {
         ui->msg->setText("Gramatica Validada!");
         ui->msg->setStyleSheet("color:green");
     } else {
@@ -57,30 +33,17 @@ void DynamicGrammarWidget::grammar_construction(bool contructed)
         ui->msg->setStyleSheet("color:red");
     }
     ui->msg->setVisible(true);
+    ;
 }
 
-void DynamicGrammarWidget::grammar_not_validated()
+void DynamicGrammarWidget::on_emptinessButton_clicked()
 {
-    ui->msg->setText("Gramatica Nao Validada!");
-    ui->msg->setStyleSheet("color:red");
-    ui->msg->setVisible(true);
-}
-
-void DynamicGrammarWidget::factored_result(bool result)
-{
-    if (result) {
-        ui->msg->setText("Gramatica Fatorada!");
-        ui->msg->setStyleSheet("color:black");
-    } else {
-        ui->msg->setText("Gramatica Nao Fatorada!");
-        ui->msg->setStyleSheet("color:black");
+    if(!(emit validated_grammar())) {
+        grammar_not_validated();
+        return;
     }
-    ui->msg->setVisible(true);
-}
 
-void DynamicGrammarWidget::emptiness_result(bool result)
-{
-    if (result) {
+    if (emit emptiness()) {
         ui->msg->setText("Gramatica Gera a Linguagem Vazia!");
         ui->msg->setStyleSheet("color:black");
     } else {
@@ -90,14 +53,55 @@ void DynamicGrammarWidget::emptiness_result(bool result)
     ui->msg->setVisible(true);
 }
 
-void DynamicGrammarWidget::finiteness_result(bool result)
+void DynamicGrammarWidget::on_finitenessButton_clicked()
 {
-    if (result) {
+    if(!(emit validated_grammar())) {
+        grammar_not_validated();
+        return;
+    }
+
+    if (emit finiteness()) {
         ui->msg->setText("Gramatica Gera uma Linguagem Finita!");
         ui->msg->setStyleSheet("color:black");
     } else {
         ui->msg->setText("Gramatica Gera uma Linguagem Infinita!");
         ui->msg->setStyleSheet("color:black");
     }
+    ui->msg->setVisible(true);
+}
+
+void DynamicGrammarWidget::on_isFactoredButton_clicked()
+{
+    if(!(emit validated_grammar())) {
+        grammar_not_validated();
+        return;
+    }
+
+    if (emit factored()) {
+        ui->msg->setText("Gramatica Fatorada!");
+        ui->msg->setStyleSheet("color:black");
+    } else {
+        ui->msg->setText("Gramatica Nao Fatorada!");
+        ui->msg->setStyleSheet("color:black");
+    }
+    ui->msg->setVisible(true);
+}
+
+void DynamicGrammarWidget::on_grammar_textChanged()
+{
+    emit grammar_changed();
+}
+
+void DynamicGrammarWidget::grammar_not_validated()
+{
+    ui->msg->setText("Gramatica Nao Validada!");
+    ui->msg->setStyleSheet("color:red");
+    ui->msg->setVisible(true);
+}
+
+void DynamicGrammarWidget::set_msg_text(QString text)
+{
+    ui->msg->setText(text);
+    ui->msg->setStyleSheet("color:black");
     ui->msg->setVisible(true);
 }

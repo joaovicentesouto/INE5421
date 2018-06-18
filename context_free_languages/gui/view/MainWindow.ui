@@ -291,7 +291,7 @@ Recursion</string>
           </widget>
          </item>
          <item>
-          <widget class="StaticGrammarWidget" name="result" native="true"/>
+          <widget class="StaticGrammarWidget" name="staticGrammar" native="true"/>
          </item>
         </layout>
        </widget>

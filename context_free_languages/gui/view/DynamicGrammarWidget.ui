@@ -92,6 +92,16 @@
      </layout>
     </widget>
    </item>
+   <item alignment="Qt::AlignHCenter">
+    <widget class="QLabel" name="title">
+     <property name="text">
+      <string>Grammar Data</string>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QTextEdit" name="grammarData"/>
+   </item>
   </layout>
  </widget>
  <resources/>
