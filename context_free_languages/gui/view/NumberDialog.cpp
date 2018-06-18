@@ -22,6 +22,6 @@ void NumberDialog::on_cancelButton_clicked()
 void NumberDialog::on_confirmButton_clicked()
 {
     emit factoring(ui->numberBox->text().toUInt());
-    emit set_msg_text("Tentativa de Fatoraçao em 'n' Passos Realizada!");
+    emit set_msg_text("Tentativa de Fatoraçao em " + ui->numberBox->text() + " Passos Realizada!");
     close();
 }

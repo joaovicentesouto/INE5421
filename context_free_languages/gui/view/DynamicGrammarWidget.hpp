@@ -18,21 +18,21 @@ public:
     void grammar_not_validated();
 
 private slots:
-    void on_grammar_textChanged();
     void on_cleanButton_clicked();
-    void on_validateButton_clicked();
     void on_emptinessButton_clicked();
     void on_finitenessButton_clicked();
     void on_isFactoredButton_clicked();
+    void set_dynamic_grammar(QString grammar);
+    void set_dynamic_grammar_data(std::string data);
 
 public slots:
+    bool validation();
     void set_msg_text(QString text);
 
 signals:
     bool factored();
     bool emptiness();
     bool finiteness();
-    void grammar_changed();
     bool validated_grammar();
     bool new_grammar(std::string grammar_text);
 

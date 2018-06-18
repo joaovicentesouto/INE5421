@@ -16,7 +16,8 @@ StaticGrammarWidget::~StaticGrammarWidget()
 
 void StaticGrammarWidget::on_updateButton_clicked()
 {
-//    emit update_grammaer(ui->grammar->)
+    emit set_dynamic_grammar(ui->grammar->toPlainText());
+    ui->grammar->clear();
 }
 
 void StaticGrammarWidget::set_grammar(std::string grammar)

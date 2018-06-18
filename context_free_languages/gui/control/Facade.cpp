@@ -1,4 +1,5 @@
 #include "Facade.hpp"
+#include <iostream>
 
 Facade::Facade()
 {
@@ -8,19 +9,15 @@ Facade::~Facade()
 {
 }
 
-void Facade::grammar_changed()
-{
-    validated = false;
-}
-
 bool Facade::new_grammar(std::string grammar_text)
 {
     try {
         m_grammar = formal_device::parser::grammar_parser(grammar_text);
-        validated = true;
+        //grammars_history.insert(m_grammar);
+        //grammar_mapping["grammar" + std::to_string(grammars_history.size())] = m_grammar;
+        construct_grammar_data();
         return true;
     } catch (const std::exception& e) {
-        validated = false;
         return false;
     }
 }
@@ -43,11 +40,6 @@ bool Facade::finiteness()
 void Facade::factoring(uint n)
 {
     emit set_static_grammar(m_grammar.factor(n).to_string());
-}
-
-bool Facade::grammar_validated()
-{
-    return validated;
 }
 
 void Facade::make_own()
@@ -73,8 +65,8 @@ void Facade::remove_dead_symbols()
 
 void Facade::remove_left_recursion()
 {
-//    ContextFree::recursion_map_type recursion();
-//    emit set_static_grammar(m_grammar.remove_recursion());
+    //ContextFree::resursion_map_type recursion();
+    //emit set_static_grammar(m_grammar.remove_recursion(recursion).to_string());
 }
 
 void Facade::remove_inutile_symbols()
@@ -94,4 +86,21 @@ void Facade::remove_unreachable_symbols()
 {
     ContextFree::symbol_ptr_set_type reachable;
     emit set_static_grammar(m_grammar.remove_unreachable_symbols(reachable).to_string());
+}
+
+void Facade::construct_grammar_data()
+{
+    std::string data = "FIRST:\n\n";
+//    for (auto producer : m_grammar.first()) {
+//        auto symb = *dynamic_cast<const NonTerminalSymbol*>(producer.first.get());
+//        data += "First(" + symb + ") = {";
+//        int i = 1;
+//        for (auto symbol : producer.second) {
+//            if (i == producer.second.size())
+//                data += symbol.value() + "}\n";
+//            else
+//                data += symbol.value() + ", ";
+//        }
+//    }
+    emit update_grammar_data(data);
 }

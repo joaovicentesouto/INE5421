@@ -20,28 +20,25 @@ void DynamicGrammarWidget::on_cleanButton_clicked()
 {
     ui->grammar->clear();
     ui->msg->setVisible(false);
-    emit grammar_changed();
 }
 
-void DynamicGrammarWidget::on_validateButton_clicked()
+bool DynamicGrammarWidget::validation()
 {
     if (emit new_grammar(ui->grammar->toPlainText().toStdString())) {
-        ui->msg->setText("Gramatica Validada!");
-        ui->msg->setStyleSheet("color:green");
-    } else {
-        ui->msg->setText("Gramatica Invalida!");
-        ui->msg->setStyleSheet("color:red");
+        ui->msg->setVisible(false);
+        return true;
     }
+
+    ui->msg->setText("Gramatica Invalida!");
+    ui->msg->setStyleSheet("color:red");
     ui->msg->setVisible(true);
-    ;
+    return false;
 }
 
 void DynamicGrammarWidget::on_emptinessButton_clicked()
 {
-    if(!(emit validated_grammar())) {
-        grammar_not_validated();
+    if(!validation())
         return;
-    }
 
     if (emit emptiness()) {
         ui->msg->setText("Gramatica Gera a Linguagem Vazia!");
@@ -55,10 +52,8 @@ void DynamicGrammarWidget::on_emptinessButton_clicked()
 
 void DynamicGrammarWidget::on_finitenessButton_clicked()
 {
-    if(!(emit validated_grammar())) {
-        grammar_not_validated();
+    if(!validation())
         return;
-    }
 
     if (emit finiteness()) {
         ui->msg->setText("Gramatica Gera uma Linguagem Finita!");
@@ -72,10 +67,8 @@ void DynamicGrammarWidget::on_finitenessButton_clicked()
 
 void DynamicGrammarWidget::on_isFactoredButton_clicked()
 {
-    if(!(emit validated_grammar())) {
-        grammar_not_validated();
+    if(!validation())
         return;
-    }
 
     if (emit factored()) {
         ui->msg->setText("Gramatica Fatorada!");
@@ -87,21 +80,19 @@ void DynamicGrammarWidget::on_isFactoredButton_clicked()
     ui->msg->setVisible(true);
 }
 
-void DynamicGrammarWidget::on_grammar_textChanged()
-{
-    emit grammar_changed();
-}
-
-void DynamicGrammarWidget::grammar_not_validated()
-{
-    ui->msg->setText("Gramatica Nao Validada!");
-    ui->msg->setStyleSheet("color:red");
-    ui->msg->setVisible(true);
-}
-
 void DynamicGrammarWidget::set_msg_text(QString text)
 {
     ui->msg->setText(text);
     ui->msg->setStyleSheet("color:black");
     ui->msg->setVisible(true);
+}
+
+void DynamicGrammarWidget::set_dynamic_grammar(QString grammar)
+{
+    ui->grammar->setText(grammar);
+}
+
+void DynamicGrammarWidget::set_dynamic_grammar_data(std::string data)
+{
+    ui->grammarData->setText(QString::fromStdString(data));
 }
