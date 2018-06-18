@@ -252,6 +252,7 @@ ContextFree ContextFree::epsilon_free(non_terminal_set_type &derives_epsilon) co
         new_initial_symbol = m_initial_symbol.value() + "\'";
         new_productions[new_initial_symbol] = new_productions[m_initial_symbol];
         new_productions[new_initial_symbol].insert(epsilon_production);
+        new_vt.insert(terminal_symbol_type("&"));
         new_vn.insert(new_initial_symbol);
     }
 
@@ -414,12 +415,204 @@ ContextFree ContextFree::remove_useless_symbols(non_terminal_set_type &fertile_s
 
 ContextFree ContextFree::factor(unsigned max_steps) const
 {
-    return ContextFree();
+    symbol_type::vector_type<non_terminal_symbol_type> to_factor(m_vn.begin(), m_vn.end());
+    first_map_type first{m_first};
+
+    non_terminal_set_type new_vn{m_vn};
+    terminal_set_type new_vt{m_vt};
+    production_map_type new_productions{m_productions};
+    non_terminal_symbol_type new_initial_symbol{m_initial_symbol};
+
+    size_t i = 0;
+    size_t steps = 0;
+
+    while (i < to_factor.size() && steps < max_steps)
+    {
+        auto non_term = to_factor[i];
+        symbol_type::vector_type<terminal_symbol_type> symbols_to_factor;
+
+        //! Deriva produção na forma S -> Ab.. para S-> Xb.. se A->X
+        production_map_type previous_productions;
+        while (new_productions != previous_productions)
+        {
+            previous_productions = new_productions;
+            terminal_set_type visited;
+
+            for (const auto& prod : previous_productions[non_term])
+            {
+                if (prod[0]->is_terminal())
+                {
+                    if (contains(visited, *prod[0]))
+                        symbols_to_factor.push_back(terminal_symbol_type(prod[0]->value()));
+
+                    visited.insert(terminal_symbol_type(prod[0]->value()));
+                }
+                else if (non_term != prod[0])
+                {
+                    bool derive = false;
+                    non_terminal_symbol_type target(prod[0]->value());
+
+                    for (const auto& my_first : first[new non_terminal_symbol_type(non_term)])
+                    {
+                        if (my_first != terminal_symbol_type("&") && contains(first[prod[0]], my_first))
+                        {
+                            derive = true;
+                            break;
+                        }
+                    }
+
+                    if (derive || contains(first[prod[0]], terminal_symbol_type("&")))
+                    {
+                        for (const auto& prod_target : previous_productions[target])
+                        {
+                            auto p = prod_target;
+
+                            for (int x = 1; x < prod.size(); ++x)
+                                p.push_back(prod[x]);
+
+                            new_productions[non_term].insert(p);
+                        }
+
+                        new_productions[non_term].erase(prod);
+                    }
+                }
+            }
+        }
+
+        //! Passo de fatoramento
+        for (int f = 0; f < symbols_to_factor.size(); ++f)
+        {
+            non_terminal_symbol_type new_non_term(non_term.value() + std::to_string(f));
+            new_vn.insert(new_non_term);
+            to_factor.push_back(new_non_term);
+
+            terminal_symbol_type terminal = symbols_to_factor[f];
+
+            for (const auto& prod : previous_productions[non_term])
+            {
+                if (terminal == prod[0])
+                {
+                    //! new_non_term productions
+                    if (prod.size() > 1)
+                    {
+                        production_type p((++prod.begin()), prod.end());
+                        new_productions[new_non_term].insert(p);
+                    }
+                    else
+                    {
+                        new_productions[new_non_term].insert({new terminal_symbol_type("&")});
+                        new_vt.insert(terminal_symbol_type("&"));
+                    }
+                    
+                    new_productions[non_term].erase(prod);
+                }
+            }
+
+            production_type new_prod_factored{new terminal_symbol_type(terminal),
+                                              new non_terminal_symbol_type(new_non_term)};
+            new_productions[non_term].insert(new_prod_factored);
+        }
+
+        if (!symbols_to_factor.empty())
+            steps++;
+
+        i++;
+
+        ContextFree update_first(new_vn, new_vt, new_productions, new_initial_symbol);
+        update_first.calculate_first();
+        first = update_first.first();
+    }
+
+    return ContextFree(new_vn, new_vt, new_productions, new_initial_symbol);
 }
 
-ContextFree ContextFree::remove_recursion(resursion_map_type &recursions) const
+ContextFree ContextFree::remove_recursion(recursion_map_type &recursions) const
 {
-    return ContextFree();
+    non_terminal_set_type derives_epsilon;
+    simple_production_map_type na;
+    non_terminal_set_type fertile_symbols;
+    symbol_ptr_set_type reachable_symbols;
+
+    auto own_grammar = own(derives_epsilon, na, fertile_symbols, reachable_symbols);
+
+    non_terminal_set_type new_vn{own_grammar.m_vn};
+    terminal_set_type new_vt{own_grammar.m_vt};
+    production_map_type new_productions;
+    non_terminal_symbol_type new_initial_symbol{own_grammar.m_initial_symbol};
+
+    symbol_type::vector_type<non_terminal_symbol_type> order(new_vn.begin(), new_vn.end());
+
+    for (auto i = 0; i < order.size(); ++i)
+    {
+        auto Ai = order[i];
+
+        recursions[Ai][Recursion::Direct];
+        recursions[Ai][Recursion::Indirect];
+        set_type<production_type> new_prod_Ai;
+
+        for (auto j = 0; j < i; ++j)
+        {
+            auto Aj = order[j];
+
+            for (const auto& prod_Ai : own_grammar.m_productions[Ai])
+                if (Aj == prod_Ai[0])
+                {
+                    for (const auto& prod_Aj : new_productions[Aj])
+                    {
+                        if (Ai == prod_Aj[0])
+                            recursions[Ai][Recursion::Indirect].insert(Aj);
+
+                        auto new_prod = prod_Aj;
+
+                        for (int x = 1; x < prod_Ai.size(); ++x)
+                            new_prod.push_back(prod_Ai[x]);
+
+                        new_prod_Ai.insert(new_prod);
+                    }
+                }
+                else
+                    new_prod_Ai.insert(prod_Ai);
+        }
+
+        if (i == 0)
+            new_prod_Ai = own_grammar.m_productions[Ai];
+
+        symbol_type::vector_type<production_type> recursion, no_recursion;
+        for (const auto& prod : new_prod_Ai)
+            if (Ai == prod[0])
+                recursion.push_back(prod);
+            else
+                no_recursion.push_back(prod);
+
+        if (recursion.empty())
+            continue;
+
+        recursions[Ai][Recursion::Direct].insert(Ai);
+
+        non_terminal_symbol_type symbol_line{Ai.value() + "\'"};
+        symbol_ptr_type symbol_line_ptr(new non_terminal_symbol_type(symbol_line));
+        new_vn.insert(symbol_line);
+
+        for (const auto& prod : no_recursion)
+        {
+            auto new_prod = prod;
+            new_prod.push_back(symbol_line_ptr);
+            new_productions[Ai].insert(new_prod);
+        }
+
+        for (const auto& prod : recursion)
+        {
+            production_type new_prod((++prod.begin()), prod.end());
+            new_prod.push_back(symbol_line_ptr);
+            new_productions[symbol_line].insert(new_prod);
+        }
+
+        production_type epsilon_prod = {new terminal_symbol_type("&")};
+        new_productions[symbol_line].insert(epsilon_prod);
+        new_vt.insert(terminal_symbol_type("&"));
+    }
+
+    return ContextFree(new_vn, new_vt, new_productions, new_initial_symbol);
 }
 
 bool ContextFree::emptiness() const
@@ -468,7 +661,35 @@ bool ContextFree::contains_cycle(non_terminal_symbol_type state,
 
 bool ContextFree::is_factored() const
 {
-    return false;
+    production_map_type copy{m_productions};
+    first_map_type first{m_first};
+
+    for (const auto& non_ter : m_vn)
+    {
+        terminal_set_type visited;
+
+        for (const auto& prod : copy[non_ter])
+            for (const auto& symbol : prod)
+                if (symbol->is_terminal())
+                {
+                    if (contains(visited, *symbol))
+                        return false;
+
+                    visited.insert(terminal_symbol_type(symbol->value()));
+                    break;
+                }
+                else
+                {
+                    for (const auto& my_first : first[new non_terminal_symbol_type(non_ter)])
+                        if (my_first != terminal_symbol_type("&") && contains(first[symbol], my_first))
+                            return false;
+
+                    if (!contains(first[symbol], terminal_symbol_type("&")))
+                        break;
+                }
+    }
+
+    return true;
 }
 
 bool ContextFree::has_recursion() const
@@ -498,42 +719,34 @@ ContextFree::string_type ContextFree::to_string() const
     string_type string;
     string = m_initial_symbol.value() + " -> ";
 
-    // auto productions(m_productions);
+     auto productions(m_productions);
 
-    // int i = productions[m_initial_symbol].size();
-    // for (auto production : productions[m_initial_symbol])
-    // {
-    //     if (production->is_terminal())
-    //         string += " " + production->to_string() + " ";
-    //     else
-    //         string += production->to_string();
+     int i = productions[m_initial_symbol].size();
+     for (auto production : productions[m_initial_symbol])
+     {
+         string += production.to_string();
 
-    //     if (--i > 0)
-    //         string += " | ";
-    // }
+         if (--i > 0)
+             string += " | ";
+     }
 
-    // string += "\n";
+     for (auto non_terminal : m_vn)
+     {
+         if (non_terminal == m_initial_symbol)
+             continue;
 
-    // for (auto non_terminal : m_vn)
-    // {
-    //     if (non_terminal == m_initial_symbol)
-    //         continue;
+         string += "\n" + non_terminal.value() + " -> ";
 
-    //     string += non_terminal.value() + " -> ";
+         i = productions[non_terminal].size();
+         for (auto production : productions[non_terminal])
+         {
+             string += production.to_string();
 
-    //     i = productions[non_terminal].size();
-    //     for (auto production : productions[non_terminal])
-    //     {
-    //         if (production->is_terminal())
-    //             string += " " + production->to_string() + " ";
-    //         else
-    //             string += production->to_string();
+             if (--i > 0)
+                 string += " | ";
+         }
 
-    //         if (--i > 0)
-    //             string += " | ";
-    //     }
-    //     string += "\n";
-    // }
+     }
 
     return string;
 }
