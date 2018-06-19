@@ -4,6 +4,7 @@
 #include <QMainWindow>
 #include <control/Facade.hpp>
 #include <view/NumberDialog.hpp>
+#include <QListWidgetItem>
 
 namespace Ui {
 class MainWindow;
@@ -26,10 +27,14 @@ private slots:
     void on_inutileSymbolsButton_clicked();
     void on_simpleProductionButton_clicked();
     void on_unreachableSymbolsButton_clicked();
-    void set_grammar_name(std::string);
+    void set_grammar_name(std::string, bool);
+
+    void select_grammar(std::string grammar_name);
+    void on_history_itemClicked(QListWidgetItem *item);
 
 signals:
     void new_grammar(std::string grammar_text);
+    void another_grammar_selected(std::string);
 
 private:
     Ui::MainWindow *ui;
