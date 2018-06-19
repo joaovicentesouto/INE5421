@@ -59,7 +59,7 @@ bool ContextFree::operator!=(const ContextFree &another) const
 
 bool ContextFree::operator<(const ContextFree &another) const
 {
-    return m_productions < another.m_productions;
+    return to_string() < another.to_string();
 }
 
 template<class T, class V>
@@ -200,7 +200,7 @@ ContextFree ContextFree::epsilon_free(non_terminal_set_type &derives_epsilon) co
                 generate_epsilon = true;
 
                 for (const auto& alfa : prod)
-                    generate_epsilon &= (*alfa == "&") | contains(derives_epsilon, *alfa);
+                    generate_epsilon &= ((*alfa == "&") | contains(derives_epsilon, *alfa));
 
                 if (generate_epsilon)
                     break;
@@ -448,6 +448,9 @@ ContextFree ContextFree::factor(unsigned max_steps) const
         {
             previous_productions = new_productions;
             terminal_set_type visited;
+
+            if (previous_productions[current].empty())
+                break;
 
             for (const auto& prod : previous_productions[current])
             {

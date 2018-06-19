@@ -7,6 +7,7 @@
 #include <QString>
 
 #include <context_free_languages/model/parsers/ContextFreeGrammarParser.hpp>
+#include <context_free_languages/gui/control/Printer.hpp>
 
 using namespace formal_device::grammar;
 
@@ -27,7 +28,6 @@ public slots:
     bool factored();
     bool emptiness();
     bool finiteness();
-
 
     void make_own();
     void epsilon_free();

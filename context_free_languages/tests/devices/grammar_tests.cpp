@@ -963,6 +963,17 @@ TEST_CASE("Grammar: Factor a grammar", "[grammar][function]")
         CHECK(new_grammar.vn() == new_vn);
         CHECK(new_grammar.productions() == new_prods);
     }
+
+    SECTION("Bad grammar", "[grammar][factor]")
+    {
+        ContextFree grammar(grammar_parser("G -> a | a A"));
+
+        REQUIRE(!grammar.is_factored());
+
+        auto new_grammar = grammar.factor(10);
+
+        CHECK(new_grammar.to_string() == "G -> a G0\nA -> \nG0 -> & | A");
+    }
 }
 
 TEST_CASE("Grammar: Parser", "[grammar][parser]")

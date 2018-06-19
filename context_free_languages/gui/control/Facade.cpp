@@ -55,7 +55,7 @@ void Facade::factoring(uint n)
     grammar_mapping[grammar_name] = grammar;
 
     emit set_static_grammar(grammar.to_string(), grammar_name);
-    emit update_static_grammar_data(construct_grammar_data(grammar));
+    emit update_static_grammar_data("");
 }
 
 void Facade::make_own()
@@ -68,6 +68,18 @@ void Facade::make_own()
     ContextFree grammar = m_grammar.own(derives_epsilon, na, fertible, reachable);
     std::string grammar_name = "Grammar " + (std::to_string(grammars_history.size() + 1));
 
+    std::string string = "Derives Epsilon";
+    string << derives_epsilon;
+
+    string += "\nSimple Productions";
+    string << na;
+
+    string += "\nFertile symbols";
+    string << derives_epsilon;
+
+    string += "\nReachable symbols";
+    string << reachable;
+
     if (grammars_history.find(grammar) == grammars_history.end())
         emit insert_grammar_name(grammar_name, false);
 
@@ -75,7 +87,7 @@ void Facade::make_own()
     grammar_mapping[grammar_name] = grammar;
 
     emit set_static_grammar(grammar.to_string(), grammar_name);
-    emit update_static_grammar_data(construct_grammar_data(grammar));
+    emit update_static_grammar_data(string);
 }
 
 void Facade::epsilon_free()
@@ -85,6 +97,9 @@ void Facade::epsilon_free()
     ContextFree grammar = m_grammar.epsilon_free(derives_epsilon);
     std::string grammar_name = "Grammar " + (std::to_string(grammars_history.size() + 1));
 
+    std::string string = "Derives Epsilon";
+    string << derives_epsilon;
+
     if (grammars_history.find(grammar) == grammars_history.end())
         emit insert_grammar_name(grammar_name, false);
 
@@ -92,7 +107,7 @@ void Facade::epsilon_free()
     grammar_mapping[grammar_name] = grammar;
 
     emit set_static_grammar(grammar.to_string(), grammar_name);
-    emit update_static_grammar_data(construct_grammar_data(grammar));
+    emit update_static_grammar_data(string);
 }
 
 void Facade::remove_dead_symbols()
@@ -101,6 +116,9 @@ void Facade::remove_dead_symbols()
 
     ContextFree grammar = m_grammar.remove_infertile_symbols(fertile_symbols);
     std::string grammar_name = "Grammar " + (std::to_string(grammars_history.size() + 1));
+    
+    std::string string = "Fertile symbols";
+    string << fertile_symbols;
 
     if (grammars_history.find(grammar) == grammars_history.end())
         emit insert_grammar_name(grammar_name, false);
@@ -109,7 +127,7 @@ void Facade::remove_dead_symbols()
     grammar_mapping[grammar_name] = grammar;
 
     emit set_static_grammar(grammar.to_string(), grammar_name);
-    emit update_static_grammar_data(construct_grammar_data(grammar));
+    emit update_static_grammar_data(string);
 }
 
 void Facade::remove_left_recursion()
@@ -119,6 +137,9 @@ void Facade::remove_left_recursion()
     ContextFree grammar = m_grammar.remove_recursion(recursion);
     std::string grammar_name = "Grammar " + (std::to_string(grammars_history.size() + 1));
 
+    std::string string = "Types of recursion";
+    string << recursion;
+
     if (grammars_history.find(grammar) == grammars_history.end())
         emit insert_grammar_name(grammar_name, false);
 
@@ -126,7 +147,8 @@ void Facade::remove_left_recursion()
     grammar_mapping[grammar_name] = grammar;
 
     emit set_static_grammar(grammar.to_string(), grammar_name);
-    emit update_static_grammar_data(construct_grammar_data(grammar));
+    emit update_static_grammar_data(string);
+    
 }
 
 void Facade::remove_inutile_symbols()
@@ -136,6 +158,12 @@ void Facade::remove_inutile_symbols()
 
     ContextFree grammar = m_grammar.remove_useless_symbols(fertile_symbols, reachable);
     std::string grammar_name = "Grammar " + (std::to_string(grammars_history.size() + 1));
+    
+    std::string string = "Fertile symbols";
+    string << fertile_symbols;
+
+    string += "\nReachable symbols";
+    string << reachable;
 
     if (grammars_history.find(grammar) == grammars_history.end())
         emit insert_grammar_name(grammar_name, false);
@@ -144,7 +172,7 @@ void Facade::remove_inutile_symbols()
     grammar_mapping[grammar_name] = grammar;
 
     emit set_static_grammar(grammar.to_string(), grammar_name);
-    emit update_static_grammar_data(construct_grammar_data(grammar));
+    emit update_static_grammar_data(string);
 }
 
 void Facade::remove_simple_production()
@@ -154,6 +182,9 @@ void Facade::remove_simple_production()
     ContextFree grammar = m_grammar.remove_simple_productions(na);
     std::string grammar_name = "Grammar " + (std::to_string(grammars_history.size() + 1));
 
+    std::string string = "Simple Productions";
+    string << na;
+
     if (grammars_history.find(grammar) == grammars_history.end())
         emit insert_grammar_name(grammar_name, false);
 
@@ -161,7 +192,8 @@ void Facade::remove_simple_production()
     grammar_mapping[grammar_name] = grammar;
 
     emit set_static_grammar(grammar.to_string(), grammar_name);
-    emit update_static_grammar_data(construct_grammar_data(grammar));
+    emit update_static_grammar_data(string);
+    
 }
 
 void Facade::remove_unreachable_symbols()
@@ -170,6 +202,9 @@ void Facade::remove_unreachable_symbols()
 
     ContextFree grammar = m_grammar.remove_unreachable_symbols(reachable);
     std::string grammar_name = "Grammar " + (std::to_string(grammars_history.size() + 1));
+    
+    std::string string = "Reachable symbols";
+    string << reachable;
 
     if (grammars_history.find(grammar) == grammars_history.end())
         emit insert_grammar_name(grammar_name, false);
@@ -178,7 +213,7 @@ void Facade::remove_unreachable_symbols()
     grammar_mapping[grammar_name] = grammar;
 
     emit set_static_grammar(grammar.to_string(), grammar_name);
-    emit update_static_grammar_data(construct_grammar_data(grammar));
+    emit update_static_grammar_data(string);
 }
 
 std::string Facade::construct_grammar_data(ContextFree grammar)
