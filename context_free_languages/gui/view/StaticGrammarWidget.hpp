@@ -22,7 +22,6 @@ private slots:
     void set_grammar_data(std::string data);
 
 signals:
-    void set_dynamic_grammar(std::string);
     void select_grammar(std::string);
 
 private:

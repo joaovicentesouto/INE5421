@@ -21,6 +21,7 @@ public:
 
 private slots:
     std::string construct_grammar_data(ContextFree grammar);
+    void make_change(ContextFree grammar, std::string result_data);
 
 public slots:
     bool new_grammar(std::string grammar_text);
@@ -28,6 +29,7 @@ public slots:
     bool factored();
     bool emptiness();
     bool finiteness();
+    bool has_recursion();
 
     void make_own();
     void epsilon_free();

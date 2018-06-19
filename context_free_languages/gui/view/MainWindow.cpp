@@ -28,17 +28,17 @@ MainWindow::MainWindow(QWidget *parent) :
     QObject::connect(ui->dynamicGrammar, SIGNAL(finiteness()),
                      m_facade, SLOT(finiteness()));
 
+    // ***** Has Recursion ***** //
+
+    QObject::connect(ui->dynamicGrammar, SIGNAL(has_recursion()),
+                     m_facade, SLOT(has_recursion()));
+
     // ***** N-Step Factoring ***** //
 
     QObject::connect(m_facade, SIGNAL(set_static_grammar(std::string, std::string)),
                      ui->staticGrammar, SLOT(set_grammar(std::string, std::string)));
 
-    // ***** Update Static Grammar ***** //
-
-    QObject::connect(ui->staticGrammar, SIGNAL(set_dynamic_grammar(std::string)),
-                     ui->dynamicGrammar, SLOT(set_dynamic_grammar(std::string)));
-
-    // ***** Update Dynamic Grammar Data ***** //
+    // ***** Update Static Grammar Data ***** //
 
     QObject::connect(m_facade, SIGNAL(update_dynamic_grammar_data(std::string)),
                      ui->dynamicGrammar, SLOT(set_dynamic_grammar_data(std::string)));

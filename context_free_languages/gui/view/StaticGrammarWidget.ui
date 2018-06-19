@@ -33,7 +33,7 @@
    <item alignment="Qt::AlignHCenter">
     <widget class="QLabel" name="title">
      <property name="text">
-      <string>Grammar Data</string>
+      <string>Resulting structures used in algorithms</string>
      </property>
     </widget>
    </item>

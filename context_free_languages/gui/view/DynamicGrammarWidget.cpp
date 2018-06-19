@@ -85,6 +85,22 @@ void DynamicGrammarWidget::on_isFactoredButton_clicked()
     ui->msg->setVisible(true);
 }
 
+void DynamicGrammarWidget::on_recursionButton_clicked()
+{
+    if(!validation())
+        return;
+
+    if (emit has_recursion()) {
+        ui->msg->setText("Gramatica Possui Recusao!");
+        ui->msg->setStyleSheet("color:black");
+    } else {
+        ui->msg->setText("Gramatica Nao Possui Recursao!");
+        ui->msg->setStyleSheet("color:black");
+    }
+    ui->msg->setVisible(true);
+
+}
+
 void DynamicGrammarWidget::set_msg_text(QString text)
 {
     ui->msg->setText(text);

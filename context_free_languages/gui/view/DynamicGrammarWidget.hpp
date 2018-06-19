@@ -26,6 +26,8 @@ private slots:
     void set_dynamic_grammar_data(std::string data);
     void on_validateButton_clicked();
 
+    void on_recursionButton_clicked();
+
 public slots:
     bool validation();
     void set_msg_text(QString text);
@@ -34,6 +36,7 @@ signals:
     bool factored();
     bool emptiness();
     bool finiteness();
+    bool has_recursion();
     bool validated_grammar();
     bool new_grammar(std::string grammar_text);
 

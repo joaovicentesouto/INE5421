@@ -64,7 +64,7 @@ grammar_type::string_type& operator<<(grammar_type::string_type& title, const gr
 
         unsigned i = 0;
         for (auto non_terminal : pair.second)
-            title += ++i < map.size()? non_terminal.value() + " , " : non_terminal.value();
+            title += i++ == 0? non_terminal.value() : " , " + non_terminal.value();
 
         title += " }\n";
     }
