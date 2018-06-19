@@ -13,8 +13,8 @@ bool Facade::new_grammar(std::string grammar_text)
 {
     try {
         m_grammar = formal_device::parser::grammar_parser(grammar_text);
-        //grammars_history.insert(m_grammar);
-        //grammar_mapping["grammar" + std::to_string(grammars_history.size())] = m_grammar;
+        grammars_history.insert(m_grammar);
+        grammar_mapping["grammar" + std::to_string(grammars_history.size())] = m_grammar;
         construct_grammar_data();
         return true;
     } catch (const std::exception& e) {
@@ -91,16 +91,16 @@ void Facade::remove_unreachable_symbols()
 void Facade::construct_grammar_data()
 {
     std::string data = "FIRST:\n\n";
-//    for (auto producer : m_grammar.first()) {
-//        auto symb = *dynamic_cast<const NonTerminalSymbol*>(producer.first.get());
-//        data += "First(" + symb + ") = {";
-//        int i = 1;
-//        for (auto symbol : producer.second) {
-//            if (i == producer.second.size())
-//                data += symbol.value() + "}\n";
-//            else
-//                data += symbol.value() + ", ";
-//        }
-//    }
+    for (auto producer : m_grammar.first()) {
+        auto symb = producer.first->value();
+        data += "First( " + symb + " ) = { ";
+        int i = 1;
+        for (auto symbol : producer.second) {
+            if (i++ == producer.second.size())
+                data += symbol.value() + " }\n";
+            else
+                data += symbol.value() + " , ";
+        }
+    }
     emit update_grammar_data(data);
 }
