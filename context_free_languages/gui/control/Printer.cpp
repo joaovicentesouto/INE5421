@@ -26,29 +26,32 @@ grammar_type::string_type& operator<<(grammar_type::string_type& title, const gr
 {
     title += "\n";
 
+    std::string direct{"Direct = { "}, indirect{"Indirect\n"};
+    bool has_indirect = false;
+
     unsigned i = 0;
     for (auto recursion : map)
     {
         if (!recursion.second[grammar_type::Recursion::Direct].empty())
-            title += recursion.first.value() + " : Possuía recursão direta\n";
-        else
-            title += recursion.first.value() + " : Não possuía recursão direta\n";
+            direct += i++ == 0? recursion.first.value() : " , " + recursion.first.value();
 
         if (!recursion.second[grammar_type::Recursion::Indirect].empty())
         {
-            title += recursion.first.value() + " : Indireta = { ";
+            has_indirect = true;
+
+            indirect += recursion.first.value() + " = { ";
 
             unsigned i = 0;
             for (const auto& non_terminal : recursion.second[grammar_type::Recursion::Indirect])
-                title += ++i < map.size()? non_terminal.value() + " , " : non_terminal.value();
+                indirect += ++i < map.size()? non_terminal.value() + " , " : non_terminal.value();
 
-            title += " }";
+            indirect += " }\n";
         }
-        else
-            title += recursion.first.value() + " = Não possuía recursão direta";
     }
 
-    return title += "\n";
+    title += direct + " } \n" + (has_indirect? indirect : "");
+
+    return title;
 }
 
 grammar_type::string_type& operator<<(grammar_type::string_type& title, const grammar_type::simple_production_map_type& map)

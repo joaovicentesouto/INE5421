@@ -30,25 +30,43 @@ MainWindow::MainWindow(QWidget *parent) :
 
     // ***** N-Step Factoring ***** //
 
-    // ***** Update Dynamic Grammar ***** //
+    QObject::connect(m_facade, SIGNAL(set_static_grammar(std::string, std::string)),
+                     ui->staticGrammar, SLOT(set_grammar(std::string, std::string)));
 
-    QObject::connect(ui->staticGrammar, SIGNAL(set_dynamic_grammar(QString)),
-                     ui->dynamicGrammar, SLOT(set_dynamic_grammar(QString)));
+    // ***** Update Static Grammar ***** //
+
+    QObject::connect(ui->staticGrammar, SIGNAL(set_dynamic_grammar(std::string)),
+                     ui->dynamicGrammar, SLOT(set_dynamic_grammar(std::string)));
 
     // ***** Update Dynamic Grammar Data ***** //
 
-    QObject::connect(m_facade, SIGNAL(update_grammar_data(std::string)),
+    QObject::connect(m_facade, SIGNAL(update_dynamic_grammar_data(std::string)),
                      ui->dynamicGrammar, SLOT(set_dynamic_grammar_data(std::string)));
 
     // ***** Update History View ***** //
 
-    QObject::connect(m_facade, SIGNAL(insert_grammar_name(std::string)),
-                     this, SLOT(set_grammar_name(std::string)));
+    QObject::connect(m_facade, SIGNAL(insert_grammar_name(std::string, bool)),
+                     this, SLOT(set_grammar_name(std::string, bool)));
 
-    // ***** Update Static Grammar ***** //
+    // ***** Update Facade Grammar With Selected Grammar ***** //
 
-    QObject::connect(m_facade, SIGNAL(set_static_grammar(std::string, std::string)),
-                     ui->staticGrammar, SLOT(set_grammar(std::string, std::string)));
+    QObject::connect(this, SIGNAL(another_grammar_selected(std::string)),
+                     m_facade, SLOT(change_grammar(std::string)));
+
+    // ***** Update Dynamic Grammar With Selected Grammar ***** //
+
+    QObject::connect(m_facade, SIGNAL(set_dynamic_grammar(std::string)),
+                     ui->dynamicGrammar, SLOT(set_dynamic_grammar(std::string)));
+
+    // ***** Update Static Grammar Data With Resulted Data Grammar ***** //
+
+    QObject::connect(m_facade, SIGNAL(update_static_grammar_data(std::string)),
+                     ui->staticGrammar, SLOT(set_grammar_data(std::string)));
+
+    // ***** Update Grammar History ***** //
+
+    QObject::connect(ui->staticGrammar, SIGNAL(select_grammar(std::string)),
+                     this, SLOT(select_grammar(std::string)));
 }
 
 MainWindow::~MainWindow()
@@ -126,7 +144,38 @@ void MainWindow::on_leftRecursionButton_clicked()
     }
 }
 
-void MainWindow::set_grammar_name(std::string name)
+void MainWindow::set_grammar_name(std::string name, bool paint)
 {
-    ui->history->addItem(new QListWidgetItem(QString::fromStdString(name)));
+    QListWidgetItem *item = new QListWidgetItem(QString::fromStdString(name));
+
+    if (paint) {
+        for (int i = 0; i < ui->history->count(); i++)
+            ui->history->item(i)->setBackgroundColor(QColor("#ffffff"));
+        item->setBackgroundColor(QColor("#71d773"));
+    }
+
+    ui->history->addItem(item);
+}
+
+void MainWindow::select_grammar(std::string grammar_name)
+{
+    for (int i = 0; i < ui->history->count(); i++) {
+        if (ui->history->item(i)->text().toStdString() == grammar_name)
+            ui->history->item(i)->setBackgroundColor(QColor("#71d773"));
+        else
+            ui->history->item(i)->setBackgroundColor(QColor("#ffffff"));
+    }
+
+    ui->history->clearSelection();
+    emit another_grammar_selected(grammar_name);
+}
+
+void MainWindow::on_history_itemClicked(QListWidgetItem *item)
+{
+    for (int i = 0; i < ui->history->count(); i++)
+        ui->history->item(i)->setBackgroundColor(QColor("#ffffff"));
+
+    item->setBackgroundColor(QColor("#71d773"));
+    ui->history->clearSelection();
+    emit another_grammar_selected(item->text().toStdString());
 }

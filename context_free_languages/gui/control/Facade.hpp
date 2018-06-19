@@ -20,11 +20,10 @@ public:
     ~Facade();
 
 private slots:
-    void construct_grammar_data();
+    std::string construct_grammar_data(ContextFree grammar);
 
 public slots:
     bool new_grammar(std::string grammar_text);
-    void new_result_grammar(const ContextFree& grammar);
 
     bool factored();
     bool emptiness();
@@ -38,11 +37,14 @@ public slots:
     void remove_inutile_symbols();
     void remove_simple_production();
     void remove_unreachable_symbols();
+    void change_grammar(std::string name);
 
 signals:
-    void set_static_grammar(std::string grammar, std::string result_data);
-    void update_grammar_data(std::string);
-    void insert_grammar_name(std::string);
+    void set_dynamic_grammar(std::string);
+    void insert_grammar_name(std::string, bool);
+    void update_static_grammar_data(std::string);
+    void update_dynamic_grammar_data(std::string);
+    void set_static_grammar(std::string, std::string);
 
 private:
      ContextFree m_grammar;

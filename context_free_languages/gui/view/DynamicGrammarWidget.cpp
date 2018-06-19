@@ -22,6 +22,11 @@ void DynamicGrammarWidget::on_cleanButton_clicked()
     ui->msg->setVisible(false);
 }
 
+void DynamicGrammarWidget::on_validateButton_clicked()
+{
+    validation();
+}
+
 bool DynamicGrammarWidget::validation()
 {
     if (emit new_grammar(ui->grammar->toPlainText().toStdString())) {
@@ -87,9 +92,10 @@ void DynamicGrammarWidget::set_msg_text(QString text)
     ui->msg->setVisible(true);
 }
 
-void DynamicGrammarWidget::set_dynamic_grammar(QString grammar)
+void DynamicGrammarWidget::set_dynamic_grammar(std::string grammar)
 {
-    ui->grammar->setText(grammar);
+    ui->grammar->setText(QString::fromStdString(grammar));
+
 }
 
 void DynamicGrammarWidget::set_dynamic_grammar_data(std::string data)

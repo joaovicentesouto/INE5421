@@ -16,12 +16,20 @@ StaticGrammarWidget::~StaticGrammarWidget()
 
 void StaticGrammarWidget::on_updateButton_clicked()
 {
-    emit set_dynamic_grammar(ui->grammar->toPlainText());
+    emit set_dynamic_grammar(ui->grammar->toPlainText().toStdString());
+    emit select_grammar(m_grammar_name);
     ui->grammar->clear();
+    ui->grammarData->clear();
+    m_grammar_name = "";
 }
 
-void StaticGrammarWidget::set_grammar(std::string grammar, std::string result_data)
+void StaticGrammarWidget::set_grammar(std::string grammar, std::string grammar_name)
 {
     ui->grammar->setText(QString::fromStdString(grammar));
-    ui->grammarData->setText(QString::fromStdString(result_data));
+    m_grammar_name = grammar_name;
+}
+
+void StaticGrammarWidget::set_grammar_data(std::string data)
+{
+    ui->grammarData->setText(QString::fromStdString(data));
 }

@@ -22,8 +22,9 @@ private slots:
     void on_emptinessButton_clicked();
     void on_finitenessButton_clicked();
     void on_isFactoredButton_clicked();
-    void set_dynamic_grammar(QString grammar);
+    void set_dynamic_grammar(std::string grammar);
     void set_dynamic_grammar_data(std::string data);
+    void on_validateButton_clicked();
 
 public slots:
     bool validation();

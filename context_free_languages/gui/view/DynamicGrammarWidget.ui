@@ -65,14 +65,21 @@
          </size>
         </property>
         <property name="text">
-         <string>Is Factored?</string>
+         <string>Factored?</string>
         </property>
        </widget>
       </item>
       <item>
        <widget class="QPushButton" name="cleanButton">
         <property name="text">
-         <string>Clean Grammar</string>
+         <string>Clean</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="validateButton">
+        <property name="text">
+         <string>Validate</string>
         </property>
        </widget>
       </item>
