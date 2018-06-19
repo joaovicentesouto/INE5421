@@ -30,15 +30,12 @@ MainWindow::MainWindow(QWidget *parent) :
 
     // ***** N-Step Factoring ***** //
 
-    QObject::connect(m_facade, SIGNAL(set_static_grammar(std::string)),
-                     ui->staticGrammar, SLOT(set_grammar(std::string)));
-
-    // ***** Update Static Grammar ***** //
+    // ***** Update Dynamic Grammar ***** //
 
     QObject::connect(ui->staticGrammar, SIGNAL(set_dynamic_grammar(QString)),
                      ui->dynamicGrammar, SLOT(set_dynamic_grammar(QString)));
 
-    // ***** Update Static Grammar Data ***** //
+    // ***** Update Dynamic Grammar Data ***** //
 
     QObject::connect(m_facade, SIGNAL(update_grammar_data(std::string)),
                      ui->dynamicGrammar, SLOT(set_dynamic_grammar_data(std::string)));
@@ -47,6 +44,11 @@ MainWindow::MainWindow(QWidget *parent) :
 
     QObject::connect(m_facade, SIGNAL(insert_grammar_name(std::string)),
                      this, SLOT(set_grammar_name(std::string)));
+
+    // ***** Update Static Grammar ***** //
+
+    QObject::connect(m_facade, SIGNAL(set_static_grammar(std::string, std::string)),
+                     ui->staticGrammar, SLOT(set_grammar(std::string, std::string)));
 }
 
 MainWindow::~MainWindow()
@@ -79,7 +81,7 @@ void MainWindow::on_ownButton_clicked()
 void MainWindow::on_simpleProductionButton_clicked()
 {
     if(ui->dynamicGrammar->validation()) {
-        m_facade->make_own();
+        m_facade->remove_simple_production();
         ui->dynamicGrammar->set_msg_text("Remoçao de Produçoes Simples Realizada com Sucesso!");
     }
 }
@@ -87,7 +89,7 @@ void MainWindow::on_simpleProductionButton_clicked()
 void MainWindow::on_epsilonFreeButton_clicked()
 {
     if(ui->dynamicGrammar->validation()) {
-        m_facade->make_own();
+        m_facade->epsilon_free();
         ui->dynamicGrammar->set_msg_text("Transformaçao em Epsilon-Livre Realizada com Sucesso!");
     }
 }
@@ -95,7 +97,7 @@ void MainWindow::on_epsilonFreeButton_clicked()
 void MainWindow::on_inutileSymbolsButton_clicked()
 {
     if(ui->dynamicGrammar->validation()) {
-        m_facade->make_own();
+        m_facade->remove_inutile_symbols();
         ui->dynamicGrammar->set_msg_text("Remoçao de Simbolos Inuteis Realizada com Sucesso!");
     }
 }
@@ -103,7 +105,7 @@ void MainWindow::on_inutileSymbolsButton_clicked()
 void MainWindow::on_deadSymbolsButton_clicked()
 {
     if(ui->dynamicGrammar->validation()) {
-        m_facade->make_own();
+        m_facade->remove_dead_symbols();
         ui->dynamicGrammar->set_msg_text("Remoçao de Simbolos Inferteis Realizada com Sucesso!");
     }
 }
@@ -111,7 +113,7 @@ void MainWindow::on_deadSymbolsButton_clicked()
 void MainWindow::on_unreachableSymbolsButton_clicked()
 {
     if(ui->dynamicGrammar->validation()) {
-        m_facade->make_own();
+        m_facade->remove_unreachable_symbols();
         ui->dynamicGrammar->set_msg_text("Remoçao de Simbolos Inalcançaveis Realizada com Sucesso!");
     }
 }
@@ -119,7 +121,7 @@ void MainWindow::on_unreachableSymbolsButton_clicked()
 void MainWindow::on_leftRecursionButton_clicked()
 {
     if(ui->dynamicGrammar->validation()) {
-        m_facade->make_own();
+        m_facade->remove_left_recursion();
         ui->dynamicGrammar->set_msg_text("Remoçao de Recurçao a Esquerda Realizada com Sucesso!");
     }
 }
