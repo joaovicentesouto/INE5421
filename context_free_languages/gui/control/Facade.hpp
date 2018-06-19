@@ -20,6 +20,7 @@ public:
 
 private slots:
     std::string construct_grammar_data(ContextFree grammar);
+    void make_change(ContextFree grammar);
 
 public slots:
     bool new_grammar(std::string grammar_text);

@@ -33,11 +33,6 @@ MainWindow::MainWindow(QWidget *parent) :
     QObject::connect(m_facade, SIGNAL(set_static_grammar(std::string, std::string)),
                      ui->staticGrammar, SLOT(set_grammar(std::string, std::string)));
 
-    // ***** Update Static Grammar ***** //
-
-    QObject::connect(ui->staticGrammar, SIGNAL(set_dynamic_grammar(std::string)),
-                     ui->dynamicGrammar, SLOT(set_dynamic_grammar(std::string)));
-
     // ***** Update Static Grammar Data ***** //
 
     QObject::connect(m_facade, SIGNAL(update_dynamic_grammar_data(std::string)),
