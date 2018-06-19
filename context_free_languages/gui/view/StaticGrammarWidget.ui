@@ -33,19 +33,12 @@
    <item alignment="Qt::AlignHCenter">
     <widget class="QLabel" name="title">
      <property name="text">
-      <string>Historico de Gramaticas</string>
+      <string>Grammar Data</string>
      </property>
     </widget>
    </item>
    <item>
-    <widget class="QTableWidget" name="historyTable">
-     <property name="maximumSize">
-      <size>
-       <width>16777215</width>
-       <height>300</height>
-      </size>
-     </property>
-    </widget>
+    <widget class="QTextEdit" name="grammarData"/>
    </item>
   </layout>
  </widget>

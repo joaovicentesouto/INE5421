@@ -18,14 +18,15 @@ public:
     Facade();
     ~Facade();
 
+private slots:
+    void construct_grammar_data();
+
 public slots:
-    void grammar_changed();
     bool new_grammar(std::string grammar_text);
 
     bool factored();
     bool emptiness();
     bool finiteness();
-    bool grammar_validated();
 
     void make_own();
     void epsilon_free();
@@ -38,10 +39,12 @@ public slots:
 
 signals:
     void set_static_grammar(std::string grammar);
+    void update_grammar_data(std::string);
 
 private:
      ContextFree m_grammar;
-     bool validated = false;
+     std::set<ContextFree> grammars_history;
+     std::map<std::string, ContextFree> grammar_mapping;
 };
 
 #endif // FACADE_H

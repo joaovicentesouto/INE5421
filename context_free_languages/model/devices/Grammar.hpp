@@ -93,8 +93,9 @@ class ContextFree
     bool is_factored() const;
     bool has_recursion() const;
 
-    bool operator==(const ContextFree &ContextFree) const;
-    bool operator!=(const ContextFree &ContextFree) const;
+    bool operator==(const ContextFree &another) const;
+    bool operator!=(const ContextFree &another) const;
+    bool operator<(const ContextFree &another) const;
 
   private:
     void calculate_first();

@@ -41,20 +41,28 @@ ContextFree::follow_map_type ContextFree::follow() const
     return m_follow;
 }
 
-bool ContextFree::operator==(const ContextFree &ContextFree) const
+bool ContextFree::operator==(const ContextFree &another) const
 {
-    return m_vn             == ContextFree.m_vn
-        && m_vt             == ContextFree.m_vt
-        && m_productions    == ContextFree.m_productions
-        && m_initial_symbol == ContextFree.m_initial_symbol;
+    return m_vn             == another.m_vn
+        && m_vt             == another.m_vt
+        && m_productions    == another.m_productions
+        && m_initial_symbol == another.m_initial_symbol;
 }
 
-bool ContextFree::operator!=(const ContextFree &ContextFree) const
+bool ContextFree::operator!=(const ContextFree &another) const
 {
-    return m_vn             != ContextFree.m_vn
-        || m_vt             != ContextFree.m_vt
-        || m_productions    != ContextFree.m_productions
-        || m_initial_symbol != ContextFree.m_initial_symbol;
+    return m_vn             != another.m_vn
+        || m_vt             != another.m_vt
+        || m_productions    != another.m_productions
+        || m_initial_symbol != another.m_initial_symbol;
+}
+
+bool ContextFree::operator<(const ContextFree &another) const
+{
+    return m_vn             < another.m_vn
+        && m_vt             < another.m_vt
+        && m_productions    < another.m_productions
+        && m_initial_symbol < another.m_initial_symbol;
 }
 
 template<class T, class V>

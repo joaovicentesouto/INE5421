@@ -20,6 +20,9 @@ private slots:
     void on_updateButton_clicked();
     void set_grammar(std::string grammar);
 
+signals:
+    void set_dynamic_grammar(QString);
+
 private:
     Ui::StaticGrammarWidget *ui;
 };
