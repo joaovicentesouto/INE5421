@@ -14,8 +14,10 @@ bool Facade::new_grammar(std::string grammar_text)
     try {
         m_grammar = formal_device::parser::grammar_parser(grammar_text);
         grammars_history.insert(m_grammar);
-        grammar_mapping["grammar" + std::to_string(grammars_history.size())] = m_grammar;
+        std::string grammar_name = "grammar" + std::to_string(grammars_history.size());
+        grammar_mapping[grammar_name] = m_grammar;
         construct_grammar_data();
+        emit insert_grammar_name(grammar_name);
         return true;
     } catch (const std::exception& e) {
         return false;

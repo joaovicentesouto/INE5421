@@ -59,10 +59,7 @@ bool ContextFree::operator!=(const ContextFree &another) const
 
 bool ContextFree::operator<(const ContextFree &another) const
 {
-    return m_vn             < another.m_vn
-        && m_vt             < another.m_vt
-        && m_productions    < another.m_productions
-        && m_initial_symbol < another.m_initial_symbol;
+    return m_productions < another.m_productions;
 }
 
 template<class T, class V>
@@ -507,12 +504,19 @@ ContextFree ContextFree::factor(unsigned max_steps) const
             {
                 for (const auto& prod_current : previous_productions[current])
                 {
-                    if (to_derive != prod_current[0] || prod_current.size() <= 1)
+                    if (to_derive != prod_current[0])
                         continue;
 
-                    production_type p(++prod_current.begin(), prod_current.end());
+                    if (prod_current.size() == 1 && !contains(previous_productions[current], production_type{new terminal_symbol_type("&")}))
+                        continue;
+
+                    production_type p = prod_current.size() == 1? production_type(++prod_current.begin(), prod_current.end()) : production_type();
+
+                    if (p.empty())
+                        p = {new terminal_symbol_type("&")};
 
                     new_productions[current].insert(p);
+                    new_productions[current].erase(prod_current);
                 }
             }
         }

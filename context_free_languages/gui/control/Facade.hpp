@@ -40,6 +40,7 @@ public slots:
 signals:
     void set_static_grammar(std::string grammar);
     void update_grammar_data(std::string);
+    void insert_grammar_name(std::string);
 
 private:
      ContextFree m_grammar;
