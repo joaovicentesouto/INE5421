@@ -7,6 +7,7 @@
 #include <QString>
 
 #include <context_free_languages/model/parsers/ContextFreeGrammarParser.hpp>
+#include <context_free_languages/gui/control/Printer.hpp>
 
 using namespace formal_device::grammar;
 
@@ -23,6 +24,7 @@ private slots:
 
 public slots:
     bool new_grammar(std::string grammar_text);
+    void new_result_grammar(const ContextFree& grammar);
 
     bool factored();
     bool emptiness();
@@ -38,7 +40,7 @@ public slots:
     void remove_unreachable_symbols();
 
 signals:
-    void set_static_grammar(std::string grammar);
+    void set_static_grammar(std::string grammar, std::string result_data);
     void update_grammar_data(std::string);
     void insert_grammar_name(std::string);
 

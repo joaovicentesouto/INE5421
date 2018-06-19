@@ -20,7 +20,8 @@ void StaticGrammarWidget::on_updateButton_clicked()
     ui->grammar->clear();
 }
 
-void StaticGrammarWidget::set_grammar(std::string grammar)
+void StaticGrammarWidget::set_grammar(std::string grammar, std::string result_data)
 {
     ui->grammar->setText(QString::fromStdString(grammar));
+    ui->grammarData->setText(QString::fromStdString(result_data));
 }

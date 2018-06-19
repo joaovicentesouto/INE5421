@@ -18,7 +18,7 @@ public:
 
 private slots:
     void on_updateButton_clicked();
-    void set_grammar(std::string grammar);
+    void set_grammar(std::string grammar, std::string result_data);
 
 signals:
     void set_dynamic_grammar(QString);

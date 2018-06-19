@@ -42,7 +42,7 @@ class ContextFree
     using follow_map_type          = map_type<non_terminal_symbol_type, terminal_set_type>;
     using production_map_type      = map_type<non_terminal_symbol_type, set_type<production_type>>;
     using recursion_map_type       = map_type<non_terminal_symbol_type, map_type<Recursion, non_terminal_set_type>>;
-    using simple_production_map_type = map_type<non_terminal_symbol_type, set_type<non_terminal_symbol_type>>;
+    using simple_production_map_type = map_type<non_terminal_symbol_type, non_terminal_set_type>;
 
     // Class constructors
     ContextFree();
