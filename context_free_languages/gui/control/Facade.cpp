@@ -47,6 +47,11 @@ bool Facade::finiteness()
     return m_grammar.finitiness();
 }
 
+bool Facade::has_recursion()
+{
+    return m_grammar.has_recursion();
+}
+
 void Facade::factoring(uint n)
 {
     make_change(m_grammar.factor(n));

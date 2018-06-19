@@ -28,6 +28,7 @@ public slots:
     bool factored();
     bool emptiness();
     bool finiteness();
+    bool has_recursion();
 
 
     void make_own();
