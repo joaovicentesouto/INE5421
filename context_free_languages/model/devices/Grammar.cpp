@@ -415,21 +415,27 @@ ContextFree ContextFree::remove_useless_symbols(non_terminal_set_type &fertile_s
 
 ContextFree ContextFree::factor(unsigned max_steps) const
 {
-    symbol_type::vector_type<non_terminal_symbol_type> to_factor(m_vn.begin(), m_vn.end());
-    first_map_type first{m_first};
+    recursion_map_type ignore;
+    ContextFree no_recursion_g = has_recursion()? remove_recursion(ignore) : *this;
 
-    non_terminal_set_type new_vn{m_vn};
-    terminal_set_type new_vt{m_vt};
-    production_map_type new_productions{m_productions};
-    non_terminal_symbol_type new_initial_symbol{m_initial_symbol};
+    symbol_type::vector_type<non_terminal_symbol_type> to_factor(no_recursion_g.m_vn.begin(),
+                                                                 no_recursion_g.m_vn.end());
+
+    first_map_type first{no_recursion_g.m_first};
+
+    non_terminal_set_type new_vn{no_recursion_g.m_vn};
+    terminal_set_type new_vt{no_recursion_g.m_vt};
+    production_map_type new_productions{no_recursion_g.m_productions};
+    non_terminal_symbol_type new_initial_symbol{no_recursion_g.m_initial_symbol};
 
     size_t i = 0;
     size_t steps = 0;
 
     while (i < to_factor.size() && steps < max_steps)
     {
-        auto non_term = to_factor[i];
+        auto current = to_factor[i];
         symbol_type::vector_type<terminal_symbol_type> symbols_to_factor;
+        map_type<terminal_symbol_type, non_terminal_set_type> symbols_to_derive;
 
         //! Deriva produção na forma S -> Ab.. para S-> Xb.. se A->X
         production_map_type previous_productions;
@@ -438,7 +444,7 @@ ContextFree ContextFree::factor(unsigned max_steps) const
             previous_productions = new_productions;
             terminal_set_type visited;
 
-            for (const auto& prod : previous_productions[non_term])
+            for (const auto& prod : previous_productions[current])
             {
                 if (prod[0]->is_terminal())
                 {
@@ -447,37 +453,58 @@ ContextFree ContextFree::factor(unsigned max_steps) const
 
                     visited.insert(terminal_symbol_type(prod[0]->value()));
                 }
-                else if (non_term != prod[0])
+                else
                 {
-                    bool derive = false;
                     non_terminal_symbol_type target(prod[0]->value());
 
-                    for (const auto& my_first : first[new non_terminal_symbol_type(non_term)])
+                    for (const auto& prod_first : first[prod[0]])
                     {
-                        if (my_first != terminal_symbol_type("&") && contains(first[prod[0]], my_first))
-                        {
-                            derive = true;
-                            break;
-                        }
+                        if (prod_first != terminal_symbol_type("&") && contains(visited, prod_first))
+                            symbols_to_factor.push_back(prod_first);
+
+                        visited.insert(prod_first);
+                        symbols_to_derive[prod_first].insert(target);
                     }
+                }
+            }
 
-                    if (derive || contains(first[prod[0]], terminal_symbol_type("&")))
+            for (const auto& cause_factor : symbols_to_factor)
+            {
+                for (const auto& to_derive : symbols_to_derive[cause_factor])
+                {
+                    for (const auto& prod_current : previous_productions[current])
                     {
-                        for (const auto& prod_target : previous_productions[target])
-                        {
-                            auto p = terminal_symbol_type("&") != prod_target[0]? prod_target : production_type();
+                        if (to_derive != prod_current[0])
+                            continue;
 
-                            for (int x = 1; x < prod.size(); ++x)
-                                p.push_back(prod[x]);
+                        for (const auto& prod_derive : previous_productions[to_derive])
+                        {
+                            auto p = terminal_symbol_type("&") != prod_derive[0]? prod_derive : production_type();
+
+                            for (int x = 1; x < prod_current.size(); ++x)
+                                p.push_back(prod_current[x]);
 
                             if (p.empty())
                                 p = {new terminal_symbol_type("&")};
 
-                            new_productions[non_term].insert(p);
+                            new_productions[current].insert(p);
                         }
 
-                        new_productions[non_term].erase(prod);
+                        new_productions[current].erase(prod_current);
                     }
+                }
+            }
+
+            for (const auto& to_derive : symbols_to_derive[terminal_symbol_type("&")])
+            {
+                for (const auto& prod_current : previous_productions[current])
+                {
+                    if (to_derive != prod_current[0] || prod_current.size() <= 1)
+                        continue;
+
+                    production_type p(++prod_current.begin(), prod_current.end());
+
+                    new_productions[current].insert(p);
                 }
             }
         }
@@ -487,13 +514,13 @@ ContextFree ContextFree::factor(unsigned max_steps) const
         //! Passo de fatoramento
         for (int f = 0; f < symbols_to_factor.size(); ++f)
         {
-            non_terminal_symbol_type new_non_term(non_term.value() + std::to_string(f));
+            non_terminal_symbol_type new_non_term(current.value() + std::to_string(f));
             new_vn.insert(new_non_term);
             to_factor.push_back(new_non_term);
 
             terminal_symbol_type terminal = symbols_to_factor[f];
 
-            for (const auto& prod : previous_productions[non_term])
+            for (const auto& prod : previous_productions[current])
             {
                 if (terminal == prod[0])
                 {
@@ -509,13 +536,13 @@ ContextFree ContextFree::factor(unsigned max_steps) const
                         new_vt.insert(terminal_symbol_type("&"));
                     }
                     
-                    new_productions[non_term].erase(prod);
+                    new_productions[current].erase(prod);
                 }
             }
 
             production_type new_prod_factored{new terminal_symbol_type(terminal),
                                               new non_terminal_symbol_type(new_non_term)};
-            new_productions[non_term].insert(new_prod_factored);
+            new_productions[current].insert(new_prod_factored);
         }
 
         if (!symbols_to_factor.empty())
@@ -668,11 +695,11 @@ bool ContextFree::is_factored() const
     production_map_type copy{m_productions};
     first_map_type first{m_first};
 
-    for (const auto& non_ter : m_vn)
+    for (const auto& non_term : m_vn)
     {
         terminal_set_type visited;
 
-        for (const auto& prod : copy[non_ter])
+        for (const auto& prod : copy[non_term])
             for (const auto& symbol : prod)
                 if (symbol->is_terminal())
                 {
@@ -684,9 +711,14 @@ bool ContextFree::is_factored() const
                 }
                 else
                 {
-                    for (const auto& my_first : first[new non_terminal_symbol_type(non_ter)])
-                        if (my_first != terminal_symbol_type("&") && contains(first[symbol], my_first))
-                            return false;
+                    for (const auto& symbol_first : first[symbol])
+                        if (symbol_first != terminal_symbol_type("&"))
+                        {
+                            if (contains(visited, symbol_first))
+                                return false;
+                            
+                            visited.insert(symbol_first);
+                        }
 
                     if (!contains(first[symbol], terminal_symbol_type("&")))
                         break;

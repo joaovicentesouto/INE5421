@@ -907,7 +907,7 @@ TEST_CASE("Grammar: Factor a grammar", "[grammar][function]")
         ContextFree::terminal_set_type new_vt{a, b, epsilon};
         ContextFree::production_map_type new_prods;
         new_prods[S] = {prod_aS0};
-        new_prods[S0] = {prod_b, prod_ep};
+        new_prods[S0] = {prod_A, prod_ep};
         new_prods[A] = {prod_b};
 
 
@@ -950,15 +950,18 @@ TEST_CASE("Grammar: Factor a grammar", "[grammar][function]")
         ContextFree::non_terminal_set_type new_vn{S, A, B, S0, B0};
         ContextFree::production_map_type new_prods;
         new_prods[S] = {prod_aS_l};
-        new_prods[S0] = {prod_A, prod_S, prod_ep};
+        new_prods[S0] = {prod_A, prod_B};
         new_prods[A] = {prod_bA, prod_ep};
         new_prods[B] = {prod_cB_l};
         new_prods[B0] = {prod_S, prod_ep};
 
         ContextFree grammar_2{new_vn, vt, new_prods, S};
 
+        new_grammar.is_factored();
         CHECK(new_grammar.is_factored());
         CHECK(new_grammar == grammar_2);
+        CHECK(new_grammar.vn() == new_vn);
+        CHECK(new_grammar.productions() == new_prods);
     }
 }
 
