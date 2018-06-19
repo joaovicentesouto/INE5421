@@ -631,7 +631,10 @@ ContextFree ContextFree::remove_recursion(recursion_map_type &recursions) const
                 no_recursion.push_back(prod);
 
         if (recursion.empty())
+        {
+            new_productions[Ai] = new_prod_Ai;
             continue;
+        }
 
         recursions[Ai][Recursion::Direct].insert(Ai);
 
@@ -745,22 +748,12 @@ bool ContextFree::is_factored() const
 
 bool ContextFree::has_recursion() const
 {
-    non_terminal_set_type derives_epsilon;
-    epsilon_free(derives_epsilon);
+    recursion_map_type recursions;
+    remove_recursion(recursions);
 
-    for (const auto & pair_prod : m_productions)
-    {
-        auto source = pair_prod.first;
-        for (const auto & prod : pair_prod.second)
-            for (const auto & symbol : prod)
-            {
-                if (source == symbol)
-                    return true;
-
-                if (!contains(derives_epsilon, *symbol))
-                    break;
-            }
-    }
+    for (const auto& non_terminal : m_vn)
+        if (!recursions[non_terminal][Recursion::Direct].empty())
+            return true;
 
     return false;
 }

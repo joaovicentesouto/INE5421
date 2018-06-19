@@ -26,7 +26,7 @@ grammar_type::string_type& operator<<(grammar_type::string_type& title, const gr
 {
     title += "\n";
 
-    std::string direct{"Direct = { "}, indirect{"Indirect\n"};
+    std::string direct{"\nDirect = { "}, indirect{"\nIndirect\n"};
     bool has_indirect = false;
 
     unsigned i = 0;
@@ -41,9 +41,9 @@ grammar_type::string_type& operator<<(grammar_type::string_type& title, const gr
 
             indirect += recursion.first.value() + " = { ";
 
-            unsigned i = 0;
+            unsigned j = 0;
             for (const auto& non_terminal : recursion.second[grammar_type::Recursion::Indirect])
-                indirect += ++i < map.size()? non_terminal.value() + " , " : non_terminal.value();
+                indirect += j++ == 0? non_terminal.value() : " , " + non_terminal.value();
 
             indirect += " }\n";
         }
