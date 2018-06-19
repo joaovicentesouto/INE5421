@@ -876,6 +876,18 @@ TEST_CASE("Grammar: Remove recursion", "[grammar][function]")
     CHECK(!new_grammar.has_recursion());
     CHECK(recursion == rec);
     CHECK(new_grammar == grammar_2);
+
+    SECTION("Bad grammar", "[grammar][factor]")
+    {
+        ContextFree grammar(grammar_parser("G -> A a | b\nA -> G b"));
+
+        grammar.has_recursion();
+
+        CHECK(grammar.has_recursion());
+
+        auto new_grammar = grammar.remove_recursion(recursion);
+        CHECK(new_grammar.to_string() == "G -> b G0\nA -> G b\nG0 -> & | b a G0");
+    }
 }
 
 TEST_CASE("Grammar: Factor a grammar", "[grammar][function]")
