@@ -26,6 +26,7 @@ private slots:
     void on_inutileSymbolsButton_clicked();
     void on_simpleProductionButton_clicked();
     void on_unreachableSymbolsButton_clicked();
+    void set_grammar_name(std::string);
 
 signals:
     void new_grammar(std::string grammar_text);

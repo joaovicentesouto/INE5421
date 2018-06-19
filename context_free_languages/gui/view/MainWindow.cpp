@@ -8,8 +8,6 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     ui->setupUi(this);
 
-    ui->data->setReadOnly(true);
-
     // ***** New Grammar ***** //
 
     QObject::connect(ui->dynamicGrammar, SIGNAL(new_grammar(std::string)),
@@ -44,6 +42,11 @@ MainWindow::MainWindow(QWidget *parent) :
 
     QObject::connect(m_facade, SIGNAL(update_grammar_data(std::string)),
                      ui->dynamicGrammar, SLOT(set_dynamic_grammar_data(std::string)));
+
+    // ***** Update History View ***** //
+
+    QObject::connect(m_facade, SIGNAL(insert_grammar_name(std::string)),
+                     this, SLOT(set_grammar_name(std::string)));
 }
 
 MainWindow::~MainWindow()
@@ -119,4 +122,9 @@ void MainWindow::on_leftRecursionButton_clicked()
         m_facade->make_own();
         ui->dynamicGrammar->set_msg_text("Remoçao de Recurçao a Esquerda Realizada com Sucesso!");
     }
+}
+
+void MainWindow::set_grammar_name(std::string name)
+{
+    ui->history->addItem(new QListWidgetItem(QString::fromStdString(name)));
 }
