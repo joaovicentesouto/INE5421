@@ -26,17 +26,21 @@ void DynamicGrammarWidget::on_cleanButton_clicked()
 
 void DynamicGrammarWidget::on_validateButton_clicked()
 {
-    validation();
+    if (validation()) {
+        ui->msg->setText("Validated with successfully!");
+        ui->msg->setStyleSheet("color:green");
+        ui->msg->setVisible(true);
+    }
 }
 
 bool DynamicGrammarWidget::validation()
 {
-    if (emit new_grammar(ui->grammar->toPlainText().toStdString())) {
-        ui->msg->setVisible(false);
-        return true;
-    }
+    std::string message = emit new_grammar(ui->grammar->toPlainText().toStdString());
 
-    ui->msg->setText("Gramatica Invalida!");
+    if (message == "Validated with successfully!")
+        return true;
+
+    ui->msg->setText(QString::fromStdString(message));
     ui->msg->setStyleSheet("color:red");
     ui->msg->setVisible(true);
     return false;
@@ -48,10 +52,10 @@ void DynamicGrammarWidget::on_emptinessButton_clicked()
         return;
 
     if (emit emptiness()) {
-        ui->msg->setText("Gramatica Gera a Linguagem Vazia!");
+        ui->msg->setText("L(G) is empty!");
         ui->msg->setStyleSheet("color:black");
     } else {
-        ui->msg->setText("Gramatica Nao Gera a Linguagem Vazia!");
+        ui->msg->setText("L(G) is not empty!");
         ui->msg->setStyleSheet("color:black");
     }
     ui->msg->setVisible(true);
@@ -63,10 +67,10 @@ void DynamicGrammarWidget::on_finitenessButton_clicked()
         return;
 
     if (emit finiteness()) {
-        ui->msg->setText("Gramatica Gera uma Linguagem Finita!");
+        ui->msg->setText("L(G) is finite!");
         ui->msg->setStyleSheet("color:black");
     } else {
-        ui->msg->setText("Gramatica Gera uma Linguagem Infinita!");
+        ui->msg->setText("L(G) is not finite!");
         ui->msg->setStyleSheet("color:black");
     }
     ui->msg->setVisible(true);
@@ -78,10 +82,10 @@ void DynamicGrammarWidget::on_isFactoredButton_clicked()
         return;
 
     if (emit factored()) {
-        ui->msg->setText("Gramatica Fatorada!");
+        ui->msg->setText("G is factored!");
         ui->msg->setStyleSheet("color:black");
     } else {
-        ui->msg->setText("Gramatica Nao Fatorada!");
+        ui->msg->setText("G is not factored!");
         ui->msg->setStyleSheet("color:black");
     }
     ui->msg->setVisible(true);
@@ -93,10 +97,10 @@ void DynamicGrammarWidget::on_recursionButton_clicked()
         return;
 
     if (emit has_recursion()) {
-        ui->msg->setText("Gramatica Possui Recusao!");
+        ui->msg->setText("G has recursion on left!");
         ui->msg->setStyleSheet("color:black");
     } else {
-        ui->msg->setText("Gramatica Nao Possui Recursao!");
+        ui->msg->setText("G has not recursion on left!");
         ui->msg->setStyleSheet("color:black");
     }
     ui->msg->setVisible(true);

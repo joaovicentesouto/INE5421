@@ -20,7 +20,7 @@ private slots:
     void on_confirmButton_clicked();
 
 signals:
-    void factoring(uint n);
+    bool factoring(uint n);
     void set_msg_text(QString);
 
 private:

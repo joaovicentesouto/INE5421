@@ -41,6 +41,11 @@ ContextFree::follow_map_type ContextFree::follow() const
     return m_follow;
 }
 
+ContextFree::first_nt_map_type ContextFree::first_nt() const
+{
+    return m_first_nt;
+}
+
 bool ContextFree::operator==(const ContextFree &another) const
 {
     return m_vn             == another.m_vn
@@ -83,6 +88,7 @@ void ContextFree::calculate_first()
 
     for (const auto& symbol : m_vn)
     {
+        m_first_nt[symbol];
         symbol_ptr_type ptr{new non_terminal_symbol_type(symbol)};
 
         production_map_type copy(m_productions);
@@ -103,20 +109,29 @@ void ContextFree::calculate_first()
 
             production_map_type copy(m_productions);
             for (const auto& prod : copy[symbol])
+            {
+                int i = 0;
                 for (const auto& target : prod)
+                {
                     if (target->is_terminal())
-                    {
-                        m_first[source].insert(terminal_symbol_type(target->value()));
                         break;
-                    }
                     else
                     {
+                        m_first_nt[symbol].insert(non_terminal_symbol_type(target->value()));
+
                         for (const auto& first_target : m_first[target])
-                            m_first[source].insert(first_target);
+                            if (first_target != terminal_symbol_type("&"))
+                                m_first[source].insert(first_target);
 
                         if (!contains(m_first[target], terminal_symbol_type("&")))
                             break;
                     }
+                    i++;
+                }
+
+                if (i == prod.size())
+                    m_first[source].insert(terminal_symbol_type("&"));
+            }
         }
     }
 }
@@ -439,7 +454,7 @@ ContextFree ContextFree::factor(unsigned max_steps) const
     while (i < to_factor.size() && steps < max_steps)
     {
         auto current = to_factor[i];
-        symbol_type::vector_type<terminal_symbol_type> symbols_to_factor;
+        terminal_set_type symbols_to_factor;
         map_type<terminal_symbol_type, non_terminal_set_type> symbols_to_derive;
 
         //! Deriva produção na forma S -> Ab.. para S-> Xb.. se A->X
@@ -457,7 +472,7 @@ ContextFree ContextFree::factor(unsigned max_steps) const
                 if (prod[0]->is_terminal())
                 {
                     if (contains(visited, *prod[0]))
-                        symbols_to_factor.push_back(terminal_symbol_type(prod[0]->value()));
+                        symbols_to_factor.insert(terminal_symbol_type(prod[0]->value()));
 
                     visited.insert(terminal_symbol_type(prod[0]->value()));
                 }
@@ -468,7 +483,7 @@ ContextFree ContextFree::factor(unsigned max_steps) const
                     for (const auto& prod_first : first[prod[0]])
                     {
                         if (prod_first != terminal_symbol_type("&") && contains(visited, prod_first))
-                            symbols_to_factor.push_back(prod_first);
+                            symbols_to_factor.insert(prod_first);
 
                         visited.insert(prod_first);
                         symbols_to_derive[prod_first].insert(target);
@@ -527,13 +542,12 @@ ContextFree ContextFree::factor(unsigned max_steps) const
         previous_productions = new_productions;
 
         //! Passo de fatoramento
-        for (int f = 0; f < symbols_to_factor.size(); ++f)
+        int f = 0;
+        for (auto terminal : symbols_to_factor)
         {
-            non_terminal_symbol_type new_non_term(current.value() + std::to_string(f));
+            non_terminal_symbol_type new_non_term(current.value() + std::to_string(f++));
             new_vn.insert(new_non_term);
             to_factor.push_back(new_non_term);
-
-            terminal_symbol_type terminal = symbols_to_factor[f];
 
             for (const auto& prod : previous_productions[current])
             {

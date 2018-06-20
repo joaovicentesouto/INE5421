@@ -21,10 +21,10 @@ public:
 
 private slots:
     std::string construct_grammar_data(ContextFree grammar);
-    void make_change(ContextFree grammar, std::string result_data);
+    void make_change(ContextFree grammar, std::string result_data, bool first = true);
 
 public slots:
-    bool new_grammar(std::string grammar_text);
+    std::string new_grammar(std::string grammar_text);
 
     bool factored();
     bool emptiness();
@@ -33,7 +33,7 @@ public slots:
 
     void make_own();
     void epsilon_free();
-    void factoring(uint n);
+    bool factoring(uint n);
     void remove_dead_symbols();
     void remove_left_recursion();
     void remove_inutile_symbols();
@@ -46,7 +46,7 @@ signals:
     void insert_grammar_name(std::string, bool);
     void update_static_grammar_data(std::string);
     void update_dynamic_grammar_data(std::string);
-    void set_static_grammar(std::string, std::string);
+    void set_static_grammar(std::string, std::string, bool);
 
 private:
      ContextFree m_grammar;
