@@ -35,6 +35,7 @@ public slots:
 signals:
     bool factored();
     bool emptiness();
+    void clean_main();
     bool finiteness();
     bool has_recursion();
     bool validated_grammar();

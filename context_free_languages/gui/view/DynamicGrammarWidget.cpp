@@ -19,7 +19,9 @@ DynamicGrammarWidget::~DynamicGrammarWidget()
 void DynamicGrammarWidget::on_cleanButton_clicked()
 {
     ui->grammar->clear();
+    ui->grammarData->clear();
     ui->msg->setVisible(false);
+    emit clean_main();
 }
 
 void DynamicGrammarWidget::on_validateButton_clicked()

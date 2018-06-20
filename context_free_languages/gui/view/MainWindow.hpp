@@ -19,6 +19,7 @@ public:
     ~MainWindow();
 
 private slots:
+    void clean_history();
     void on_ownButton_clicked();
     void on_factoringButton_clicked();
     void on_deadSymbolsButton_clicked();

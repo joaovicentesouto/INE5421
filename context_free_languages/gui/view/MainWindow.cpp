@@ -67,12 +67,23 @@ MainWindow::MainWindow(QWidget *parent) :
 
     QObject::connect(ui->staticGrammar, SIGNAL(select_grammar(std::string)),
                      this, SLOT(select_grammar(std::string)));
+
+    // ***** Update Grammar History ***** //
+
+    QObject::connect(ui->dynamicGrammar, SIGNAL(clean_main()),
+                     this, SLOT(clean_history()));
 }
 
 MainWindow::~MainWindow()
 {
     delete ui;
     delete m_facade;
+}
+
+void MainWindow::clean_history()
+{
+    for (int i = 0; i < ui->history->count(); i++)
+        ui->history->item(i)->setBackgroundColor(QColor("#ffffff"));
 }
 
 void MainWindow::on_factoringButton_clicked()
