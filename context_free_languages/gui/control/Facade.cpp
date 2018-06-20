@@ -9,7 +9,7 @@ Facade::~Facade()
 {
 }
 
-bool Facade::new_grammar(std::string grammar_text)
+std::string Facade::new_grammar(std::string grammar_text)
 {
     try {
         m_grammar = formal_device::parser::grammar_parser(grammar_text);
@@ -25,10 +25,10 @@ bool Facade::new_grammar(std::string grammar_text)
         grammars_history.insert(m_grammar);
         grammar_mapping[grammar_name] = m_grammar;
         emit update_dynamic_grammar_data(construct_grammar_data(m_grammar));
-        return true;
+        return "Validated with successfully!";
 
-    } catch (const std::exception& e) {
-        return false;
+    } catch (const std::out_of_range& e) {
+        return e.what();
     }
 }
 
@@ -52,9 +52,11 @@ bool Facade::has_recursion()
     return m_grammar.has_recursion();
 }
 
-void Facade::factoring(uint n)
+bool Facade::factoring(uint n)
 {
-    make_change(m_grammar.factor(n), "");
+    ContextFree grammar = m_grammar.factor(n);
+    make_change(grammar, "");
+    return grammar.is_factored();
 }
 
 void Facade::make_own()
@@ -64,21 +66,33 @@ void Facade::make_own()
     ContextFree::non_terminal_set_type fertible;
     ContextFree::non_terminal_set_type derives_epsilon;
 
-    ContextFree grammar = m_grammar.own(derives_epsilon, na, fertible, reachable);
+    ContextFree grammar = m_grammar.epsilon_free(derives_epsilon);
 
     std::string string = "Derives Epsilon";
     string << derives_epsilon;
 
+    make_change(grammar, string);
+
+    grammar = grammar.remove_simple_productions(na);
+
     string += "\nSimple Productions";
     string << na;
 
+    make_change(grammar, string, false);
+
+    grammar = grammar.remove_infertile_symbols(fertible);
+
     string += "\nFertile symbols";
-    string << derives_epsilon;
+    string << fertible;
+
+    make_change(grammar, string, false);
+
+    grammar = grammar.remove_unreachable_symbols(reachable);
 
     string += "\nReachable symbols";
     string << reachable;
 
-    make_change(grammar, string);
+    make_change(grammar, string, false);
 }
 
 void Facade::epsilon_free()
@@ -122,15 +136,19 @@ void Facade::remove_inutile_symbols()
     ContextFree::symbol_ptr_set_type reachable;
     ContextFree::non_terminal_set_type fertile_symbols;
 
-    ContextFree grammar = m_grammar.remove_useless_symbols(fertile_symbols, reachable);
+    ContextFree grammar = m_grammar.remove_infertile_symbols(fertile_symbols);
     
     std::string string = "Fertile symbols";
     string << fertile_symbols;
 
+    make_change(grammar, string);
+
+    grammar = grammar.remove_unreachable_symbols(reachable);
+
     string += "\nReachable symbols";
     string << reachable;
 
-    make_change(grammar, string);
+    make_change(grammar, string, false);
 }
 
 void Facade::remove_simple_production()
@@ -157,7 +175,7 @@ void Facade::remove_unreachable_symbols()
     make_change(grammar, string);
 }
 
-void Facade::make_change(ContextFree grammar, std::string result_data)
+void Facade::make_change(ContextFree grammar, std::string result_data, bool fisrt)
 {
     std::string grammar_name = "Grammar " + (std::to_string(grammars_history.size() + 1));
 
@@ -171,7 +189,7 @@ void Facade::make_change(ContextFree grammar, std::string result_data)
     grammars_history.insert(grammar);
     grammar_mapping[grammar_name] = grammar;
 
-    emit set_static_grammar(grammar.to_string(), grammar_name);
+    emit set_static_grammar(grammar.to_string(), grammar_name, fisrt);
     emit update_static_grammar_data(result_data);
 }
 
@@ -181,6 +199,20 @@ std::string Facade::construct_grammar_data(ContextFree grammar)
     for (auto producer : grammar.first()) {
         auto symb = producer.first->value();
         data += "First( " + symb + " ) = { ";
+        int i = 1;
+        for (auto symbol : producer.second) {
+            if (i++ == producer.second.size())
+                data += symbol.value() + " }\n";
+            else
+                data += symbol.value() + " , ";
+        }
+        if (producer.second.size() == 0)
+            data += " }\n";
+    }
+    data += "\nFIRST-NT:\n\n";
+    for (auto producer : grammar.first_nt()) {
+        auto symb = producer.first.value();
+        data += "First-NT( " + symb + " ) = { ";
         int i = 1;
         for (auto symbol : producer.second) {
             if (i++ == producer.second.size())

@@ -40,6 +40,7 @@ class ContextFree
     using symbol_ptr_set_type      = set_type<symbol_ptr_type>;
     using first_map_type           = map_type<symbol_ptr_type, terminal_set_type>;
     using follow_map_type          = map_type<non_terminal_symbol_type, terminal_set_type>;
+    using first_nt_map_type        = map_type<non_terminal_symbol_type, non_terminal_set_type>;
     using production_map_type      = map_type<non_terminal_symbol_type, set_type<production_type>>;
     using recursion_map_type       = map_type<non_terminal_symbol_type, map_type<Recursion, non_terminal_set_type>>;
     using simple_production_map_type = map_type<non_terminal_symbol_type, non_terminal_set_type>;
@@ -70,6 +71,7 @@ class ContextFree
     const non_terminal_symbol_type &initial_symbol() const;
     first_map_type first() const;
     follow_map_type follow() const;
+    first_nt_map_type first_nt() const;
     string_type to_string() const;
 
     ContextFree own(non_terminal_set_type &derives_epsilon,
@@ -110,6 +112,7 @@ class ContextFree
     production_map_type      m_productions;
     first_map_type           m_first;
     follow_map_type          m_follow;
+    first_nt_map_type        m_first_nt;
 };
 
 } // namespace grammar

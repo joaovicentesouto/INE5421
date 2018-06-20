@@ -40,6 +40,16 @@
    <item>
     <widget class="QTextEdit" name="grammarData"/>
    </item>
+   <item>
+    <widget class="QLabel" name="title_result">
+     <property name="text">
+      <string>Intermediate results</string>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QListWidget" name="history"/>
+   </item>
   </layout>
  </widget>
  <resources/>

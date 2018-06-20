@@ -21,7 +21,9 @@ void NumberDialog::on_cancelButton_clicked()
 
 void NumberDialog::on_confirmButton_clicked()
 {
-    emit factoring(ui->numberBox->text().toUInt());
-    emit set_msg_text("Tentativa de Fatoraçao em " + ui->numberBox->text() + " Passos Realizada!");
+    if (emit factoring(ui->numberBox->text().toUInt()))
+        emit set_msg_text("Grammar factored with successfully!");
+    else
+        emit set_msg_text("Grammar factoring with no success!");
     close();
 }

@@ -7,7 +7,7 @@ namespace parser {
 grammar_type grammar_parser(string_type grammar)
 {
     if (grammar.length() < 4)
-        throw std::out_of_range("Gramatica Invalida!");
+        throw std::out_of_range("Invalid Grammar!");
 
     non_terminal_set_type vn;
     terminal_set_type vt;
@@ -27,7 +27,7 @@ grammar_type grammar_parser(string_type grammar)
 
             case 0:
                 if (!std::regex_match(sequence, std::regex("[A-Z][0-9]*")))
-                    throw std::out_of_range("Simbolo Terminal invalido!");
+                    throw std::out_of_range("Symbol '" + sequence + "' is invalid!");
                 generator = non_terminal_symbol_type(sequence);
                 vn.insert(generator);
                 if (line == productions_line.front())
@@ -37,7 +37,7 @@ grammar_type grammar_parser(string_type grammar)
 
             case 1:
                 if (!std::regex_match(sequence, std::regex("->")))
-                    throw std::out_of_range("Simbolo Terminal invalido!");
+                    throw std::out_of_range("Symbol '" + sequence + "' is invalid!");
                 i++;
                 break;
 
@@ -51,7 +51,7 @@ grammar_type grammar_parser(string_type grammar)
                     vt.insert(*symbol);
                     production.push_back(symbol_ptr_type(symbol));
                 } else if (sequence != "|")
-                    throw std::out_of_range("Gramatica Invalida!");
+                    throw std::out_of_range("Symbol '" + sequence + "' is invalid!");
                 i++;
                 break;
 
@@ -68,11 +68,11 @@ grammar_type grammar_parser(string_type grammar)
                     p[generator].insert(production);
                     production = production_type();
                 } else
-                    throw std::out_of_range("Simbolo Terminal invalido!");
+                    throw std::out_of_range("Symbol '" + sequence + "' is invalid!");
                 break;
 
             default:
-                throw std::out_of_range("Simbolo Terminal invalido!");
+                throw std::out_of_range("Symbol '" + sequence + "' is invalid!");
             }
         }
     }

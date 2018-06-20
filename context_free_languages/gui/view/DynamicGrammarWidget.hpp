@@ -39,7 +39,7 @@ signals:
     bool finiteness();
     bool has_recursion();
     bool validated_grammar();
-    bool new_grammar(std::string grammar_text);
+    std::string new_grammar(std::string grammar_text);
 
 private:
     Ui::DynamicGrammarWidget *ui;
