@@ -26,6 +26,8 @@ set(formal_languages_VERSION 0.1)
 # Set c++14 globally
 set(CMAKE_CXX_STANDARD 14)
 
+set(CMAKE_OSX_DEPLOYMENT_TARGET "10.10" CACHE STRING "Minimum macOS deployment version")
+
 # Set formal_languages source dir
 set(formal_languages_source_dir ${PROJECT_SOURCE_DIR})
 
