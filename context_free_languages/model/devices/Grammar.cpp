@@ -80,12 +80,17 @@ bool contains(const ContextFree::set_type<T>& set, const V& value)
 
 void ContextFree::calculate_first()
 {
+    //! Follows algorithm seen in class, in particular,
+    //! first-NT construction is done together.
+
+    //! Step 1
     for (const auto& symbol : m_vt)
     {
         symbol_ptr_type ptr{new terminal_symbol_type(symbol)};
         m_first[ptr] = {symbol};
     }
 
+    //! Step 2
     for (const auto& symbol : m_vn)
     {
         m_first_nt[symbol];
@@ -99,6 +104,7 @@ void ContextFree::calculate_first()
 
     first_map_type previous;
 
+    //! Step 3
     while (m_first != previous)
     {
         previous = m_first;
@@ -117,6 +123,7 @@ void ContextFree::calculate_first()
                         break;
                     else
                     {
+                        //! Create first-NT
                         m_first_nt[symbol].insert(non_terminal_symbol_type(target->value()));
 
                         for (const auto& first_target : m_first[target])
@@ -138,8 +145,12 @@ void ContextFree::calculate_first()
 
 void ContextFree::calculate_follow()
 {
+    //! Follows algorithm seen in class
+
+    //! Step 1
     m_follow[m_initial_symbol] = {terminal_symbol_type("$")};
 
+    //! Step 2
     for (const auto& pair : m_productions)
         for (const auto& prod : pair.second)
             for (int i = 0; i < prod.size(); ++i)
@@ -162,6 +173,7 @@ void ContextFree::calculate_follow()
 
     follow_map_type previous;
 
+    //! Step 3
     while (m_follow != previous)
     {
         previous = m_follow;
@@ -290,16 +302,18 @@ ContextFree ContextFree::epsilon_free(non_terminal_set_type &derives_epsilon) co
 
 ContextFree ContextFree::remove_simple_productions(simple_production_map_type &na) const
 {
+    //! Every non-terminal symbol generates it in zero steps
     for (const auto& non_terminal : m_vn)
         na[non_terminal] = {non_terminal};
 
+    //! Find the Simple Direct productions
     for (const auto& pair : m_productions)
         for (const auto& prod : pair.second)
             if (prod.size() == 1 && !prod[0]->is_terminal())
                 na[pair.first].insert(*dynamic_cast<const non_terminal_symbol_type*>(prod[0].get()));
 
+    //! Find the Simple Indirect productions
     simple_production_map_type na_previous;
-
     while (na != na_previous)
     {
         na_previous = na;
@@ -312,11 +326,13 @@ ContextFree ContextFree::remove_simple_productions(simple_production_map_type &n
 
     production_map_type new_productions;
 
+    //! Replicate non-terminal symbol productions not simple
     for (const auto& pair : m_productions)
         for (const auto& prod : pair.second)
             if ((prod.size() > 1) || prod[0]->is_terminal())
                 new_productions[pair.first].insert(prod);
 
+    //! Copies non-terminal productions of the symbols belonging to the simple productions
     for (const auto& source : m_vn)
         for (const auto& target : na[source])
         {
@@ -336,14 +352,20 @@ ContextFree ContextFree::remove_infertile_symbols(non_terminal_set_type &fertile
     production_map_type productions(m_productions);
     non_terminal_set_type still_infertile(m_vn);
 
+    //! Algorithm follows what was seen in class
+
+    //! Check to see if the symbols that are still
+    //! infertile have some production formed only of hatching symbols
     do
     {
         previous = fertile_symbols;
 
+        //! For each non-terminal infertile symbol
         for (const auto& symbol : non_terminal_set_type{still_infertile})
         {
             bool fertile = false;
 
+            //! Check if there is any production of it that is formed only of fertile symbols
             for (const auto& prod : productions[symbol])
             {
                 fertile = true;
@@ -369,6 +391,7 @@ ContextFree ContextFree::remove_infertile_symbols(non_terminal_set_type &fertile
     production_map_type new_productions;
     non_terminal_symbol_type new_initial_symbol{m_initial_symbol};
 
+    //! Maintains only productions with fertile symbols
     for (const auto& fertile : fertile_symbols)
         for (const auto& prod : productions[fertile])
         {
@@ -380,6 +403,7 @@ ContextFree ContextFree::remove_infertile_symbols(non_terminal_set_type &fertile
                 new_productions[fertile].insert(prod);
         }
 
+    //! New vt
     for (const auto& pair : new_productions)
         for (const auto& prod : pair.second)
             for (const auto& symbol : prod)
@@ -405,11 +429,15 @@ ContextFree ContextFree::remove_unreachable_symbols(symbol_ptr_set_type &reachab
     symbol_type::vector_type<symbol_ptr_type> to_process{new non_terminal_symbol_type{m_initial_symbol}};
     reachable_symbols.insert(to_process.front());
 
+    //! Algorio follows what was seen in class
+
+    //! From the initial symbol I will reach new
+    //! symbols and insert into the set, when no new symbol is reached, stop.
     do
     {
         const auto * symbol = dynamic_cast<const non_terminal_symbol_type*>(to_process[i].get());
 
-        if (!symbol) //! Terminal Symbol -> continue
+        if (!symbol) //! Terminal Symbol
         {
             new_vt.insert(*dynamic_cast<const terminal_symbol_type*>(to_process[i].get()));
             continue;
@@ -420,8 +448,10 @@ ContextFree ContextFree::remove_unreachable_symbols(symbol_ptr_set_type &reachab
         if (productions[*symbol].empty())
             continue;
 
+        //! Achieveable Productions
         new_productions[*symbol] = productions[*symbol];
 
+        //! Updates queue of symbols achieved
         for (const auto& prod : productions[*symbol])
             for (const auto& alfa : prod)
                 if (!contains(reachable_symbols, alfa))
@@ -438,6 +468,7 @@ ContextFree ContextFree::remove_unreachable_symbols(symbol_ptr_set_type &reachab
 ContextFree ContextFree::remove_useless_symbols(non_terminal_set_type &fertile_symbols,
                                                 symbol_ptr_set_type &reachable_symbols) const
 {
+    //! As seen in class, just run the following algorithms in the following order.
     auto fertible = remove_infertile_symbols(fertile_symbols);
     return fertible.remove_unreachable_symbols(reachable_symbols);
 }
@@ -445,11 +476,14 @@ ContextFree ContextFree::remove_useless_symbols(non_terminal_set_type &fertile_s
 ContextFree ContextFree::factor(unsigned max_steps) const
 {
     recursion_map_type ignore;
+    //! Eliminates recursion
     ContextFree no_recursion_g = has_recursion()? remove_recursion(ignore) : *this;
 
+    //! Symbols not yet verified
     symbol_type::vector_type<non_terminal_symbol_type> to_factor(no_recursion_g.m_vn.begin(),
                                                                  no_recursion_g.m_vn.end());
 
+    //! First copy
     first_map_type first{no_recursion_g.m_first};
 
     non_terminal_set_type new_vn{no_recursion_g.m_vn};
@@ -460,13 +494,16 @@ ContextFree ContextFree::factor(unsigned max_steps) const
     size_t i = 0;
     size_t steps = 0;
 
+    //! As long as there are symbols not yet verified or reached the maximum number of steps
     while (i < to_factor.size() && steps < max_steps)
     {
         auto current = to_factor[i];
-        terminal_set_type symbols_to_factor;
+        terminal_set_type unfactored_terminal;
         map_type<terminal_symbol_type, non_terminal_set_type> symbols_to_derive;
 
-        //! Deriva produção na forma S -> Ab.. para S-> Xb.. se A->X
+        //! Derives production in the form S-> ABeta... for S -> GammaBeta... If A -> Gamma
+        
+        //! As long as there is indirect factoring it will be derived thus creating new productions
         production_map_type previous_productions;
         while (new_productions != previous_productions)
         {
@@ -476,12 +513,14 @@ ContextFree ContextFree::factor(unsigned max_steps) const
             if (previous_productions[current].empty())
                 break;
 
+            //! Verifies that a terminal symbol can start two existing productions
+            //! Or find non-terminal symbols that cause indirect factoring
             for (const auto& prod : previous_productions[current])
             {
                 if (prod[0]->is_terminal())
                 {
                     if (contains(visited, *prod[0]))
-                        symbols_to_factor.insert(terminal_symbol_type(prod[0]->value()));
+                        unfactored_terminal.insert(terminal_symbol_type(prod[0]->value()));
 
                     visited.insert(terminal_symbol_type(prod[0]->value()));
                 }
@@ -489,10 +528,11 @@ ContextFree ContextFree::factor(unsigned max_steps) const
                 {
                     non_terminal_symbol_type target(prod[0]->value());
 
+                    //! Checks for the intersection of the first minus &
                     for (const auto& prod_first : first[prod[0]])
                     {
                         if (prod_first != terminal_symbol_type("&") && contains(visited, prod_first))
-                            symbols_to_factor.insert(prod_first);
+                            unfactored_terminal.insert(prod_first);
 
                         visited.insert(prod_first);
                         symbols_to_derive[prod_first].insert(target);
@@ -500,7 +540,8 @@ ContextFree ContextFree::factor(unsigned max_steps) const
                 }
             }
 
-            for (const auto& cause_factor : symbols_to_factor)
+            //! Derives non-terminal symbols that cause factoring minus &
+            for (const auto& cause_factor : unfactored_terminal)
             {
                 for (const auto& to_derive : symbols_to_derive[cause_factor])
                 {
@@ -527,6 +568,7 @@ ContextFree ContextFree::factor(unsigned max_steps) const
                 }
             }
 
+            //! Derives non-terminal simbols who derives &
             for (const auto& to_derive : symbols_to_derive[terminal_symbol_type("&")])
             {
                 for (const auto& prod_current : previous_productions[current])
@@ -550,14 +592,18 @@ ContextFree ContextFree::factor(unsigned max_steps) const
 
         previous_productions = new_productions;
 
-        //! Passo de fatoramento
+        //! Factoring step
         int f = 0;
-        for (auto terminal : symbols_to_factor)
+        for (auto terminal : unfactored_terminal)
         {
+            //! New Symbol
             non_terminal_symbol_type new_non_term(current.value() + std::to_string(f++));
             new_vn.insert(new_non_term);
+
+            //! Inserts it into the scan queue
             to_factor.push_back(new_non_term);
 
+            //! Eliminates Unfactored Productions and inserts the new production into the new terminal
             for (const auto& prod : previous_productions[current])
             {
                 if (terminal == prod[0])
@@ -578,16 +624,19 @@ ContextFree ContextFree::factor(unsigned max_steps) const
                 }
             }
 
+            //! New factored production
             production_type new_prod_factored{new terminal_symbol_type(terminal),
                                               new non_terminal_symbol_type(new_non_term)};
             new_productions[current].insert(new_prod_factored);
         }
 
-        if (!symbols_to_factor.empty())
+        //! If factoring occurred then increments the step
+        if (!unfactored_terminal.empty())
             steps++;
 
         i++;
 
+        //! Update first
         ContextFree update_first(new_vn, new_vt, new_productions, new_initial_symbol);
         first = update_first.first();
     }
@@ -602,6 +651,7 @@ ContextFree ContextFree::remove_recursion(recursion_map_type &recursions) const
     non_terminal_set_type fertile_symbols;
     symbol_ptr_set_type reachable_symbols;
 
+    //! Turns into a grammar of its own
     auto own_grammar = own(derives_epsilon, na, fertile_symbols, reachable_symbols);
 
     non_terminal_set_type new_vn{own_grammar.m_vn};
@@ -611,6 +661,7 @@ ContextFree ContextFree::remove_recursion(recursion_map_type &recursions) const
 
     symbol_type::vector_type<non_terminal_symbol_type> order(new_vn.begin(), new_vn.end());
 
+    //! Algorithm follows what was seen in class
     for (auto i = 0; i < order.size(); ++i)
     {
         auto Ai = order[i];
@@ -689,6 +740,7 @@ ContextFree ContextFree::remove_recursion(recursion_map_type &recursions) const
 
 bool ContextFree::emptiness() const
 {
+    //! Checks whether the initial symbol is fertile
     non_terminal_set_type fertile;
     auto g = remove_infertile_symbols(fertile);
 
@@ -700,6 +752,7 @@ bool ContextFree::finitiness() const
     non_terminal_set_type temporary;
     non_terminal_set_type permanent;
 
+    //! Performs an in-depth search, visiting all the symbols of the grammar.
     return !contains_cycle(m_initial_symbol, temporary, permanent);
 }
 
@@ -736,6 +789,9 @@ bool ContextFree::is_factored() const
     production_map_type copy{m_productions};
     first_map_type first{m_first};
 
+    //! Verifies that from a non-terminal symbol you can initially
+    //! derive a terminal by more than one production using the
+    //! visited set. If it is visited twice then it is not factored.
     for (const auto& non_term : m_vn)
     {
         terminal_set_type visited;
@@ -771,6 +827,8 @@ bool ContextFree::is_factored() const
 
 bool ContextFree::has_recursion() const
 {
+    //! Removes recursion and verifies that some direct recursion has
+    //! been detected, in case if an indirect has been made direct also counts.
     recursion_map_type recursions;
     remove_recursion(recursions);
 
