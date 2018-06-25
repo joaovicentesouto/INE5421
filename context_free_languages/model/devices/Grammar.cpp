@@ -191,6 +191,7 @@ ContextFree ContextFree::own(non_terminal_set_type &derives_epsilon,
                              non_terminal_set_type &fertile_symbols,
                              symbol_ptr_set_type &reachable_symbols) const
 {
+    //! Calls another functions to make own grammar
     return epsilon_free(derives_epsilon)
            .remove_simple_productions(na)
            .remove_useless_symbols(fertile_symbols, reachable_symbols);
@@ -202,6 +203,8 @@ ContextFree ContextFree::epsilon_free(non_terminal_set_type &derives_epsilon) co
     production_map_type productions(m_productions);
     non_terminal_set_type does_not_derives_epsilon(m_vn);
 
+    //! Creates two sets, one with all non terminal that derives epsilon, directly or not
+    //! and another that do not derives epsilon
     do
     {
         previous = derives_epsilon;
@@ -236,11 +239,14 @@ ContextFree ContextFree::epsilon_free(non_terminal_set_type &derives_epsilon) co
     non_terminal_symbol_type new_initial_symbol{m_initial_symbol};
     production_type epsilon_production{new terminal_symbol_type("&")};
 
+    //! Copy of non epsilon productions to new production map
     for (const auto& pair : m_productions)
         for (const auto& prod : pair.second)
             if (prod != epsilon_production)
                 new_productions[pair.first].insert(prod);
 
+    //! Copy the productions from symbols X (where X derivates epsilon at old grammar)
+    //! to symbols Y that derivates X
     production_map_type copy(new_productions);
     for (const auto& pair : copy)
     {
@@ -267,6 +273,9 @@ ContextFree ContextFree::epsilon_free(non_terminal_set_type &derives_epsilon) co
         }
     }
 
+    //! Case the initial symbol derivates epsilon then create a new initial symbol,
+    //! copy the productions from old initial symbol to new initial symbol and insert
+    //! a epsilon-production on new initial symbol
     if (contains(derives_epsilon, m_initial_symbol))
     {
         new_initial_symbol = m_initial_symbol.value() + "0";

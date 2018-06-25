@@ -175,7 +175,7 @@ void Facade::remove_unreachable_symbols()
     make_change(grammar, string);
 }
 
-void Facade::make_change(ContextFree grammar, std::string result_data, bool fisrt)
+void Facade::make_change(ContextFree grammar, std::string result_data, bool first)
 {
     std::string grammar_name = "Grammar " + (std::to_string(grammars_history.size() + 1));
 
@@ -189,7 +189,7 @@ void Facade::make_change(ContextFree grammar, std::string result_data, bool fisr
     grammars_history.insert(grammar);
     grammar_mapping[grammar_name] = grammar;
 
-    emit set_static_grammar(grammar.to_string(), grammar_name, fisrt);
+    emit set_static_grammar(grammar.to_string(), grammar_name, first);
     emit update_static_grammar_data(result_data);
 }
 

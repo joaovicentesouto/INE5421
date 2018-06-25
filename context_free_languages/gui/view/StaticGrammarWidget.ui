@@ -40,7 +40,7 @@
    <item>
     <widget class="QTextEdit" name="grammarData"/>
    </item>
-   <item>
+   <item alignment="Qt::AlignHCenter">
     <widget class="QLabel" name="title_result">
      <property name="text">
       <string>Intermediate results</string>
