@@ -169,7 +169,7 @@ void ContextFree::calculate_follow()
                             if (symbol != terminal_symbol_type("&"))
                                 m_follow[non_term].insert(symbol);
 
-                        if (prod[j]->is_terminal())
+                        if (prod[j]->is_terminal() || contains(m_first[prod[i]], terminal_symbol_type("&")))
                             break;
                     }
                 }
