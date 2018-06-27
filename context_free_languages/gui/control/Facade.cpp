@@ -197,6 +197,9 @@ std::string Facade::construct_grammar_data(ContextFree grammar)
 {
     std::string data = "FIRST:\n\n";
     for (auto producer : grammar.first()) {
+        if (producer.first->is_terminal())
+            continue;
+
         auto symb = producer.first->value();
         data += "First( " + symb + " ) = { ";
         int i = 1;
