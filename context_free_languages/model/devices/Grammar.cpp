@@ -95,6 +95,7 @@ void ContextFree::calculate_first()
     {
         m_first_nt[symbol];
         symbol_ptr_type ptr{new non_terminal_symbol_type(symbol)};
+        m_first[ptr];
 
         production_map_type copy(m_productions);
         for (const auto& prod : copy[symbol])
@@ -120,7 +121,10 @@ void ContextFree::calculate_first()
                 for (const auto& target : prod)
                 {
                     if (target->is_terminal())
+                    {
+                        m_first[source].insert(terminal_symbol_type(target->value()));
                         break;
+                    }
                     else
                     {
                         //! Create first-NT
